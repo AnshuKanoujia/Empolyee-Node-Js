@@ -1,0 +1,45 @@
+extends ./../../layout/hr-layout
+
+block content
+      #page-wrapper
+            .row.page-titles
+                .col-md-5.align-self-center
+                    h3.text-themecolor Hr
+                .col-md-7.align-self-center
+                    ol.breadcrumb
+                        //- li.breadcrumb-item.active Roles List
+            .container-fluid
+                -if(messages.msg_error)
+                    .alert.alert-danger #{messages.msg_error}
+                -else if(messages.msg_info)
+                    .alert.alert-success #{messages.msg_info}
+                .row
+                    .col-md-12
+                        .card
+                            .card-body
+                                h4  Roles List
+                                .table-responsive
+                                    table.table.table-striped.table-bordered
+                                        thead
+                                            tr
+                                                th #
+                                                th Project Name
+                                                th Descrpition
+                                                th Action
+                                        tbody
+                                            
+                                            if(roles.length)
+                                                each role, i in roles
+                                                    tr
+                                                        td= i+1
+                                                        td= role.type_name
+                                                        td= role.description
+                                                        td
+                                                            a.btn.btn-primary.btn-sm(href='/admin/hr/editRoles/#{role.id}', data-toggle='tooltip', title='Edit Role') 
+                                                                i.fa.fa-edit
+                                                            &nbsp;
+                                                            a.btn.btn-danger.btn-sm(href='/admin/hr/deleteRoles/#{role.id}', data-toggle='tooltip', title='Delete Role') 
+                                                                i.fa.fa-trash
+                                            else
+                                                tr.danger.text-center
+                                                    td(colspan='3') Sorry, no record found!

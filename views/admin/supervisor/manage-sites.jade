@@ -1,0 +1,50 @@
+extends ./../../layout/supervisor-layout
+
+block content
+      #page-wrapper
+            .row.page-titles
+                .col-md-5.align-self-center
+                    h3.text-themecolor Project Planner
+                .col-md-7.align-self-center
+                    ol.breadcrumb
+                        li.breadcrumb-item.active Locations
+            .container-fluid
+                -if(messages.msg_error)
+                    .alert.alert-danger #{messages.msg_error}
+                -else if(messages.msg_info)
+                    .alert.alert-success #{messages.msg_info}
+                .row
+                        .col-md-12
+                            .card
+                                .card-body
+                                    h4  Locations List
+                                    .table-responsive
+                                        table.table.table-striped.table-bordered
+                                            thead
+                                                tr
+                                                    th #
+                                                    th Location Name
+                                                    th Address
+                                                    th Action
+                                            tbody
+                                                if(siteLists.length)
+                                                    each siteList, i in siteLists
+                                                        tr
+                                                            td= i+1
+                                                            td= siteList.siteName
+                                                            //- td= siteList.siteName+' ('+ siteList.sitesCode+')'
+                                                            td= siteList.newAddress ? siteList.newAddress : '--'
+                                                            td(style="width: 250px")
+                                                                a.btn.btn-info.btn-sm(href='/admin/supervisor/view-sites/#{siteList.id}', data-toggle='tooltip', title='View Location') 
+                                                                    i.fa.fa-eye
+                                                                &nbsp;
+                                                                a.btn.btn-primary.btn-sm(href='/admin/supervisor/create-jobs/#{siteList.id}', data-toggle='tooltip', title='Create Project') 
+                                                                    i.fa.fa-user-plus
+                                                                &nbsp;
+                                                                a.btn.btn-success.btn-sm(href='/admin/supervisor/view-jobs/#{siteList.id}', data-toggle='tooltip', title='View Project') 
+                                                                    i.fa.fa-eye
+                                                else
+                                                    tr.danger.text-center
+                                                        td(colspan='7') Sorry, no record found!
+
+            

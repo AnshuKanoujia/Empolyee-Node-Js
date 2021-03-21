@@ -1,0 +1,5 @@
+Cron jobs -
+	1.) Daily (check if enroll_Indate is today_date set is_current=1 in table users_job)
+
+Important_jobs -	
+	1.) Set is_current in users_job to 0(jobs will not start the same day user accept).

@@ -1,0 +1,113 @@
+extends ./../../layout/user-layout
+
+block content
+      #page-wrapper
+            .row.page-titles
+                .col-md-5.align-self-center
+                    h3.text-themecolor Technician
+                .col-md-7.align-self-center
+                    ol.breadcrumb
+                        li.breadcrumb-item.active Project Name
+            .container-fluid
+                .row
+                    .col-md-12
+                    
+                            .card
+                                .card-header 
+                                    h4  #{viewReportLists.jobName+' ('+viewReportLists.jobCode+')'}
+                                .card-body
+                                
+                                    .table-responsive
+                                        table.table.table-borderless.job-details
+                                        
+                                            tbody
+                                                tr
+                                                    th Location Name:
+                                                    td= viewReportLists.siteName
+                                                    //- td= viewReportLists.siteName+' ('+viewReportLists.sitesCode+')'
+                                                    th Project Dates:
+                                                    td= moment(viewReportLists.startDate).format('MM/DD/YYYY')+ ' - '+ moment(viewReportLists.endDate).format('MM/DD/YYYY')
+                                                        span(data-toggle='modal', class="manage-btn-sm ml-1", data-target='#view-timeDuration', data-id=viewReportLists.jobId ,)
+                                                            button.btn.btn-info.manage-btn-sm(data-toggle='tooltip',title='View Duration', data-placement='top') 
+                                                                i.fa.fa-calendar
+                                                tr
+                                                    th Supervisor:
+                                                    td= viewReportLists.SupervisorName  
+                                                    th Planner:
+                                                    td= viewReportLists.plannerName  
+                                                tr
+                                                    th Location:
+                                                    td(colspan="4")= viewReportLists.newAddress ? viewReportLists.newAddress : '--'
+                                                tr
+                                                    th Trade:   
+                                                    td= viewReportLists.type_name
+                                                    th Current Status:
+                                                    td <span class="j-type full-time">#{viewReportLists.jobStatus}</span>
+                                                tr 
+                                                    th Description Of Project
+                                                    td(colspan="4")= viewReportLists.description  
+                                                        
+
+                                    form.col-md-12(accept-charset='utf-8', method='post', name='offerForm', id='form', action="/user/technician/acceptUser/#{id}")
+                                        input.form-control(type='text', name='offerId', value=viewReportLists.offerId)
+                                        input.form-control(type='text', name='jobId', value=viewReportLists.jobId)
+                                        input.form-control(type='hidden', name='startDate', value=viewReportLists.startDate)
+                                        input.form-control(type='hidden', name='endDate', value=viewReportLists.endDate)
+                                        button.btn.btn-success.btn-sm(type='submit', name='act', value=1, onclick="return confirm('Do you really wish to accept this project? Not arriving punctually to project location on start date will affect your score. Repeat offenses will lead to termination from staffing company.');") Accept 
+                                        &nbsp;&nbsp;
+                                        button.btn.btn-danger.btn-sm(type='submit', name='act', value=2, onclick="return confirm('Do you really want to reject the project?');") Reject
+
+            .modal#view-timeDuration.fade(tabindex='-1', role='dialog' aria-labelledby="delete-skill" aria-hidden="true")
+                    .modal-dialog(role='document')
+                        .modal-content
+                            .modal-header.theme-bg
+                                h4.modal-title Duration Time Period
+                                button.close(type='button', data-dismiss='modal', aria-label='Close')
+                                    span(aria-hidden='true') ×
+                            .modal-body
+                                table.table.table-borderless.job-details
+                                    tbody
+                                        tr
+                                            th Duration In Days:
+                                            td.days
+                                        tr
+                                            th Duration In Months:
+                                            td.months
+                                        tr
+                                            th Duration In Weeks:
+                                            td.weeks
+                            .modal-footer
+                                button.btn.btn-default(type='button', data-dismiss='modal') Cancel
+                                    
+
+                script(type="text/javascript").
+                    $(document).ready(function(){
+                        $(document).on('click', "span.manage-btn-sm[data-toggle='modal']", function() {
+                            var k = !{JSON.stringify(viewReportLists)};
+                            console.log(k,'kk')
+                            var d1 = new Date(k.startDate);
+                            var d2 = new Date(k.endDate);
+                            var timeDiff = d2.getTime() - d1.getTime();
+                            var milliseconds = parseInt(timeDiff);
+                            var hours = Math.floor(milliseconds / 3600000);
+                            var days =  hours / 24; 
+                            $('.days').text(days);                            
+                            if(days >= 30){
+                                 var months = Math.floor(days/30);
+                                $('.months').text(months);
+                            } else{
+                                $('.months').text('-');
+                            }
+                            if(days >= 7){
+                                var weeks = Math.floor(days/7);
+                                $('.weeks').text(weeks);
+                            } else{
+                                $('.weeks').text('-');
+                            }
+                          
+                            
+                          
+                        });
+                    });
+                                                       
+                        

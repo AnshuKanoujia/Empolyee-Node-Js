@@ -1,0 +1,6 @@
+{
+    "appUrl": "http://localhost:4000/",
+    "jwtSecret": "vcRueFMBm4Uolhf2sjYiB9r5J88WV9B7",
+    "perPage": 20,
+    "apiKey": "AIzaSyBuCIAfY1ODCoVTvJyBtkZe-irKy0ljPXY"
+}

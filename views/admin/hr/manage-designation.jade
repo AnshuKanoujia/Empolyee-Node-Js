@@ -1,0 +1,118 @@
+extends ./../../layout/hr-layout
+
+block content
+            #page-wrapper
+                .row.page-titles
+                    .col-md-5.align-self-center
+                        h3.text-themecolor Hr
+                    .col-md-7.align-self-center
+                        ol.breadcrumb
+                            li.breadcrumb-item.active Budget Prediction
+                .container-fluid
+                    -if(messages.msg_error)
+                        .alert.alert-danger #{messages.msg_error}
+                    -else if(messages.msg_info)
+                        .alert.alert-success #{messages.msg_info}
+                    .row
+                        .col-md-12.col-sm-12
+                            .card
+                                .card-header
+                                    .col-sm-10
+                                        h4 Designation
+                                    
+                                .card-body
+                                    form#newSiteForm(accept-charset='utf-8', method='post', name='loginForm', action='/admin/hr/update-designation', enctype='multipart/form-data')
+                                        .row
+                                            .col-sm-3.m-clear
+                                                label Trade
+                                                    span.text-danger  *
+                                                select.wide.form-control(id='jobType', name='jobType', onchange='getDesignations(this.value)')
+                                                        each jobTypes in jobtype
+                                                            if jobTypes.id == designation.jobType
+                                                                option(selected="true",value=jobTypes.id) #{jobTypes.type_name}
+                                                            else	
+                                                                option(value=jobTypes.id) #{jobTypes.type_name}
+                                            .col-sm-3.m-clear
+                                                label Designation
+                                                    span.text-danger  *
+                                                select.wide.form-control(name='designationId', id='designationId')
+                                                    each designations in designation
+                                                        option(value=designations.designationId, selected=designations.length ==designations.designationId) #{designations.designationId}							
+                                            .col-sm-3
+                                                label Hourly Rates
+                                                    span.text-danger  *
+                                                input.form-control(type='text', name='hourly_rate', id='hourly_rate', value=designation.hourly_rate, step='any')
+                                            .col-sm-3
+                                                label Per Diem Rates
+                                                    span.text-danger  *
+                                                input.form-control(type='text', name='max_pertime_rate', id='max_pertime_rate', value=designation.max_pertime_rate, step='any')
+                                            .col-md-12
+                                                .text-right
+                                                    button.btn.btn-success(type='submit') Submit & Exit
+                script(type='text/javascript').
+                    var k = !{JSON.stringify(url)};
+                    $(document).ready(function(){
+
+                        var selectedDesignationName='#{designation.designationId}';
+                        var selectedDesignationHourRate='#{designation.hourly_rate}';
+                        var selectedDesignationMaxRate='#{designation.max_pertime_rate}';
+                        if($('#jobType').val() !== "0"){
+                            var val=$('#jobType').val();
+                            getDesignations(val)
+                        }
+
+                        $('#designationId').on('change', function() {
+                            let jobType = $('#jobType').val(),
+                            designationId = $(this).val();
+                            var url = k+"manage-designationRate/"+jobType+'/'+designationId;
+                            $.ajax({
+                                type: "GET",
+                                url: url,
+                                success: function(data){
+                                    var data = data.data; 
+                                    var htmHourRate= " ";       
+                                    var htmMaxRate= " ";       
+
+                                    data.forEach(function(val, index){
+                                        $("#hourly_rate").val(data[0].hourly_rate);
+                                        $("#max_pertime_rate").val(data[0].max_pertime_rate);
+                                    })
+                                    
+                                }
+                            });
+                        });
+                    });
+
+                    function getDesignations(val) {
+                        var url = k+"manage-designation/"+val;
+                        $.ajax({
+                            type: "GET",
+                            url: url,
+                            success: function(data){
+                                var data = data.data; 
+                                var htmld= " ";                              
+                                var htmHourRate= " ";                              
+                                var htmMaxRate= " ";                              
+                                data.forEach(function(val, index){
+                                    var selectedDesignationName='#{designation.designationId}';
+                                    var selectedDesignationHourRate='#{designation.hourly_rate}';
+                                    var selectedDesignationMaxRate='#{designation.max_pertime_rate}';
+                                        if (selectedDesignationName == val.id && selectedDesignationHourRate == val.id && selectedDesignationMaxRate == val.id){	
+                                            htmld += "<option value ='"+val.designationId+"' selected>" +val.skill_level+'. '  +val.designation_name + "</option>",
+                                            $("#hourly_rate").val(data[0].hourly_rate);
+                                            $("#max_pertime_rate").val(data[0].max_pertime_rate);
+                                        }else{
+                                            htmld += "<option value ='"+val.designationId+"'>" +val.skill_level+'. '  +val.designation_name + "</option>"
+                                            $("#hourly_rate").val(data[0].hourly_rate);
+                                            $("#max_pertime_rate").val(data[0].max_pertime_rate);
+                                        }
+                                })
+                                $("#designationId").html(htmld);
+                                $("#hourly_rate").html(htmHourRate);
+                                $("#max_pertime_rate").html(htmMaxRate);
+                            }
+                        });
+                    }
+
+                   
+                    

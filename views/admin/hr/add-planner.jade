@@ -1,0 +1,57 @@
+extends ./../../layout/hr-layout
+block content
+      #page-wrapper
+            .row.page-titles
+                .col-md-5.align-self-center
+                    h3.text-themecolor HR
+                .col-md-7.align-self-center
+                    ol.breadcrumb
+                        li.breadcrumb-item.active Add Planner
+            .container-fluid
+              .row
+                .col-md-12.col-sm-12
+                form#newSiteForm(accept-charset='utf-8', method='post', name='loginForm', action='/admin/hr/add-planner')
+                  -if(messages.msg_error)
+                    each error in messages.msg_error
+                      .alert.alert-danger #{error}
+                  -else if(messages.msg_info)
+                    .alert.alert-success #{messages.msg_info}
+                  // General Information
+                  .card
+                    .card-header
+                      h4 Account Summary 
+                    .card-body
+                      .row
+                        .col-md-12
+                          .row
+                            .col-sm-6
+                              label First Name
+                                span.text-danger  *
+                              input.form-control(type='text', name='firstName', required)
+                            .col-sm-6
+                              label Last Name
+                                span.text-danger  *
+                              input.form-control(type='text', name='lastName', required)
+                          .row
+                            .col-sm-6
+                                label Email
+                                  span.text-danger  *
+                                input.form-control(type='email', name='email', required)
+                            .col-sm-6
+                                label Password
+                                  span.text-danger  *
+                                input.form-control(type='password', minlength='6', name='password', required)
+                          .row
+                            .col-sm-12
+                              .text-right
+                                button.btn.btn-success(type='submit') Submit & Exit
+        script(type="text/javascript").
+            $(document).ready(function(){
+              $('[data-toggle="datepicker"]').datepicker({
+                    autoHide: true,
+                    zIndex: 2048,
+                });
+               
+            })
+            
+            

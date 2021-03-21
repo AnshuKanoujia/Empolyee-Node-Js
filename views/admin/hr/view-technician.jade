@@ -1,0 +1,251 @@
+extends ./../../layout/hr-layout
+
+block content
+      #page-wrapper
+            .row.page-titles
+                .col-md-5.align-self-center
+                    h3.text-themecolor Hr
+                .col-md-7.align-self-center
+                    ol.breadcrumb
+                        li.breadcrumb-item.active Technician
+            .container-fluid
+                -if(messages.msg_error)
+                    .alert.alert-danger #{messages.msg_error}
+                -else if(messages.msg_info)
+                    .alert.alert-success #{messages.msg_info}
+                .row
+                    .col-md-12
+                        .card
+                            .card-header 
+                                .col-sm-6
+                                    h4 
+                                        i.fa.fa-filter  Filter
+                            .card-body
+                                .col-sm-12
+                                    .row
+                                        form#newSiteForm.d-inline-block(accept-charset='utf-8', method='post', name='searchQuesAns', action='/admin/hr/search_jobType')
+                                            input(type="hidden" name="id" value="1")
+                                            button.btn.btn-primary.btn-sm(type="submit", data-toggle='tooltip', title='Search mechanical users') Mechanical
+                                        form#newSiteForm.d-inline-block(accept-charset='utf-8', method='post', name='searchQuesAns', action='/admin/hr/search_jobType')
+                                            input(type="hidden" name="id" value="2")
+                                            button.btn.btn-primary.btn-sm(type="submit", data-toggle='tooltip', title='Search electrical users') Electrical
+                                        form#newSiteForm.d-inline-block(accept-charset='utf-8', method='get', name='searchQuesAns', action='/admin/hr/view-technician')
+                                            button.btn.btn-primary.btn-sm(type="submit", data-toggle='tooltip', title='Search all users') All
+                                                
+                    .col-md-12
+                        .card
+                            .card-header
+                                .col-sm-6
+                                    h4  Technicians List
+                                .col-sm-6.text-right
+                                    a.btn.btn-primary.block.btn-sm(href='/admin/hr/technicianMap-view', title='View On Map') View On Map
+                            .card-body
+                                .table-responsive
+                                    table.table.table-striped.table-bordered.tech_list
+                                        thead
+                                            tr
+                                                th #
+                                                //- th E_Code
+                                                th Name
+                                                th Project Trade
+                                                th Experience
+                                                th Designation
+                                                th Ratings
+                                                th Action
+                                        tbody
+                                            if(users.length)
+                                                each user, i in users
+                                                    tr
+                                                        td= i+1
+                                                        //- td= user.eCode
+                                                        td(style='width: 6px;')= user.name
+                                                        td= user.jobtype
+                                                        td= user.experience
+                                                        td= user.designation_name ? user.designation_name : '--'
+                                                        if(user.ratings == 0)
+                                                            td= "New"
+                                                        else
+                                                            td= user.ratings+' / '+5 
+                                                        td  
+                                                            span(data-toggle='modal', class="manage-btn-sm", data-target='#view-dest', data-destid=user.user_id ,data-job_type=user.id)
+                                                                button.btn.btn-info.manage-btn-sm(data-toggle='tooltip', title='Select Designation', data-placement='top') 
+                                                                    i.fa.fa-id-badge
+                                                            &nbsp;
+                                                            span(data-toggle='modal', class="location-btn-sm", data-target='#view-location', data-id=user.user_id)
+                                                                button.btn.btn-danger.location-btn-sm(data-toggle='tooltip', data-placement='top', title='Select Location', data-target='#view-location') 
+                                                                    i.fa.fa-map-marker
+                                                            &nbsp;
+                                                            a.btn.btn-primary.btn-sm(href='/admin/hr/view-technicianProfile/#{user.user_id}', title='View Profile', data-toggle='tooltip') 
+                                                                i.fa.fa-user-circle
+                                                            &nbsp;
+                                                            a.btn.btn-success.btn-sm(href='/admin/hr/manage-TimeSheet/#{user.user_id}', title='Manage TimeSheet', data-toggle='tooltip') 
+                                                                i.ti-timer 
+                                                            &nbsp;
+                                                            a.btn.btn-danger.block.btn-sm(href='/admin/hr/block-UnblockTech/#{user.user_id}', title='Unblock Technician', data-toggle='tooltip',)  
+                                                                i.fa.fa-ban 
+                                                            &nbsp;
+                                                            a.btn.btn-success.btn-sm(href='/admin/hr/view-reviews/#{user.user_id}', title='View Reviews', data-toggle='tooltip')  
+                                                                i.fa.fa-comments 
+                                                            &nbsp;
+                                                            a.btn.btn-danger.allow.btn-sm(href='/admin/hr/allowExam/#{user.user_id}', title='disallow exam', data-toggle='tooltip',)  
+                                                                i.fa.fa-ban 
+                                                                
+                                            else
+                                                tr.danger.text-center
+                                                    td(colspan='7') Sorry, no record found!
+        
+            .modal#view-dest.fade(tabindex='-1', role='dialog' aria-labelledby="delete-skill" aria-hidden="true")
+                    .modal-dialog(role='document')
+                        .modal-content
+                            .modal-header.theme-bg
+                                h4.modal-title Select Designation
+                                button.close(type='button', data-dismiss='modal', aria-label='Close')
+                                    span(aria-hidden='true') ×
+                            form#ViewDesignationForm(accept-charset='utf-8', method='post', name='ViewDesignationForm', action='/admin/hr/ViewDesignationForm')
+                                .modal-body
+                                        div
+                                        label Designation
+                                            span.text-danger  *
+                                         select.wide.form-control(name='designation_id',class='sb', id='designation_id')
+                                            each Designations in Designation
+                                                option(value=Designations.designation_id, data-job_type=Designations.job_type) #{Designations.designation_name}
+                                            //- input.form-control(type='hidden', id='designation_job_type' ,name='designation_job_type', value=Designations.job_type)
+                                            input.form-control(type='hidden', id='destid', name='destid')
+                                            input.form-control(type='hidden', id='job_type')  
+                                .modal-footer
+                                    button.btn.btn-default(type='button', data-dismiss='modal') Cancel
+                                    button#delete.btn.btn-primary(type='submit') Submit
+            .modal#view-location.fade(tabindex='-1', role='dialog' aria-labelledby="delete-skill" aria-hidden="true")
+                        .modal-dialog(role='document')
+                            .modal-content
+                                .modal-header.theme-bg
+                                    h4.modal-title Location
+                                    button.close(type='button', data-dismiss='modal', aria-label='Close')
+                                        span(aria-hidden='true') ×
+                                form#SupervisorForm(accept-charset='utf-8', method='post', name='superviosrForm', action='/admin/hr/addLocation')
+                                    .modal-body
+                                            .row
+                                                .form-group.col-md-12
+                                                    label Add Address 
+                                                    input#address(type="text", name='newAddress', class="form-control"  placeholder="Add your location here" , onBlur='codeAddress()', required) 
+                                            .row
+                                                .col-md-6
+                                                    input#latitude(type="hidden", name='latitude', class="form-control" readonly)
+                                                .col-md-6
+                                                    input#longitude(type="hidden", name='longitude', class="form-control" readonly)
+                                                //- .col-md-6
+                                                //-     label Enter latitude
+                                                //-         span.text-danger  *
+                                                //-     input.form-control(type='text', name='latitude', required, autocomplete="off")
+                                                //- .col-md-6
+                                                //-     label Enter longitude
+                                                //-         span.text-danger  *
+                                                //-     input.form-control(type='text', name='longitude', required, autocomplete="off")
+
+                                            input.form-control(type='hidden', id='id', value='' name='id')
+                                    .modal-footer
+                                        button.btn.btn-default(type='button', data-dismiss='modal') Cancel
+                                        button#delete.btn.btn-primary(type='submit') Manage Location
+            script(src="https://maps.googleapis.com/maps/api/js?key="+apiKey+"&libraries=places")
+            script(type="text/javascript").
+                codeAddress();
+                function activatePlaceSearch(){ 
+                    let autocomplete = new google.maps.places.Autocomplete(document.getElementById('address'));                   
+                    autocomplete.setTypes(['geocode']);
+                        google.maps.event.addListener(autocomplete, 'place_changed', function() {
+                            var place = autocomplete.getPlace();
+                            if (!place.geometry) {
+                                return;
+                            }
+
+                        var address = '';
+                        if (place.address_components) {
+                            address = [
+                                (place.address_components[0] && place.address_components[0].short_name || ''),
+                                (place.address_components[1] && place.address_components[1].short_name || ''),
+                                (place.address_components[2] && place.address_components[2].short_name || '')
+                                ].join(' ');
+                        }
+                    });
+                }
+                function codeAddress() {
+                    geocoder = new google.maps.Geocoder();
+                    var address = document.getElementById("address").value;
+                    if(address == ""){
+                        $('#latitude, #longitude').val("")
+                    } else{
+                        geocoder.geocode( { 'address': address}, function(results, status) {
+                            if (status == google.maps.GeocoderStatus.OK) {
+                                $('#latitude').val(results[0].geometry.location.lat())
+                                $('#longitude').val(results[0].geometry.location.lng())
+
+                            //- alert("Latitude: "+results[0].geometry.location.lat());
+                            //- alert("Longitude: "+results[0].geometry.location.lng());
+                            } 
+
+                            else {
+                                alert("Geocode was not successful for the following reason: " + status);
+                            }
+                            });
+
+                    }
+
+                }
+
+                google.maps.event.addDomListener(window, 'load', activatePlaceSearch);
+                $(document).ready(function(){
+                    codeAddress();
+                 
+                    $(document).on('click', "span.manage-btn-sm[data-toggle='modal']", function() {
+                        //- event.preventDefault();
+                        let {destid, job_type} = $(this).data();   
+                            $("#destid").val(destid);
+                        $("#job_type").val(job_type);   
+                        $('#view-dest').modal('show');
+                        $('#designation_id option').hide();
+                        let options = $('#designation_id option').filter((i, option) => $(option).data('job_type') == job_type)
+                        options.show();
+                    });
+                    $(document).on('click', "span.location-btn-sm[data-toggle='modal']", function() {
+                        let id = $(this).data('id');
+                        $("#id").val(id);
+                        $('#view-location').modal('show');
+                    });
+                    var k = !{JSON.stringify(users)};
+
+                    $('.block').on('click', function(){
+                            if($(this).is('.btn-info')){
+                                    return confirm('Do you really want to Unblock user?');
+                            } else if($(this).is('.btn-danger')){
+                                    return confirm('Do you really want to Block user?');
+                            }
+                    })
+                    $('.tech_list tbody tr').each(function(i){
+                        if(k[i].status== 1){
+                            $(this).find('.block').removeClass('btn-primary').html('<i class="fa fa-ban"></i>').attr('title', 'Block Technician');
+
+                        } else{
+                            $(this).find('.block').removeClass('btn-danger').addClass('btn-info').html('<i class="fa fa-unlock"></i>')
+                        }
+                    })  
+
+                    
+                    $('.allow').on('click', function(){
+                        if($(this).is('.btn-info')){
+                                return confirm('Do you really want to disallow user for exam ?');
+                        } else if($(this).is('.btn-danger')){
+                                return confirm('Do you really want to allow user for exam ?');
+                        }
+                    })
+                    $('.tech_list tbody tr').each(function(i){
+                        if(k[i].allowExam == 0){
+                            $(this).find('.allow').removeClass('btn-primary').html('<i class="fa fa-book"></i>').attr('title', 'allow exam');
+
+                        } else{
+                            $(this).find('.allow').removeClass('btn-danger').addClass('btn-info').html('<i class="fa fa-ban"></i>')
+                        }
+                    })  
+                           
+                });
+
+        

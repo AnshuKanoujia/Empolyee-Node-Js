@@ -1,0 +1,44 @@
+extends ./../../layout/user-layout
+
+block content
+            #page-wrapper
+                .row.page-titles
+                    .col-md-5.align-self-center
+                        h3.text-themecolor Technician
+                    .col-md-7.align-self-center
+                        ol.breadcrumb
+                            li.breadcrumb-item.active Subject - Dashboard
+                .container-fluid
+                    -if(messages.msg_error)
+                        .alert.alert-danger #{messages.msg_error}
+                    -else if(messages.msg_info)
+                        .alert.alert-success #{messages.msg_info}
+                    .row
+                        form#newSiteForm(accept-charset='utf-8', method='post', name='examForm', action='/user/technician/giveExam')
+                            .col-md-12.col-sm-12
+                                .card
+                                        .card-header
+                                            .row
+                                                .col-sm-6
+                                                    h4 Subject
+                                        .card-body
+                                            .row
+                                                .col-md-12
+                                                    .row
+                                                        .col-sm-6
+                                                            label Subject
+                                                                span.text-danger  *
+                                                            select.wide.form-control(id='sub_name', name='sub_name') 
+                                                                each paper in questionPaper
+                                                                    option(value=paper.sub_id) #{paper.sub_name}
+                                                            //- input(type='text', value=questionPaper[0].sub_id, name='sub1')
+                                                            //- input(type='text', value=questionPaper[1].sub_id, name='sub2')
+                                                
+                                            .col-md-12
+                                                .text-right
+                                                        button.btn.btn-m.btn-success(type='submit') Submit & Exit
+                script(type='text/javascript').
+
+                    $(document).ready(function(){
+                        
+                        })                                     

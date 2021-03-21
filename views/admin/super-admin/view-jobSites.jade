@@ -1,0 +1,42 @@
+extends ./../../layout/admin-layout
+
+block content
+      #page-wrapper
+            .row.page-titles
+                .col-md-5.align-self-center
+                    h3.text-themecolor Project Planner
+                .col-md-7.align-self-center
+                    ol.breadcrumb
+                        //- li.breadcrumb-item.active View Sites
+            .container-fluid
+                -if(messages.msg_error)
+                    .alert.alert-danger #{messages.msg_error}
+                -else if(messages.msg_info)
+                    .alert.alert-success #{messages.msg_info}
+                .row
+                        .col-md-12
+                            .card
+                                .card-body
+                                    h4  Locations List
+                                    .table-responsive
+                                        table.table.table-striped.table-bordered
+                                            thead
+                                                tr
+                                                    th Sr No
+                                                    th Project Name
+                                                    th Location Id
+                                                    th Date
+                                                    th Shift
+                                            tbody
+                                                if(siteLists.length)
+                                                    each siteList, i in siteLists
+                                                        tr
+                                                            td= i+1
+                                                            td= siteList.jobName +' ('+ siteList.jobCode +')'
+                                                            td= siteList.siteId
+                                                            td= moment(siteList.date).isValid() ? moment(siteList.date).format('YYYY/MM/DD') : '--'
+                                                            td= siteList.shift
+                                                            
+                                                else
+                                                    tr.danger.text-center
+                                                        td(colspan='5') Sorry, no record found!

@@ -1,0 +1,167 @@
+extends ./../../layout/user-layout
+
+block content
+      #page-wrapper
+            .row.page-titles
+                .col-md-5.align-self-center
+                    h3.text-themecolor Technician
+                .col-md-7.align-self-center
+                    ol.breadcrumb
+                        li.breadcrumb-item.active Account Details - Dashboard
+            .container-fluid
+              .row
+                .col-md-12.col-sm-12
+                  // General Information
+                  .card
+                    .card-header
+                      h4 Account Summary 
+                    .card-body
+                      .row
+                        .col-sm-4
+                          label First Name
+                          input.form-control(type='text')
+                        .col-sm-4
+                          label Last Name
+                          input.form-control(type='text')
+                        .col-sm-4.m-clear
+                          label Gender
+                          .custom-radio
+                            input#Male(type='radio', name='gender', checked='')
+                            label(for='Male') Male
+                            input#Female(type='radio', name='gender')
+                            label(for='Female') Female
+                      .row
+                        .col-sm-4
+                          label Birthday
+                          input.form-control(type='text', data-toggle='datepicker')
+                        .col-sm-4
+                          label Email
+                          input.form-control(type='email')
+                        .col-sm-4
+                          label Phone
+                          input.form-control(type='text')
+                        .col-sm-4
+                          label Address
+                          input.form-control(type='text')
+                        .col-sm-4
+                          label City
+                          select.wide.form-control
+                            option(data-display='City') London
+                            option(value='1') Liverpool
+                            option(value='2') Bristol
+                            option(value='3') Yorkshire
+                            option(value='4') Manchester
+                        .col-sm-4.m-clear
+                          label State
+                          select.wide.form-control
+                            option(data-display='State') Lancashire
+                            option(value='1') Northamptonshire
+                            option(value='2') Oxfordshire
+                            option(value='3') Worcestershire 
+                        .col-sm-4.m-clear
+                          label Country
+                          select.wide.form-control
+                            option(data-display='Country') United Kingdom
+                            option(value='1') India
+                            option(value='2') Austrailia
+                            option(value='3') New ZeLand
+                        .col-sm-4.m-clear
+                          label Zip Code
+                          input.form-control(type='text')
+                        .col-sm-4
+                          label Father Name
+                          input.form-control(type='text')
+                        .col-sm-4
+                          label Hobbies(With Comma)
+                          input.form-control(type='text')
+                        .col-sm-4
+                          label Strength
+                          input.form-control(type='text')
+                  
+                  // General Information
+                  .card
+                    .card-header
+                      h4 Personal Skill 
+                    .card-body
+                      .row
+                        .col-sm-4
+                          label Designation
+                          input.form-control(type='text')
+                        .col-sm-4
+                          label Category
+                          select.wide.form-control
+                            option(data-display='Location') Project Planner
+                            option(value='1') Supervisor
+                            option(value='2') Machanical
+                        .col-sm-4.m-clear
+                          label Experience
+                          select.wide.form-control
+                            option(data-display='Experience') 0 To 6 Month
+                            option(value='1') 1 Year
+                            option(value='2') 2 Year
+                        .col-sm-4.m-clear
+                          label Project Trade
+                          select.wide.form-control
+                            option(data-display='Job Type') Full Time
+                            option(value='1') Part Time
+                            option(value='2') Freelancer
+                        .col-sm-4.m-clear
+                          label Expect Package
+                          select.wide.form-control
+                            option(data-display='Package') 2,00000 CTC
+                            option(value='1') 3,00000 CTC
+                            option(value='2') 4,00000 CTC
+                        .col-sm-12.m-clear
+                          label Skills
+                          input.form-control(type='text', placeholder='')
+                        .col-sm-12
+                          label Career
+                          textarea#career.form-control.height-120.textarea(placeholder='Career')
+                  // Social Accounts
+                  //- .card
+                  //-   .card-header
+                  //-     h4 Reviews 
+                  //-   .card-body
+                  //-     .row
+                  //-       .col-sm-4
+                  //-         label
+                  //-           i.fa.fa-facebook.mrg-r-5
+                  //-           | Facebook
+                  //-         input.form-control(type='text')
+                  //-       .col-sm-4
+                  //-         label
+                  //-           i.fa.fa-google-plus.mrg-r-5
+                  //-           | Google +
+                  //-         input.form-control(type='text')
+                  //-       .col-sm-4
+                  //-         label
+                  //-           i.fa.fa-twitter.mrg-r-5
+                  //-           | Twitter
+                  //-         input.form-control(type='text')
+                  //-       .col-sm-4
+                  //-         label
+                  //-           i.fa.fa-linkedin.mrg-r-5
+                  //-           | LinkedIn
+                  //-         input.form-control(type='text')
+                  //-       .col-sm-4
+                  //-         label
+                  //-           i.fa.fa-pinterest.mrg-r-5
+                  //-           | Pinterest
+                  //-         input.form-control(type='text')
+                  //-       .col-sm-4
+                  //-         label
+                  //-           i.fa.fa-instagram.mrg-r-5
+                  //-           | Instagram
+                  //-         input.form-control(type='text')
+                  // Qualification & Instruction
+                  .card
+                    .card-header
+                      h4 Reviews
+                    .card-body
+                      .row
+                        .col-sm-12
+                          //- label Reviews
+                          textarea#about-company.form-control.height-120.textarea(placeholder='Review ')
+                  .text-right
+                    button.btn.btn-m.btn-success(type='submit') Submit & Exit
+

@@ -1,0 +1,63 @@
+extends ./../../layout/hr-layout
+block content
+      #page-wrapper
+            .row.page-titles
+                .col-md-5.align-self-center
+                    h3.text-themecolor HR
+                .col-md-7.align-self-center
+                    ol.breadcrumb
+                        li.breadcrumb-item.active Add Supervisor
+            .container-fluid
+              .row
+                .col-md-12.col-sm-12
+                form#newSiteForm(accept-charset='utf-8', method='post', name='loginForm', action='/admin/hr/add-supervisor')
+                  -if(messages.msg_error)
+                    each error in messages.msg_error
+                      .alert.alert-danger #{error}
+                  -else if(messages.msg_info)
+                    .alert.alert-success #{messages.msg_info}
+                  // General Information
+                  .card
+                    .card-header
+                      h4 Account Summary 
+                    .card-body
+                      .row
+                        .col-md-12
+                          .row
+                            .col-sm-4
+                              label First Name
+                                span.text-danger  *
+                              input.form-control(type='text', name='firstName', required)
+                            .col-sm-4
+                              label Last Name
+                                span.text-danger  *
+                              input.form-control(type='text', name='lastName', required)
+                            .col-sm-4
+                              label Project Trade
+                                span.text-danger  *
+                              select.wide.form-control(id='jobType', name='jobType', required)
+                                //- option(value="0") Select Project Trade
+                                each jobTypes in jobType
+                                  option(value=jobTypes.id) #{jobTypes.type_name}
+                          .row
+                            .col-sm-6
+                                label Email
+                                  span.text-danger  *
+                                input.form-control(type='email', name='email', required)
+                            .col-sm-6
+                                label Password
+                                  span.text-danger  *
+                                input.form-control(type='password', minlength='6', name='password', required)
+                      .text-right
+                        button.btn.btn-success(type='submit') Submit & Exit
+                    
+        script(type="text/javascript").
+            $(document).ready(function(){
+              $('[data-toggle="datepicker"]').datepicker({
+                    autoHide: true,
+                    zIndex: 2048,
+                });
+               
+            })
+           
+            

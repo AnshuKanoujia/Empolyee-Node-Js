@@ -1,0 +1,46 @@
+extends ./../../layout/hr-layout
+block content
+      #page-wrapper
+            .row.page-titles
+                .col-md-5.align-self-center
+                    h3.text-themecolor Hr
+                .col-md-7.align-self-center
+                    ol.breadcrumb
+                        li.breadcrumb-item.active Add New Skills 
+            .container-fluid
+              .row
+                .col-md-12.col-sm-12
+                form#newSiteForm(accept-charset='utf-8', method='post', name='loginForm', action='/admin/hr/addSkills')
+                    // General Information
+                    -if(messages.msg_error)
+                        each error in messages.msg_error
+                            .alert.alert-danger #{error}
+                    -else if(messages.msg_info)
+                        .alert.alert-success #{messages.msg_info}
+                    .card
+                        .card-header
+                            h4 Skills Details
+                        .card-body
+                            .row
+                            .col-md-12
+                                .row
+                                    .col-sm-6
+                                        label Project Trade
+                                            span.text-danger  *
+                                        select.wide.form-control(id='job_type_id', name='job_type_id', required) Select Project Trade
+                                            //- option(data-display='Job Type') 
+                                            each role in roles
+                                                option(value=role.id) #{role.type_name}
+                                    .col-sm-6
+                                        label Skill Name
+                                            span.text-danger  *
+                                        input.form-control(type='text', name='skill_name', required)
+                                .row
+                                    .col-sm-12
+                                        label Description Of Skill
+                                        textarea#description.form-control.height-120.textarea(placeholder='About Jobs', name='description',minlength='5')
+                    
+                                    .col-sm-12
+                                        .text-right
+                                            button.btn.btn-success(type='submit') Submit & Exit
+       

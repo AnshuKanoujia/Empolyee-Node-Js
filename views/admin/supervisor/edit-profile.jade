@@ -1,0 +1,344 @@
+extends ./../../layout/supervisor-layout
+
+block content
+            #page-wrapper
+                .row.page-titles
+                    .col-md-5.align-self-center
+                        h3.text-themecolor Supervisor
+                    .col-md-7.align-self-center
+                        ol.breadcrumb
+                            li.breadcrumb-item.active Edit Profile - Dashboard
+                .container-fluid
+                    .row
+                        .col-md-12.col-sm-12
+                            
+                                -if(messages.msg_error)
+                                    .alert.alert-danger #{messages.msg_error}
+                                -else if(messages.msg_info)
+                                    .alert.alert-success #{messages.msg_info}
+
+                                .card
+                                    .card-header
+                                        .col-sm-10
+                                            h4 #{value.email}
+                                        .col-sm-2
+                                            span(data-toggle='modal', class="location-btn-sm", data-target='#changePassword', data-id=value.id)
+                                                button.btn.btn-success.location-btn-sm(data-toggle='tooltip', data-placement='top', title='Change Password', data-target='#changePassword') Change Password    
+                                    .card-body
+                                        form#newSiteForm(accept-charset='utf-8', method='post', name='loginForm', action='/admin/supervisor/edit-profile', enctype='multipart/form-data')
+                                            .row
+                                                .col-md-12
+                                                    .col-md-12
+                                                        input(type="text" hidden)#skills-data
+                                                    .col-md-12
+                                                        .col-md-4
+                                                            .contact-img(style="margin:0; width: 100%;position:relative")
+                                                                if(value.profileImg)
+                                                                    img#user_img.img-circle.img-responsive(src='/uploads/profile_img/#{value.profileImg}', alt='' style="margin: 20px 0; width: 128px; height: 128px; background: #ddd; border-radius: 50%;")
+                                                                else
+                                                                    img#user_img.img-circle.img-responsive(src='/admin/img/avatar.jpg', alt='' style="margin: 20px 0; width: 128px; height: 128px; background: #ddd; border-radius: 50%;")
+
+                                                                input(type='file', name='profileImg', value=value.profileImg, onchange='imgUpload(this)', style='position: absolute;top: 30px;z-index: 0;opacity: 0;cursor: pointer;width: 64px;height: 64px;')							
+                                                    .row
+                                                        .col-sm-4
+                                                            label First Name 
+                                                                span.text-danger  *
+                                                            input.form-control(type='text', name='firstName', value=value.firstName, required)
+                                                        .col-sm-4
+                                                            label Last Name
+                                                                span.text-danger  *
+                                                            input.form-control(type='text', name='lastName', value=value.lastName, required)
+                                                        .col-sm-4
+                                                            label Preferred Name
+                                                            input.form-control(type='text', name='preferredName', value=value.preferredName)
+                                                    .row
+                                                        .col-sm-6
+                                                            label Birthday
+                                                                span.text-danger  *
+                                                            input#dob.form-control(type='text',name='dob', value=moment(value.dob).isValid() ? moment(value.dob).format('MM/DD/YYYY') : "", data-toggle='datepicker', required)
+                                                        .col-sm-6
+                                                            label Mobile No.
+                                                                span.text-danger  *
+                                                            //- input.form-control(type='text', name='phone_number', value=value.phone_number, pattern='^(0|[1-9][0-9]{5,9})$', required)
+                                                            input.form-control(type='text', name='phone_number', value=value.phone_number,required)
+                                                .col-sm-4
+                                                    label Email
+                                                    input.form-control(type='email', name='email', value=value.email,  readonly)
+                                                .col-sm-4
+                                                    .row
+                                                        .col-md-12
+                                                            label Experience
+                                                        .col-sm-6
+                                                            select.form-control(name='year')
+                                                                - year = [ '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17','18', '19', '20']
+                                                                each item in year
+                                                                    if (value.experience)
+                                                                        - years = value.experience.toString()
+                                                                        - sp = years.split('.')
+                                                                        option(selected = sp[0] == item,value=item) #{item}
+                                                                    else	
+                                                                        option(value=item) #{item}
+                                                        .col-sm-6
+                                                            select.form-control(name='month')
+                                                                - month = [ '00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11']
+                                                                each items in month
+                                                                    if (value.experience)
+                                                                        - years = value.experience.toString()
+                                                                        - sps = years.split('.')
+                                                                        option(selected= sps[1] == items, value=items) #{items}
+                                                                    else	
+                                                                        option(value=items) #{items}
+                                                .col-sm-4
+                                                    label Trade
+                                                        span.text-danger  *
+                                                    select.wide.form-control(id='jobType', name='jobType', onchange='getSkills(this.value)')
+                                                            each jobTypes in jobtype
+                                                                if jobTypes.id == value.jobType
+                                                                    option(selected="true",value=jobTypes.id) #{jobTypes.type_name}
+                                                                else	
+                                                                    option(value=jobTypes.id) #{jobTypes.type_name}
+                                                //- .col-sm-12.m-clear.skills-field
+                                                //- 	label Skills
+                                                //- 		span.text-danger  *
+                                                //- 	.custom-checkbox(id='allSkills')
+                                                //- 		input(type="checkbox", id="selectAll")
+                                                //- 		label(for="selectAll") Select All;
+                                                //- 	.custom-checkbox(id='skills')
+
+                                                .col-sm-12
+                                                    .row
+                                                        .form-group.col-md-12
+                                                            label Add Address 
+                                                            input#address(type="text", name='newAddress', value=value.newAddress, class="form-control"  placeholder="Add your location here" onFocusout="codeAddress()", required) 
+                                                    .row
+                                                        .col-md-6
+                                                            input#latitude(type="hidden", name='latitude', class="form-control" readonly)
+                                                        .col-md-6
+                                                            input#longitude(type="hidden", name='longitude', class="form-control" readonly)
+                                                    .row
+                                                        .col-md-12
+                                                            .text-right
+                                                                button.btn.btn-success(type='submit') Submit & Exit
+                                           
+            .modal#changePassword.fade(tabindex='-1', role='dialog' aria-labelledby="delete-skill" aria-hidden="true")
+                .modal-dialog(role='document')
+                    .modal-content
+                        .modal-header.theme-bg
+                            h4.modal-title Change Password
+                            button.close(type='button', data-dismiss='modal', aria-label='Close')
+                                span(aria-hidden='true') ×
+                        form#changePasswordForm(accept-charset='utf-8', method='post', name='changePasswordForm', action='/admin/supervisor/changePassword')
+                            .modal-body
+                                    .row
+                                        .col-md-12
+                                            label Current Password
+                                                span.text-danger  *
+                                            input.form-control(type='password', name='currentPassword', minlength='6', required, autocomplete="off")
+                                    .row
+                                        .col-md-12
+                                            label New Password
+                                                span.text-danger  *
+                                            input.form-control(type='password', minlength='6', name='newPassword', required, autocomplete="off")
+                                    .row
+                                        .col-md-12
+                                            label Confirm New Password
+                                                span.text-danger  *
+                                            input.form-control(type='password', name='confirmNewPassword', minlength='6', required, autocomplete="off")
+
+                                    input.form-control(type='hidden', id='id', value='' name='id')
+                            .modal-footer
+                                button.btn.btn-default(type='button', data-dismiss='modal') Cancel
+                                button#delete.btn.btn-primary(type='submit') Sumbit
+            //- // Map Modal //
+            .modal#mapModal.fade(tabindex='-1', role='dialog' aria-labelledby="mapModal" aria-hidden="true")
+                .modal-dialog(role='document')
+                    .modal-content
+                        .modal-header.theme-bg
+                            h4.modal-title Add your location here !
+                        .modal-body
+                            #myMap
+                        .modal-footer
+                            button.btn.btn-primary(type='button' data-dismiss='modal') save
+            script(src="https://maps.googleapis.com/maps/api/js?key="+apiKey+"&libraries=places")   
+            script(type='text/javascript').
+                var d = new Date();
+                var validDate = new Date(d.setFullYear(new Date().getFullYear()-18));
+                $('#dob').datepicker({
+                    autoclose: true,
+                    todayHighlight: true,
+                    format: 'mm/dd/yyyy',
+                    endDate: validDate
+                })
+                codeAddress();
+                function activatePlaceSearch(){ 
+                    let autocomplete = new google.maps.places.Autocomplete(document.getElementById('address'));                   
+                    autocomplete.setTypes(['geocode']);
+                        google.maps.event.addListener(autocomplete, 'place_changed', function() {
+                            var place = autocomplete.getPlace();
+                            if (!place.geometry) {
+                                return;
+                            }
+
+                        var address = '';
+                        if (place.address_components) {
+                            address = [
+                                (place.address_components[0] && place.address_components[0].short_name || ''),
+                                (place.address_components[1] && place.address_components[1].short_name || ''),
+                                (place.address_components[2] && place.address_components[2].short_name || '')
+                                ].join(' ');
+                        }
+                    });
+                }
+                function codeAddress() {
+                    geocoder = new google.maps.Geocoder();
+                    var address = document.getElementById("address").value;
+                    if(address == ""){
+                        $('#latitude, #longitude').val("")
+                    } else{
+                         geocoder.geocode( { 'address': address}, function(results, status) {
+                            if (status == google.maps.GeocoderStatus.OK) {
+                                $('#latitude').val(results[0].geometry.location.lat())
+                                $('#longitude').val(results[0].geometry.location.lng())
+
+                            //- alert("Latitude: "+results[0].geometry.location.lat());
+                            //- alert("Longitude: "+results[0].geometry.location.lng());
+                            } 
+
+                            else {
+                                alert("Geocode was not successful for the following reason: " + status);
+                            }
+                            });
+
+                    }
+
+                }
+
+                google.maps.event.addDomListener(window, 'load', activatePlaceSearch);
+            script(type='text/javascript').
+                $(document).ready(function(){
+                    $(document).on('click', "span.location-btn-sm[data-toggle='modal']", function() {
+                        let id = $(this).data('id');
+                        $("#id").val(id);
+                        $('#changePassword').modal('show');
+                    });
+
+                    $('#selectAll').click(function(){
+                        if($(this).is(':checked')){
+                            $('#skills').find('input[type="checkbox"]').prop('checked', true);
+                        } else{
+                            $('#skills').find('input[type="checkbox"]').prop('checked', false);
+                        }
+                    })
+
+                });
+                function imgUpload(input){
+                    if (input.files && input.files[0]) {
+                        var reader = new FileReader();
+                        reader.onload = function (e) {
+                            document.getElementById('user_img').src = e.target.result;
+                        };
+                        reader.readAsDataURL(input.files[0]);
+                    }
+                }
+
+                var k = !{JSON.stringify(url)};
+
+                //- var selectedState='#{value.state}';
+                //- var selectedCity='#{value.city}';
+
+                //- if($('#jobType').val() !== "0"){
+                //- 	var val=$('#jobType').val();
+                //- 	getSkills(val)
+                //- }
+                //- if (selectedState == val.id){	
+                //- 	var val=$('#state').val();
+                //- 	getState(val)
+                //- }
+                    
+                //- if(selectedCity == val.id){
+                //- var val=$('#city').val();
+                //- getCity(val)
+                //- }
+
+                
+                
+                //- $('#jobType').on('change', function(){
+                //- 	if($(this).val() !== "0"){
+                //- 		$('.skills-field').slideDown();
+                //- 	} else{
+                //- 		$('.skills-field').slideUp();
+                //- 	}
+                //- })
+
+                //- function getState(val) {
+                //- 	var url = k+"getState/"+val;
+                //- 		$.ajax({
+                //- 			type: "GET",
+                //- 			url: url,
+                //- 			data: val,
+                //- 				success: function(data){
+                //- 					var data = data.data;
+                //- 					var htmld= " ";                              
+                //- 					data.forEach(function(val, index){
+                //- 						var selectedState='#{value.state}';
+                //- 						if (selectedState == val.id){	
+                //- 							htmld += "<option value ='"+val.id+"' selected>" +val.name + "</option>"
+                //- 						}else{
+                //- 							htmld += "<option value ='"+val.id+"'>" +val.name + "</option>"
+                //- 						}
+                //- 					})
+                //- 						$("#state").html(htmld);
+                                
+                //- 				}
+                //- 		});
+                //- }
+
+                //- function getCity(val) {
+                //- 	var url = k+"getCity/"+val;
+                //- 	$.ajax({
+                //- 		type: "GET",
+                //- 		url: url,
+                //- 		data: val,
+                //- 			success: function(data){
+                //- 				var data = data.data;                              
+                //- 				var htmld= " ";                              
+                //- 				data.forEach(function(val, index){
+                //- 					var selectedCity='#{value.city}';
+                //- 						if (selectedCity == val.id){	
+                //- 							htmld += "<option value ='"+val.id+"' selected>" +val.name + "</option>"
+                //- 						}else{
+                //- 							htmld += "<option value ='"+val.id+"'>" +val.name + "</option>"
+                //- 						}
+                //- 				})
+                //- 				$("#city").html(htmld);
+                //- 			}
+                //- 		});
+                //- }
+
+                //- function getSkills(val) {
+                //- 	var url = k+"getSkill/"+val;
+                //- 	var skills='#{value.skills_id}';
+                //- 	$.ajax({
+                //- 		type: "GET",
+                //- 		url: url,
+                //- 		data: val,
+                //- 			success: function(data){
+                //- 			//var skills = selectedSkills.split(',');
+                //- 			var data = data.data;
+                //- 			var htmld= " ";
+                //- 			data.forEach(function(val, index){
+
+                //- 				if (skills.indexOf(val.id.toString()) >= 0){
+                //- 				htmld += "<div class='col-md-6'><input type='checkbox' id='skills' checked name='skills' value ='"+val.id+"'> <label for='skills'>" +val.name + " </label></div>"	
+                //- 				}else{
+                //- 				htmld += "<div class='col-md-6'><input type='checkbox' id='skills' name='skills' value ='"+val.id+"'> <label for='skills'>" +val.name + " </label></div>"
+                //- 				}	
+                //- 			})
+                //- 			htmld += "<br><br>"
+                //- 			$("#skills").html(htmld);
+                //- 		}
+                //- 	});
+                //- }
+                
+
+

@@ -1,0 +1,203 @@
+extends ./../../layout/hr-layout
+
+block content
+            #page-wrapper
+                .row.page-titles
+                    .col-md-5.align-self-center
+                        h3.text-themecolor HR
+                    .col-md-7.align-self-center
+                        ol.breadcrumb
+                            li.breadcrumb-item.active Edit Profile - Dashboard
+                .container-fluid
+                    .row
+                        .col-md-12.col-sm-12
+                            form#newSiteForm(accept-charset='utf-8', method='post', name='loginForm', action='/admin/hr/edit-profile', enctype='multipart/form-data')
+                                -if(messages.msg_error)
+                                    .alert.alert-danger #{messages.msg_error}
+                                -else if(messages.msg_info)
+                                    .alert.alert-success #{messages.msg_info}
+
+                                .card
+                                    .card-header
+                                        h4 Edit Profile
+                                    .card-body
+
+                                        .row
+                                            .col-md-12
+                                                input(type="text" hidden)#skills-data
+                                            .col-md-12
+                                                .col-md-4
+                                                    .contact-img(style="margin:0; width: 100%;position:relative")
+                                                        if(value.profileImg)
+                                                            img#user_img.img-circle.img-responsive(src='/uploads/profile_img/#{value.profileImg}', alt='' style="margin: 20px 0;width:64px;height:64px")
+                                                        else
+                                                            img#user_img.img-circle.img-responsive(src='/admin/img/avatar.jpg', alt='' style="margin: 20px 0;width:64px;height:64px")
+
+                                                        input(type='file', name='profileImg', value=value.profileImg, onchange='imgUpload(this)', style='position: absolute;top: 30px;z-index: 0;opacity: 0;cursor: pointer;width: 64px;height: 64px;')
+                                            .col-md-12
+                                                .col-sm-4
+                                                    label Email
+                                                    input.form-control(type='email', name='email', value=value.email,  readonly)
+                                            .col-md-12
+                                                .col-sm-3
+                                                    label First Name
+                                                        span.text-danger  *
+                                                    input.form-control(type='text', name='firstName', value=value.firstName)
+                                                .col-sm-3
+                                                    label Last Name
+                                                        span.text-danger  *
+                                                    input.form-control(type='text', name='lastName', value=value.lastName)
+                                                .col-sm-3
+                                                    label Birthday
+                                                        span.text-danger  *
+                                                    input.form-control(type='text', name='dob', value=moment(value.dob).isValid() ? moment(value.dob).format('MM/DD/YYYY') : "", data-toggle='datepicker', autocomplete="off")
+                                                .col-sm-3
+                                                    label Mobile No.
+                                                        span.text-danger  *
+                                                    input.phone_number.form-control(type='text', name='phone_number', value=value.phone_number, required)
+                                            .col-md-12
+                                                .col-sm-4.m-clear
+                                                    label Country
+                                                        span.text-danger  *
+                                                    select.wide.form-control(name='country', id='country' onchange='getState(this.value)')
+                                                            option(data-display='Country') select Country
+                                                            each countries in country
+                                                                if countries.id == value.country
+                                                                    option(selected="true" ,value=countries.id) #{countries.name}
+                                                                else
+                                                                    option(value=countries.id) #{countries.name}
+                                                .col-sm-4.m-clear
+                                                    label State
+                                                        span.text-danger  *
+                                                    select.wide.form-control(name='state', id='state', onchange='getCity(this.value)')
+                                                            each states in state
+                                                                if states.id == value.state
+                                                                    option(selected="true",value=states.id) #{states.name}
+                                                                else
+                                                                    option(data-display='State',value=states.id) #{states.name}
+                                                .col-sm-4
+                                                    label City
+                                                        span.text-danger  *
+                                                    select.wide.form-control(name='city', id='city')
+                                                            each cities in city
+                                                                if cities.id == value.city
+                                                                    option(selected="true",value=cities.id) #{cities.name}
+                                                                else
+                                                                    option(data-display='city') #{cities.name}
+                                            .col-md-12
+                                                .col-sm-12
+                                                    label Address
+                                                        span.text-danger  *
+                                                    textarea.form-control.height-120.textarea(type='text', name='address') #{value.address}
+                                    .col-md-12.text-right
+                                        button.btn.btn-success(type='submit') Submit & Exit
+            script(type='text/javascript').
+                $(document).ready(function notificationVerifiedEmail() {
+                    var k = !{JSON.stringify(url)};
+
+                    var url = k+"notificationVerifiedEmail";
+                        $.ajax({
+                            type: "GET",
+                            url: url,
+                            success: function(data){
+                                var data = data.data;
+                                if(data.emailVerified == 0) {
+
+                                    $('.notificationEmail').removeClass('open').hide();
+
+                                } else{
+                                    $('.notificationEmail').show();
+                                }
+
+                            }
+                        });
+
+                    $('.phone_number').on('blur', function(){
+                        var mobNum = $(this).val();
+                        var filter = /^(1\s?)?((\([0-9]{3}\))|[0-9]{3})[\s\-]?[\0-9]{3}[\s\-]?[0-9]{4}$/;
+                        if (filter.test(mobNum)) {
+                            if(mobNum.length == 10){
+                            } else {
+                                    alert('Please put valid mobile number');
+                                    return false;
+                                //-  $('.phone_number').after('<span style="color:red">Please enter valid number.</span>')
+                            }
+                        } else {
+                            alert('Not a valid mobile number');
+                            return false;
+                            //- $('.subjectName').next('span').remove();
+                        }
+                    
+                    });
+                    })
+
+                function imgUpload(input){
+                    if (input.files && input.files[0]) {
+                        var reader = new FileReader();
+                        reader.onload = function (e) {
+                            document.getElementById('user_img').src = e.target.result;
+                        };
+                        reader.readAsDataURL(input.files[0]);
+                    }
+                }
+                var k = !{JSON.stringify(url)};
+                var selectedState='#{value.state}';
+                    var selectedCity='#{value.city}';
+                //- if($('#jobType').val() !== "0"){
+                //-     var val=$('#jobType').val();
+                //-     getSkills(val)
+                //- }
+                if (selectedState == val.id){
+                    var val=$('#state').val();
+                    getState(val)
+                    }
+					
+                if(selectedCity == val.id){
+                    var val=$('#city').val();
+                    getCity(val)
+                }
+
+                function getState(val) {
+                    var url = k+"getState/"+val;
+                        $.ajax({
+                            type: "GET",
+                            url: url,
+                            data: val,
+                                success: function(data){
+                                    var data = data.data;
+                                    var htmld= " ";
+                                    data.forEach(function(val, index){
+                                        var selectedState='#{value.state}';
+                                        if (selectedState == val.id){
+                                            htmld += "<option value ='"+val.id+"' selected>" +val.name + "</option>"
+                                        }else{
+                                            htmld += "<option value ='"+val.id+"'>" +val.name + "</option>"
+                                        }
+                                    })
+                                    $("#state").html(htmld);
+                                }
+                        });
+                }
+
+                function getCity(val) {
+                    var url = k+"getCity/"+val;
+                        $.ajax({
+                            type: "GET",
+                            url: url,
+                            data: val,
+                            success: function(data){
+                                var data = data.data; 
+                                var htmld= " ";  
+                                data.forEach(function(val, index){
+                                    var selectedCity='#{value.city}';
+                                    if (selectedCity == val.id){
+                                        htmld += "<option value ='"+val.id+"' selected>" +val.name + "</option>"
+                                    }else{
+                                        htmld += "<option value ='"+val.id+"'>" +val.name + "</option>"
+                                    }
+                                })
+                                $("#city").html(htmld);
+                            }
+                        });
+                }
+               

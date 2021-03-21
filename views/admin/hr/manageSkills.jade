@@ -1,0 +1,64 @@
+extends ./../../layout/hr-layout
+
+block content
+      #page-wrapper
+            .row.page-titles
+                .col-md-5.align-self-center
+                    h3.text-themecolor Hr
+                .col-md-7.align-self-center
+                    ol.breadcrumb
+                        li.breadcrumb-item.active Skills
+            .container-fluid
+                -if(messages.msg_error)
+                    .alert.alert-danger #{messages.msg_error}
+                -else if(messages.msg_info)
+                    .alert.alert-success #{messages.msg_info}
+                .row
+                    .col-md-12
+                        .card
+                            .card-header 
+                                .col-sm-12
+                                    h4 
+                                        i.fa.fa-filter  Filter
+                            .card-body
+                                .col-sm-12
+                                    .row
+                                        form#newSiteForm.d-inline-block(accept-charset='utf-8', method='post', name='searchQuesAns', action='/admin/hr/search_skills')
+                                            input(type="hidden" name="id" value="1")
+                                            button.btn.btn-primary.btn-sm(type="submit", data-toggle='tooltip', title='Search mechanical skills') Mechanical
+                                        form#newSiteForm.d-inline-block(accept-charset='utf-8', method='post', name='searchQuesAns', action='/admin/hr/search_skills')
+                                            input(type="hidden" name="id" value="2")
+                                            button.btn.btn-primary.btn-sm(type="submit", data-toggle='tooltip', title='Search electrical skills') Electrical
+                                        form#newSiteForm.d-inline-block(accept-charset='utf-8', method='get', name='searchQuesAns', action='/admin/hr/manageSkills')
+                                            button.btn.btn-primary.btn-sm(type="submit", data-toggle='tooltip', title='Search all skills') All
+                    .col-md-12
+                        .card
+                            .card-body
+                                h4  Skills List
+                                .table-responsive
+                                    table.table.table-striped.table-bordered
+                                        thead
+                                            tr
+                                                th #
+                                                th Project Trade
+                                                th Skill Name
+                                                th Descrpition
+                                                th Action
+                                        tbody
+                                            
+                                            if(skills.length > 0)
+                                                each skill, i in skills
+                                                    tr
+                                                        td= i+1
+                                                        td= skill.type_name
+                                                        td= skill.skill_name
+                                                        td= skill.description
+                                                        td
+                                                            a.btn.btn-primary.btn-sm(href='/admin/hr/editSkills/#{skill.id}', data-toggle='tooltip', title='Edit Skill') 
+                                                                i.fa.fa-edit
+                                                            &nbsp;
+                                                            a.btn.btn-danger.btn-sm(href='/admin/hr/deleteSkills/#{skill.id}', data-toggle='tooltip', title='Delete Skill') 
+                                                                i.fa.fa-trash
+                                            else
+                                                tr.danger.text-center
+                                                    td(colspan='4') Sorry, no record found!

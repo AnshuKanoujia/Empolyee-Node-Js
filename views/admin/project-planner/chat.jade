@@ -1,0 +1,182 @@
+extends ./../../layout/admin-layout
+
+block content
+        #page-wrapper
+            .row.page-titles
+                .col-md-5.align-self-center
+                    h3.text-themecolor Project Planner
+                .col-md-7.align-self-center
+                    ol.breadcrumb
+          
+            .container-fluid.techChat
+                -if(messages.msg_error)
+                    .alert.alert-danger #{messages.msg_error}
+                -else if(messages.msg_info)
+                .row
+                    .col-md-4.col-xl-3.chat
+                        .card.mb-sm-3.mb-md-0.contacts_card
+                            .card-header
+                                p Customer Support
+                                |                         
+                            .card-body.contacts_body
+                                ul.contacts
+                                    each messages in msg
+                                        li(onclick='scrollToBottom()')
+                                            a(href='#chat-div'+messages.msg_from, class=(msg_to == messages.msg_to) ? "show_message" : "show_message" , data-msg_from=messages.msg_from, data-msg_to=messages.msg_to, data-name=messages.name,data-profileImage=messages.profileImage, data-uid=uid, data-token=token)
+                                                .d-flex.bd-highlight
+                                                    if(messages.profileImg)
+                                                        .img_cont
+                                                            img.rounded-circle.user_img(src='/uploads/profile_img/#{messages.profileImg}')
+                                                            |                                         
+                                                    else
+                                                        .img_cont
+                                                            img.rounded-circle.user_img(src='/images/client-1.jpg')
+                                                            |     
+                                                    .user_info
+                                                        p
+                                                        | #{messages.name}
+                                                        //- span.msg_count 3
+                                                        //- span.msg_count 3
+                                               
+                                                                 
+                    .col-md-8.col-xl-6.chat
+                        #chat-div.show_message
+                            .card.change_message
+                                .card-header.msg_head
+                                    .d-flex.bd-highlight
+                                        .img_cont
+                                            if(msg[0].profileImg)
+                                                img.rounded-circle.user_img.user_msg_image(src='/uploads/profile_img/#{msg[0].profileImg}')
+                                            else
+                                                img.rounded-circle.user_img(src='/images/client-1.jpg')
+                                        .user_info
+                                            //- span.white.user_name #{msg[0].name}
+                                            span.white.user_name #{msg[0].name}
+                                #msg-body.card-body.msg_card_body
+                                    each msgToFrom in msgDetails
+                                        if(uid != msgToFrom.msg_from)
+                                            .d-flex.justify-content-start.mb-4.receiver
+                                                .msg_cotainer
+                                                    | #{msgToFrom.message}
+                                                    span.msg_time  #{moment(msgToFrom.time).format('MM/DD/YYYY hh:mm A')}
+                                            .unread
+                                                | unread msg
+                                                
+                                        else
+                                            .d-flex.justify-content-end.mb-4.sender
+                                                .msg_cotainer_send
+                                                    //- if(msgToFrom.msg_from)
+                                                    | #{msgToFrom.message}
+                                                    span.msg_time  #{moment(msgToFrom.time).format('MM/DD/YYYY hh:mm A')}
+                                            .unread
+                                                | unread msg
+                                                
+                                .card-footer
+                                    .input-group
+                                        //- .input-group-append
+                                        //-     span.input-group-text.attach_btn
+                                        //-         i.fa.fa-paperclip
+                                        textarea.form-control.type_msg(name='', placeholder='Type your message...', data-value=msg[0].msg_to, data-userId=msg[0].msg_from, data-token=token) 
+                                        .input-group-append
+                                            span.input-group-text.send_btn
+                                                i.fa.fa-paper-plane
+                    
+            script(type='text/javascript').
+                var k = !{JSON.stringify(url)};
+
+                $(window).load(function() {
+                    $('ul.contacts li:first-child').addClass('selected');
+                    $("#msg-body").animate({ 
+                        scrollTop: $('#msg-body').get(0).scrollHeight 
+                    })
+                });
+                $(document).ready(function()
+                {
+                    clickContact();
+                    setInterval(function() {
+                        $(".contacts li a").click();
+                        //- alert("Message to alert every 5 seconds");
+                    }, 10000);
+
+                    var textarea = $('.type_msg');
+                    textarea.on('keypress', function(e){
+                        if(e.which == 13){
+                            $('.send_btn').trigger('click');
+                        }
+                    
+                    })
+                    
+                    $(".chat").show();
+                    $('.send_btn').on('click', function(){
+                        $("#msg-body").animate({ 
+                            scrollTop: $('#msg-body').get(0).scrollHeight 
+                        })
+                        var id = $('textarea.type_msg').data('value');
+                        var userId = $('textarea.type_msg').data('userid');
+                        var message = $('textarea.type_msg').val();
+                        var token = $('textarea.type_msg').data('token');
+                        if(message != ''){
+                            $.ajax({
+                                type: "POST",
+                                url: k+'senderMsg',
+                                async: false,
+                                data:{ 
+                                    'id': id,
+                                    'message': message,
+                                    'userId': userId,
+                                    'token': token,
+                                },
+                                success: function(data){
+                                    const date = moment(),
+                                    curr = +moment(),
+                                    time = date.format("MM/DD/YYYY hh:mm A")
+                                    $('textarea.type_msg').val('');
+                                    $('.msg_card_body').append('<div class="d-flex justify-content-end mb-4 sender"><div class="msg_cotainer_send">'+message+'<span class="msg_time_send">'+time+'</span></div>')
+                                }
+                            })
+                        } else {
+                            alert("please enter any message to send")
+                        }
+                        
+                    })
+                });
+
+                function clickContact() {
+
+                    $(".contacts li a").click(function(event) {
+                        event.preventDefault();
+                        let{msg_from, msg_to, name, profileImage, uid, token} =$(this).data();
+                        var href = $(this).attr('href');
+                        $.ajax({
+                            type: "POST",
+                            url: k+'getMsgDetail',
+                            async: false,
+                            data:{'msg_from': msg_from, 'msg_to': msg_to, 'uid': uid, 'token': token},
+                            success: function(response){
+                                $(".user_msg_image").attr('src', profileImage)
+                                $(".user_name").text(name)
+                                var data = response.msgDetails;
+                                $('.type_msg').attr('data-userid',msg_from);
+                                $('.msg_card_body').empty()
+                                $.each(data, function(key, value) {
+                                    if(uid == value.msg_from) {
+                                        $('.msg_card_body').append('<div class="d-flex justify-content-end mb-4 sender"><div class="msg_cotainer_send">'+value.message+'<span class="msg_time_send">'+moment(value.time).format('MM/DD/YYYY hh:mm A')+'</span></div>');
+                                    } else {
+                                        $('.msg_card_body').append('<div class="d-flex justify-content-start mb-4 receiver"><div class="msg_cotainer">'+value.message+'<span class="msg_time_send">'+moment(value.time).format('MM/DD/YYYY hh:mm A')+'</span></div></div>')
+                                    }
+                                })
+                            }
+                        })
+                    });
+                }
+
+                function scrollToBottom() {
+                    var objDiv = document.getElementById("msg-body");
+                    objDiv.scrollTop = objDiv.scrollHeight;
+                }
+
+
+
+         
+                
+            

@@ -1,0 +1,153 @@
+extends ./../../layout/admin-layout
+
+block content
+      #page-wrapper
+            .row.page-titles
+                .col-md-5.align-self-center
+                    h3.text-themecolor Project Planner
+                .col-md-7.align-self-center
+                    ol.breadcrumb
+                        //- li.breadcrumb-item.active View Reports
+            .container-fluid
+                    -if(messages.msg_error)
+                        .alert.alert-danger #{messages.msg_error}
+                    -else if(messages.msg_info)
+                       .alert.alert-success #{messages.msg_info}
+                    .row
+                        .col-md-12
+                            .card
+                                .card-body
+                                    h4  pending timesheet
+                                    .table-responsive
+                                        form#ratingForm(accept-charset='utf-8', method='post', name='ratingForm', action='/admin/super-admin/approveRejectTime', enctype='multipart/form-data')
+                                            if(reports.length)
+                                                input.form-control(type='hidden', id='supId', value=reports[0].supId, name='supId')
+                                                input.form-control(type='hidden', id='plannerId', value=reports[0].plannerId, name='plannerId')
+                                            table.table.table-striped.table-bordered
+                                                thead
+                                                    tr
+                                                        th #
+                                                        th Date
+                                                        th In Time
+                                                        th Out Time
+                                                        th Total Hours
+                                                        th Status 
+                                                        th Action
+                                                tbody
+                                                    if(reports.length)
+                                                        each report, i in reports
+                                                            tr
+                                                                td= i+1
+                                                                td= moment(report.date).format('YYYY/MM/DD')
+                                                                td= report.inTime
+                                                                td= report.outTime
+                                                                td= report.hours_count
+                                                                td= report.statusName
+                                                                td
+                                                                    a.btn.btn-primary.btn-lg(href="#myModal", class="btn-desc" data-toggle="modal", data-description=report.description) View Description
+                                                                    &#32;
+                                                                    span(data-toggle='modal', data-placement='top',class="btn-sm", data-target='#manage-timeSheet',  data-id=report.id, data-userId=report.supId, data-intime=report.inTime, data-outtime=report.outTime)
+                                                                        button.btn.btn-primary.btn-lg(data-toggle='tooltip', data-placement='top', title='Edit Time', data-target='#manage-timeSheet') 
+                                                                            i.fa.fa-edit
+                                                    else
+                                                        tr.danger.text-center
+                                                            td(colspan='7') Sorry, no record found!
+                                            if(reports.length)
+                                                .col-md-12
+                                                    .text-right
+                                                        button.btn.btn-success(type='submit', name="status" value="5") Approve
+                                                        &#32;
+                                                        button.btn.btn-danger(type='submit', name="status" value="6") Reject
+
+                #myModal.modal.fade(tabindex="-1", role="dialog", aria-labelledby="myModalLabel", aria-hidden="true")
+                    .modal-dialog
+                        .modal-content
+                            .modal-header
+                                button.close(type="button", data-dismiss="modal", aria-hidden="true") &times;
+                                h4.modal-title Report Description
+                            .modal-body
+                                div
+                            .modal-footer
+                                button.btn.btn-default(type="button", data-dismiss="modal") Close
+
+                .modal#manage-timeSheet.fade(tabindex='-1', role='dialog' aria-labelledby="delete-skill" aria-hidden="true")
+                        .modal-dialog(role='document')
+                            .modal-content
+                                .modal-header.theme-bg
+                                    h4.modal-title Reporting
+                                    button.close(type='button', data-dismiss='modal', aria-label='Close')
+                                        span(aria-hidden='true') ×
+                                form#SupervisorForm(accept-charset='utf-8', method='post', name='superviosrForm', action='/admin/super-admin/InTime-OutTime')
+                                    .modal-body
+                                            .row
+                                                .col-md-6
+                                                    label Enter Clock In
+                                                        span.text-danger  *
+                                                    input.timepicker.form-control(type='text', name='inTime', id='inTime', value=reports.inTime, required, autocomplete="off")
+                                                .col-md-6
+                                                    label Enter Clock Out
+                                                        span.text-danger  *
+                                                    input.timepicker.form-control(type='text', name='outTime', id='outTime',  value=reports.outTime, required, autocomplete="off")
+
+                                            input.form-control(type='hidden', id='id', value=reports.id, name='id')
+                                            input.form-control(type='hidden', id='userId', value=reports.userId, name='userId')
+
+                                    .modal-footer
+                                        button.btn.btn-default(type='button', data-dismiss='modal') Cancel
+                                        button#delete.btn.btn-primary(type='submit') Change Time
+                script(type='text/javascript').
+                   
+                    $(document).ready(function(){
+                        //- $('.timepicker').datetimepicker({
+                        //-     //- format: 'LT'
+                        //- });
+        
+
+                        
+                        $(".btn-desc").click(function(){
+                            $("#myModal .modal-body div").empty().append($(this).data('description'));
+                        })
+                        
+                        $('.rating > input').on('click', function(){
+                            var $this = $(this);
+                            ratingAverage($this);
+                        })
+                        
+                    })   
+                    $(document).on('click', "span.btn-sm[data-toggle='modal']", function() {
+                             event.preventDefault();
+                            let {id, userid, intime, outtime} = $(this).data();
+                            $("#id").val(id);
+                            $("#userId").val(userid);
+                            $("#inTime").val(intime);
+                            $("#outTime").val(outtime);
+                            $('#manage-timeSheet').modal('show');
+
+                            $('#inTime').datetimepicker({
+                                maxDate: outtime
+                            });
+                            $('#outTime').datetimepicker({
+                                minDate: intime
+                            });
+                            $("#inTime").on("blur", function (e) {
+                                $('#outTime').data("DateTimePicker").minDate($(this).val());
+                            });
+                            $("#outTime").on("blur", function (e) {
+                                $('#inTime').data("DateTimePicker").maxDate($(this).val());
+                            });
+
+                        });
+
+                    //- function ratingAverage($this , data){
+                    //-     var data = [];
+                    //-     $this.closest('.row').parent().find('.row').each(function(){
+                    //-       data.push($(this).find('input[type="radio"]:checked').length ? parseInt($(this).find('input[type="radio"]:checked').val()) : 0);
+                    //-     })
+                    //-     var sum = data.reduce(function(i , val){
+                           
+                    //-         return  i + val; 
+                    //-     })
+
+                    //-     $('#rating_avg').text(Math.round( (sum/7) * 10 ) / 10);
+
+                    //- }                          

@@ -1,0 +1,62 @@
+/*html.w-mod-js *[data-ix="fade-in-on-scroll"]{ opacity: 1 !important; }*/
+
+.opacity1{ opacity: 1 !important;}
+
+.small-hero-intro-title{ margin-bottom:35px;}
+
+.iphone-hero{ background-image: url(../img/5d080aebd5102a4e9e02e5c2_medgridpoint.png);}
+
+.color-block{-webkit-box-shadow: 0 13px 27px -5px rgba(50,50,93,.25), 0 8px 16px -8px rgba(0,0,0,.3), 0 -6px 16px -6px rgba(0,0,0,.025);
+    box-shadow: 0 13px 27px -5px rgba(50,50,93,.25), 0 8px 16px -8px rgba(0,0,0,.3), 0 -6px 16px -6px rgba(0,0,0,.025);
+    -webkit-transition-property: color,background-color,-webkit-box-shadow,-webkit-transform;
+    transition-property: color,background-color,-webkit-box-shadow,-webkit-transform;
+    transition-property: color,background-color,box-shadow,transform;
+    transition-property: color,background-color,box-shadow,transform,-webkit-box-shadow,-webkit-transform;
+    -webkit-transition-duration: .15s;
+    transition-duration: .15s;}
+	
+	
+.white-contact-form{ -webkit-box-shadow: 0 13px 27px -5px rgba(50,50,93,.25), 0 8px 16px -8px rgba(0,0,0,.3), 0 -6px 16px -6px rgba(0,0,0,.025);
+    box-shadow: 0 13px 27px -5px rgba(50,50,93,.25), 0 8px 16px -8px rgba(0,0,0,.3), 0 -6px 16px -6px rgba(0,0,0,.025);
+    -webkit-transition-property: color,background-color,-webkit-box-shadow,-webkit-transform;
+    transition-property: color,background-color,-webkit-box-shadow,-webkit-transform;
+    transition-property: color,background-color,box-shadow,transform;
+    transition-property: color,background-color,box-shadow,transform,-webkit-box-shadow,-webkit-transform;
+    -webkit-transition-duration: .15s;
+    transition-duration: .15s;}
+	
+.video-lightbox-block{  -webkit-box-shadow: 0 13px 27px -5px rgba(50,50,93,.25), 0 8px 16px -8px rgba(0,0,0,.3), 0 -6px 16px -6px rgba(0,0,0,.025);
+    box-shadow: 0 13px 27px -5px rgba(50,50,93,.25), 0 8px 16px -8px rgba(0,0,0,.3), 0 -6px 16px -6px rgba(0,0,0,.025);
+    -webkit-transition-property: color,background-color,-webkit-box-shadow,-webkit-transform;
+    transition-property: color,background-color,-webkit-box-shadow,-webkit-transform;
+    transition-property: color,background-color,box-shadow,transform;
+    transition-property: color,background-color,box-shadow,transform,-webkit-box-shadow,-webkit-transform;
+    -webkit-transition-duration: .15s;
+    transition-duration: .15s;}
+	
+	
+.contact-info-block{ -webkit-box-shadow: 0 13px 27px -5px rgba(50,50,93,.25), 0 8px 16px -8px rgba(0,0,0,.3), 0 -6px 16px -6px rgba(0,0,0,.025);
+    box-shadow: 0 13px 27px -5px rgba(50,50,93,.25), 0 8px 16px -8px rgba(0,0,0,.3), 0 -6px 16px -6px rgba(0,0,0,.025);
+    -webkit-transition-property: color,background-color,-webkit-box-shadow,-webkit-transform;
+    transition-property: color,background-color,-webkit-box-shadow,-webkit-transform;
+    transition-property: color,background-color,box-shadow,transform;
+    transition-property: color,background-color,box-shadow,transform,-webkit-box-shadow,-webkit-transform;
+    -webkit-transition-duration: .15s;
+    transition-duration: .15s;}
+	
+	
+.device-mockup-left{ -webkit-box-shadow: 0 13px 27px -5px rgba(50,50,93,.25), 0 8px 16px -8px rgba(0,0,0,.3), 0 -6px 16px -6px rgba(0,0,0,.025);
+    box-shadow: 0 13px 27px -5px rgba(50,50,93,.25), 0 8px 16px -8px rgba(0,0,0,.3), 0 -6px 16px -6px rgba(0,0,0,.025);
+    -webkit-transition-property: color,background-color,-webkit-box-shadow,-webkit-transform;
+    transition-property: color,background-color,-webkit-box-shadow,-webkit-transform;
+    transition-property: color,background-color,box-shadow,transform;
+    transition-property: color,background-color,box-shadow,transform,-webkit-box-shadow,-webkit-transform;
+    -webkit-transition-duration: .15s;
+    transition-duration: .15s;}
+	
+	
+	
+	
+	
+	
+	

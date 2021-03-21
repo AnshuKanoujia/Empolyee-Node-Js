@@ -1,0 +1,140 @@
+extends ./../../layout/user-layout
+
+block content
+      #page-wrapper
+            .row.page-titles
+                .col-md-5.align-self-center
+                    h3.text-themecolor Technician
+                .col-md-7.align-self-center
+                    ol.breadcrumb
+                        li.breadcrumb-item.active Job Detail
+            .container-fluid
+                -if(messages.msg_error)
+                    .alert.alert-danger #{messages.msg_error}
+                -else if(messages.msg_info)
+                    .alert.alert-success #{messages.msg_info}
+                .row
+                    .col-md-12
+                            //- each viewReportLists in viewReportList
+                            .card
+                                .card-header 
+                                    .row
+                                        .col-sm-6
+                                            h4  #{viewReportList.jobName+' ('+viewReportList.jobCode+')'}
+                                        .col-sm-6.text-right
+                                            a.btn.btn-primary.block.btn-sm(href='/user/technician/userJobs', title='Back to Current Project List')
+                                                i.ti-angle-left Back
+                                .card-body
+                                
+                                    .table-responsive
+                                        table.table.table-borderless.job-details
+                                        
+                                            tbody
+                                                tr
+                                                    th Location Name:
+                                                    td= viewReportList.siteName
+                                                    //- td= viewReportList.siteName+' ('+viewReportList.sitesCode+')'
+                                                    th Duration Date:
+                                                    td= moment(viewReportList.startDate).format('MM/DD/YYYY') +'  -  '+moment(viewReportList.endDate).format('MM/DD/YYYY') 
+                                                        span(data-toggle='modal', class="manage-btn-sm ml-1", data-target='#view-timeDuration', data-id=viewReportList.jobId ,)
+                                                            button.btn.btn-info.manage-btn-sm(data-toggle='tooltip',title='View Duration', data-placement='top') 
+                                                                i.fa.fa-calendar
+                                                tr
+                                                    th Supervisor:
+                                                    td= viewReportList.SupervisorName  
+                                                    th Planner:
+                                                    td= viewReportList.plannerName  
+                                                                                                     
+                                                tr
+                                                    th No of Phases:
+                                                    td= viewReportList.noOfPhases 
+                                                    th Current Status:
+                                                    td <span class="j-type full-time">#{viewReportList.jobStatus}</span>
+                                                tr
+                                                    th Location:
+                                                    td= viewReportList.newAddress ? viewReportList.newAddress : '--'
+                                                    th Total Days:
+                                                    td= viewReportList.days_count
+                                                tr 
+                                                    th Description Of Project
+                                                    td(colspan="4")= viewReportList.description  
+                                                       
+                        .card
+                            .card-body
+                                h4  Last 5 TimeSheets
+                                .table-responsive
+                                    table.table.table-striped.table-bordered
+                                        thead
+                                            tr
+                                                th Date
+                                                th In Time
+                                                th Out Time
+                                                th Total Hours
+                                                th Status
+
+                                        tbody
+                                            if(reportList.length)
+                                                each viewreportList in reportList
+                                                    tr
+                                                        td= moment(viewreportList.date).format('MM/DD/YYYY')
+                                                        td= viewreportList.inTime
+                                                        td= viewreportList.outTime
+                                                        td= viewreportList.hours_count 
+                                                        td= viewreportList.jobStatus
+                                                   
+                                            else
+                                                tr.danger.text-center
+                                                    td(colspan='6') You don't have any entry yet !
+            .modal#view-timeDuration.fade(tabindex='-1', role='dialog' aria-labelledby="delete-skill" aria-hidden="true")
+                    .modal-dialog(role='document')
+                        .modal-content
+                            .modal-header.theme-bg
+                                h4.modal-title Duration Time Period
+                                button.close(type='button', data-dismiss='modal', aria-label='Close')
+                                    span(aria-hidden='true') ×
+                            .modal-body
+                                table.table.table-borderless.job-details
+                                    tbody
+                                        tr
+                                            th Duration In Days:
+                                            td.days
+                                        tr
+                                            th Duration In Months:
+                                            td.months
+                                        tr
+                                            th Duration In Weeks:
+                                            td.weeks
+                            .modal-footer
+                                button.btn.btn-default(type='button', data-dismiss='modal') Cancel
+                                    
+
+                script(type="text/javascript").
+                    $(document).ready(function(){
+                        $(document).on('click', "span.manage-btn-sm[data-toggle='modal']", function() {
+                            //- var d1 = new Date("2019/08/06");
+                            //- var d2 = new Date("2020/09/07");
+                            var k = !{JSON.stringify(viewReportList)};
+                            var d1 = new Date(k.startDate);
+                            var d2 = new Date(k.endDate);
+                            var timeDiff = d2.getTime() - d1.getTime();
+                            var milliseconds = parseInt(timeDiff);
+                            var hours = Math.floor(milliseconds / 3600000);
+                            var days =  hours / 24; 
+                            $('.days').text(days);                            
+                            if(days >= 30){
+                                 var months = Math.floor(days/30);
+                                $('.months').text(months);
+                            } else{
+                                $('.months').text('-');
+                            }
+                            if(days >= 7){
+                                var weeks = Math.floor(days/7);
+                                $('.weeks').text(weeks);
+                            } else{
+                                $('.weeks').text('-');
+                            }
+                          
+                            
+                          
+                        });
+                    });

@@ -1,0 +1,49 @@
+extends ./../../layout/hr-layout
+
+block content
+      #page-wrapper
+            .row.page-titles
+                .col-md-5.align-self-center
+                    h3.text-themecolor Technician
+                .col-md-7.align-self-center
+                    ol.breadcrumb
+                        //- li.breadcrumb-item.active View Application
+            .container-fluid
+                -if(messages.msg_error)
+                    .alert.alert-danger #{messages.msg_error}
+                -else if(messages.msg_info)
+                    .alert.alert-success #{messages.msg_info}
+                .row
+                    .col-md-12
+                        .card
+                            .card-body
+                                h4  Application List
+                                .table-responsive
+                                    table.table.table-striped.table-bordered
+                                        thead
+                                            tr
+                                                
+                                                th #
+                                                th User Name
+                                                th Project
+                                                th Preferred Shift
+                                                th Date
+                                                th Status
+                                                th Action
+                                        tbody
+                                            if(userlists.length)
+                                                each userlist, i in userlists
+                                                    tr
+                                                        
+                                                        td= i+1
+                                                        td= userlist.firstName + '  ' + userlist.lastName
+                                                        td= userlist.jobName
+                                                        td= userlist.shift
+                                                        td= moment(userlist.date).isValid() ? moment(userlist.date).format('YYYY/MM/DD') : '--'
+                                                        td= userlist.statusName
+                                                        td 
+                                                            a.btn.btn-info.btn-sm(href='/admin/hr/viewApplication/#{userlist.id}', title='View Application', style="width: 100px") View
+                                            else
+                                                tr.danger.text-center
+                                                    td(colspan='7') Sorry, no record found!
+                                                            

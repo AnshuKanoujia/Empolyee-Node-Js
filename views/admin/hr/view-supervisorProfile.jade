@@ -1,0 +1,122 @@
+extends ./../../layout/hr-layout
+
+block content
+      #page-wrapper
+            .row.page-titles
+                .col-md-5.align-self-center
+                    h3.text-themecolor Hr
+                .col-md-7.align-self-center
+                    ol.breadcrumb
+                        li.breadcrumb-item.active Supervisor Profile
+            .container-fluid
+                -if(messages.msg_error)
+                    .alert.alert-danger #{messages.msg_error}
+                -else if(messages.msg_info)
+                    .alert.alert-success #{messages.msg_info}
+                .row
+                    .col-md-12
+                        .card
+                            .card-header 
+                                .row
+                                    .col-sm-6
+                                        h4 Profile
+                                    .col-sm-6.text-right
+<<<<<<< HEAD
+                                        a.btn.btn-primary.block.btn-sm(href='/admin/hr/view-supervisor', title='Back to View Supervisors list')  
+                                            i.ti-angle-left Back
+                                        span(data-toggle='modal', class="location-btn-sm", data-target='#changePassword', data-id=users[0].id)  
+                                            button.btn.btn-success.location-btn-sm(data-toggle='tooltip', data-placement='top', title='Change Password', data-target='#changePassword') Change Password
+                                        span(data-toggle='modal', data-placement='top',class="bt-sm", data-target='#sendMsg',  data-id=users[0].id)
+                                            button.btn.btn-primary.btn-sm(data-toggle='tooltip', data-placement='top', title='Send Message', data-target='#sendMsg') 
+=======
+                                        a.btn.btn-primary.block.btn-sm(href='/admin/hr/view-supervisor', title='Back To View Supervisors List')  
+                                            i.ti-angle-left Back
+                                        span(data-toggle='modal', class="location-btn-sm", data-target='#changePassword', data-id=users[0].id)  
+                                            button.btn.btn-success.location-btn-sm(data-toggle='tooltip', data-placement='top', title='Change Passord', data-target='#changePassword') Change Password
+                                        span(data-toggle='modal', data-placement='top',class="bt-sm", data-target='#sendMsg',  data-id=users[0].id)
+                                            button.btn.btn-primary.btn-sm(data-toggle='tooltip', data-placement='top', title='send Message', data-target='#sendMsg') 
+>>>>>>> ceca5dc5475038541249948ba47e41fe203f841a
+                                                i.fa.fa-envelope
+                            .card-body
+                               
+                                .table-responsive
+                                    table.table.table-borderless.job-details
+                                        tbody
+                                            each supervisorProfile in users
+                                                tr
+                                                    th Name:
+                                                    td= supervisorProfile.name 
+                                                    th DOB:
+                                                    td= moment(supervisorProfile.dob).isValid() ? moment(supervisorProfile.dob).format('MM/DD/YYYY') : "--" 
+                                                tr
+                                                    th Email:
+                                                    td= supervisorProfile.email ? supervisorProfile.email : '--'
+                                                    th Project Trade:
+                                                    td= supervisorProfile.type_name ? supervisorProfile.type_name : '--'
+                                                tr
+                                                    th Experience:
+                                                    td= supervisorProfile.experience ? supervisorProfile.experience : '--'
+                                                     th Location:
+                                                    td= supervisorProfile.newAddress ? supervisorProfile.newAddress : '--'
+                                                //- tr
+                                                //-     th Skills:
+                                                //-     td(colspan="4")= supervisorProfile.skills ? supervisorProfile.skills : '--'
+            
+            .modal#sendMsg.modal.fade(tabindex='-1', role='dialog' aria-labelledby="delete-skill" aria-hidden="true")
+                    .modal-dialog(role='document')
+                        .modal-content
+                            .modal-header.theme-bg
+                                h4.modal-title Send Message
+                                button.close(type='button', data-dismiss='modal', aria-label='Close')
+                                    span(aria-hidden='true') ×
+                            form#SupervisorForm(accept-charset='utf-8', method='post', name='superviosrForm', action='/admin/hr/sendMsg')
+                                .modal-body
+                                       .row
+                                            .col-md-12
+                                                label Message
+                                                    span.text-danger  *
+                                                textarea.form-control.height-100.textarea(rows='3', placeholder='Enter Message', name='message', required)
+                                        input.form-control(type='hidden', id='id', name='id')
+                                .modal-footer
+                                    button.btn.btn-default(type='button', data-dismiss='modal') Cancel
+                                    button#delete.btn.btn-primary(type='submit') Submit
+            .modal#changePassword.fade(tabindex='-1', role='dialog' aria-labelledby="delete-skill" aria-hidden="true")
+                .modal-dialog(role='document')
+                    .modal-content
+                        .modal-header.theme-bg
+                            h4.modal-title Change Password
+                            button.close(type='button', data-dismiss='modal', aria-label='Close')
+                                span(aria-hidden='true') ×
+                        form#changePasswordForm(accept-charset='utf-8', method='post', name='changePasswordForm', action='/admin/hr/supChangePassword')
+                            .modal-body
+                                    .row
+                                        .col-md-12
+                                            label New Password
+                                                span.text-danger  *
+                                            input.form-control(type='password', name='newPassword', required, minlength='6', autocomplete="off")
+                                    .row
+                                        .col-md-12
+                                            label Confirm New Password
+                                                span.text-danger  *
+                                            input.form-control(type='password', name='confirmNewPassword', required, minlength='6', autocomplete="off")
+                                            
+                                    input.form-control.change_password_id(type='hidden', id='id', value='' name='id')
+                            .modal-footer
+                                button.btn.btn-default(type='button', data-dismiss='modal') Cancel	
+                                button#delete.btn.btn-primary(type='submit') Sumbit
+            script(type='text/javascript').
+                $(document).on('click', "span.bt-sm[data-toggle='modal']", function(event) {
+                        event.preventDefault();
+                    let userId = $(this).data('id');
+                    $("#id").val(userId);
+                    $('#sendMsg').modal('show');
+                });
+                $(document).ready(function(){
+                    $(document).on('click', "span.location-btn-sm[data-toggle='modal']", function() {
+                        let id = $(this).data('id');
+                        $(".change_password_id").val(id);
+                        $('#changePassword').modal('show');
+                    });
+                });
+                                                
+                                                        

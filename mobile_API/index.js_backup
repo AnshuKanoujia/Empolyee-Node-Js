@@ -1,0 +1,388 @@
+var express = require('express');
+var session = require('express-session');
+var db = require('../config/db');
+var defaults = require('../config/default');
+var router = express.Router();
+const bcrypt = require("bcrypt");
+const nodemailer = require("nodemailer");
+const config = require('config');
+const crypto = require('crypto');
+var jwt = require('jsonwebtoken');
+const createResponse = require("./libraries/response");
+
+// Load input validation
+const validateLoginInput = require("../validation/login");
+/ GET home page. /
+router.get('/', function (req, res, next) {
+	res.render('index', {
+		title: 'Express',
+		layout: 'layout/home-layout.jade'
+	});
+});
+
+/* API SignIn */
+router.post('/signup', function (req, res) {
+	let resetCode = crypto.randomBytes(20).toString("hex");
+	bcrypt.genSalt(10, (err, salt) => {
+		bcrypt.hash(req.body.password, salt, (err, hash) => {
+			var data = {
+				firstName: req.body.fname,
+				lastName: req.body.lname,
+				email: req.body.email,
+				password: hash,
+				resetCode: resetCode,
+				role: '1',
+				createdAt: new Date()
+			};
+			db.query('select email from users where email="' + data.email + '"', function (err, rows) {
+				if (rows.length == 0) {
+					var q = db.query('INSERT INTO users SET ?', data, function (err, rows, fields) {
+						if (err)
+							console.error(err.message)
+						var id = q._results[0]['insertId'];
+						let w = id.toString(16);
+						var userCode = 'TECH_' + w;
+						db.query('UPDATE users SET eCode= ? WHERE id =?', [userCode, id], function (err) {
+							if (err) {
+								console.log(a.sql, 'query update', err)
+								db.query('DELETE FROM users where id= ?', id)
+								res.status(403);
+								return res.json(createResponse("FAIL", 5));
+							}
+						});
+
+						var transporter = nodemailer.createTransport({
+							// ssl: false,
+							// port: 465,
+							service: 'gmail',
+							// host: 'mail.easeyatra.com ',
+							auth: {
+								user: 'test.augurs@gmail.com',
+								pass: 'qwerty098!'
+							},
+							requireTLS: true,
+							secure: true,
+							tls: {
+								rejectUnauthorized: false
+							},
+							debug: true
+						});
+
+						// setup e-mail data with unicode symbols
+						var mailOptions = {
+							from: "test.augurs@gmail.com", // sender address
+							to: req.body.email, // list of receivers
+							subject: "Technician Registration", // Subject line
+							generateTextFromHTML: true,
+							html: "Welcome to the Portal,<br>Please verify your E-mail by clicking on following link <br>" + "http://localhost:4000/verify-email/" + resetCode + "<br/><br/>" + " <br>Please access the portal with these details your email is: <b>" + req.body.email + "</b> and your password: <b>" + req.body.password + "</b><br>Please complete provide the complete details, in edit profile in your dashboard in order to increase your chances for the job, Incomplete profiles won't be entertained.<br>Thank you." // html body
+						}
+						// send mail with defined transport object
+						transporter.sendMail(mailOptions, function (err, info) {
+							if (err)
+								console.error(err.message)
+							else
+								console.error(err.message)
+						});
+
+						res.status(200);
+						return res.json(createResponse("SUCCESS", 4));
+					});
+				} else {
+					res.status(403);
+					return res.json(createResponse("FAIL", 6));
+				}
+			})
+		});
+	});
+});
+
+/* API Login */
+router.post('/signin', function (req, res) {
+	const {
+		errors,
+		isValid
+	} = validateLoginInput(req.body);
+
+	if (!isValid) {
+		return res.status(403).json({
+			request: 'FAIL',
+			errors
+		});
+	}
+
+	var email = req.body.email;
+	console.log(email)
+	// let currSiteId = 0;
+	const password = req.body.password;
+
+	email = email.toLowerCase();
+	email = email.trim();
+	db.query('select email, password, status, profileImg, id, role, firstName, lastName, (SELECT site_id FROM user_sites WHERE user_id=users.id AND is_current=1) as currSiteId from users where email="' + email + '"', function (err, rows) {
+		if (rows.length <= 0) {
+			res.status(403);
+			return res.json(createResponse("FAIL", 1));
+		} else if (rows[0].status != 1) {
+			res.status(403)
+			return res.json("FAIL", 46);
+		} else {
+			bcrypt.compare(password, rows[0].password, function (err, isMatch) {
+				if (isMatch) {
+
+					// Sign token
+					const payload = {
+						uid: rows[0].id,
+						firstName: rows[0].firstName,
+						lastName: rows[0].lastName,
+						role: rows[0].role,
+						profileImg: rows[0].profileImg,
+					};
+
+					// Sign token
+					jwt.sign(
+						payload,
+						config.get("jwtSecret"), {
+							expiresIn: 86400 //31556926
+						},
+						(err, token) => {
+							return res.status(200).json({
+								profile: {
+									uid: rows[0].id,
+									firstName: rows[0].firstName,
+									lastName: rows[0].lastName,
+									role: rows[0].role,
+									profileImg: rows[0].profileImg,
+								},
+								accessToken: token
+							});
+						}
+					);
+
+				} else {
+					res.status(403);
+					return res.json(createResponse("FAIL", 2));
+				}
+			})
+		}
+	})
+});
+
+/* API forget-password */
+router.post('/forgot-password', function (req, res) {
+	let {
+		email
+	} = req.body;
+	let resetCode = crypto.randomBytes(20).toString('hex');
+	email = email.toLowerCase();
+	email = email.trim();
+	db.query('select email from users where email="' + email + '"', function (err, rows) {
+		if (rows.length == 0) {
+			// req.flash('msg_error', "The email address was not recognized. Please try again");
+			return res.json({
+				message: `User ${email} Not Found`
+			});
+			// res.redirect('/forget-password');
+		} else {
+			var today = new Date();
+			today.setHours(today.getHours() + 1);
+			var data = {
+				resetCode: resetCode,
+				resetCodeExpire: today
+
+			};
+			db.query('UPDATE users SET ? WHERE email = ? ', [data, email], function (err, rows, fields) {
+				if (err)
+					console.error(err.message)
+				var transporter = nodemailer.createTransport({
+					// ssl: false,
+					// port: 465,
+					service: 'gmail',
+					// host: 'mail.easeyatra.com ',
+					auth: {
+						user: 'test.augurs@gmail.com',
+						pass: 'qwerty098!'
+					},
+					requireTLS: true,
+					secure: true,
+					tls: {
+						rejectUnauthorized: false
+					},
+					debug: true
+				});
+				// setup e-mail data with unicode symbols
+				var mailOptions = {
+					from: "augurs.comp123@gmail.com", // sender address
+					to: email, // list of receivers
+					subject: "Forget Password", // Subject line
+					generateTextFromHTML: true,
+					html: "Dear User,<br/>You are receiving this because you (or someone else) have requested the reset of the password for your account<br/><br/>" +
+						"Please click on the following link to complete the process within one hour of receiving it:<br/><br/>" + config.appUrl +
+						"reset-password/" + resetCode + "<br/><br/>" +
+						"If you didn't request this, please ignore this email and your password will remain unchanged." // html body
+				}
+				// send mail with defined transport object
+				transporter.sendMail(mailOptions, function (err, info) {
+					if (err)
+						console.error(err.message)
+					else
+						console.error(err.message)
+				});
+				res.status(200);
+				return res.json(createResponse("SUCCESS", 3));
+
+			});
+		}
+	})
+})
+
+/* API Send verification mail to user*/
+router.post('/send-verification', function (req, res) {
+	let {
+		uid
+	} = req.body;
+	let resetCode = crypto.randomBytes(20).toString('hex');
+
+	db.query('select email from users where id="' + uid + '"', function (err, rows) {
+		if (rows.length == 0) {
+			res.status(403);
+			return res.json(createResponse("FAIL", 8));
+		} else {
+			var today = new Date();
+			today.setHours(today.getHours() + 1);
+			let email = rows[0].email;
+			var data = {
+				resetCode: resetCode,
+				resetCodeExpire: today
+
+			};
+			db.query('UPDATE users SET ? WHERE id = ? ', [data, uid], function (err, rows, fields) {
+				if (err)
+					console.error(err.message)
+				var transporter = nodemailer.createTransport({
+					// ssl: false,
+					// port: 465,
+					service: 'gmail',
+					// host: 'mail.easeyatra.com ',
+					auth: {
+						user: 'test.augurs@gmail.com',
+						pass: 'qwerty098!'
+					},
+					requireTLS: true,
+					secure: true,
+					tls: {
+						rejectUnauthorized: false
+					},
+					debug: true
+				});
+
+				var mailOptions = {
+					from: "test.augurs@gmail.com", // sender address
+					to: email, // list of receivers
+					subject: "Email Verification", // Subject line
+					generateTextFromHTML: true,
+					html: "Welcome to the Portal,<br>Please verify your E-mail by clicking on following link <br>" + url + "/verify-email/" + resetCode + "<br/><br/>" + " <br>Please access the portal with these details your email is: <b>" + req.body.email + "</b> and your password: <b>" + req.body.password + "</b><br>Please complete provide the complete details, in edit profile in your dashboard in order to increase your chances for the job, Incomplete profiles won't be entertained.<br>Thank you." // html body
+
+				}
+				transporter.sendMail(mailOptions, function (err, info) {
+					if (err)
+						console.error(err.message)
+					else
+						console.error(err.message)
+				});
+				res.status(403);
+				return res.json(createResponse("FAIL", 7));
+
+			});
+		}
+	});
+});
+
+/* GET Logout */
+router.get('/logout', function (req, res) {
+	res.status(200);
+	return res.json({});
+});
+
+/* API get user profile */
+// router.post('/get-userProfile', [
+// 		check('firstName').not().isEmpty().withMessage('Name must have more than 2 characters'),
+// 		check('lastName').not().isEmpty().withMessage('Name must have more than 2 characters'),
+// 		check('dob', 'Date of birth is required').not().isEmpty(),
+// 		check('email', 'Your email is not valid').not().isEmpty(),
+// 	],
+// 	function (req, res) {
+// 		chksession(req, res);
+// 		const errors = validationResult(req);
+// 		var userId = req.session.uid;
+
+// 		if (!errors.isEmpty()) {
+// 			const validationErrors = errors.array();
+// 			let errorMessages = [];
+// 			validationErrors.forEach(function (row) {
+// 				errorMessages.push(row.msg);
+// 			})
+// 			req.flash('msg_error', errorMessages);
+// 		} else {
+// 			var sk = req.body.skills;
+// 			if (!sk)
+// 				sk = '';
+// 			if (typeof sk != "object")
+// 				sk = [sk];
+
+// 			if (!req.files) {
+// 				var data = {
+// 					firstName: req.body.firstName,
+// 					lastName: req.body.lastName,
+// 					dob: moment(req.body.dob).format('YYYY-MM-DD'),
+// 					address: req.body.address,
+// 					jobtype: req.body.jobType,
+// 					experience: parseFloat(req.body.year + '.' + req.body.month),
+// 					country: req.body.country,
+// 					state: req.body.state,
+// 					city: req.body.city
+// 				};
+// 			} else {
+// 				if (req.files.profileImg.mimetype == "image/jpeg" || req.files.profileImg.mimetype == "image/png" || req.files.profileImg.mimetype == "image/gif") {
+// 					var imageFile = req.files.profileImg;
+// 					let imageExtension = imageFile.name.split('.');
+// 					let ext = imageExtension[(imageExtension).length - 1];
+// 					var image = userId + '_' + new Date().toISOString();
+// 					new_image = md5(image);
+// 					new_image = new_image + '.' + ext;
+// 					let fileName = new_image;
+// 					var uploadPath = 'uploads/profile_img';
+// 					var data = {
+// 						firstName: req.body.firstName,
+// 						lastName: req.body.lastName,
+// 						dob: moment(req.body.dob).format('YYYY-MM-DD'),
+// 						address: req.body.address,
+// 						jobtype: req.body.jobType,
+// 						experience: req.body.year + '.' + req.body.month,
+// 						country: req.body.country,
+// 						state: req.body.state,
+// 						city: req.body.city,
+// 						profileImg: fileName
+// 					};
+// 					req.session.profileImg = fileName;
+// 					imageFile.mv(`public/${uploadPath}/${fileName}`, function (err) {});
+// 				} else {
+// 					res.status(403);
+// 					return res.json(createResponse("FAIL", 10));
+// 					req.end();
+// 				}
+// 			}
+// 			db.query('UPDATE users SET ? WHERE id = ? ', [data, userId], function (err, rows) {
+// 				db.query('delete from user_skills where user_id=?', userId);
+// 				sk.forEach(function (a) {
+
+// 					db.query('INSERT INTO user_skills (user_id, skill_id)VALUES (?, ?)', [userId, a], function (err) {
+// 						if (err)
+// 							console.error(err.message)
+
+// 					});
+// 				})
+// 				res.status(403);
+// 				return res.json(createResponse("FAIL", 9));
+// 			});
+// 		}
+// 	});
+module.exports = router;

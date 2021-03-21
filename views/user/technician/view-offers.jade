@@ -1,0 +1,53 @@
+extends ./../../layout/user-layout
+
+block content
+      #page-wrapper
+            .row.page-titles
+                .col-md-5.align-self-center
+                    h3.text-themecolor Technician
+                .col-md-7.align-self-center
+                    ol.breadcrumb
+                        li.breadcrumb-item.active View Reports
+            .container-fluid
+                    -if(messages.msg_error)
+                        .alert.alert-danger #{messages.msg_error}
+                    -else if(messages.msg_info)
+                       .alert.alert-success #{messages.msg_info}
+                    .row
+                        .col-md-12
+                            .card
+                                .card-body
+                                    h4  All Offers
+                                    .table-responsive
+                                        table.table.table-striped.table-bordered
+                                            thead
+                                                tr
+                                                    th #
+                                                    //- th Project_Id
+                                                    th Project Name
+                                                    th Project Number
+                                                    th Location 
+                                                    th Start Date 
+                                                    th End Date 
+                                                    th Action
+                                            tbody
+                                                if (offers.length)
+                                                    each offerList, i in offers
+                                                        tr
+                                                            td= i+1
+                                                            //- td= offerList.jobId
+                                                            td= offerList.jobName
+                                                            td= offerList.jobCode
+                                                            td= offerList.newAddress ? offerList.newAddress : '--'
+                                                            td= moment(offerList.startDate).isValid() ? moment( offerList.startDate).format('MM/DD/YYYY') : '--'
+                                                            td= moment(offerList.endDate).isValid() ? moment(offerList.endDate).format('MM/DD/YYYY') : '--'
+                                                            td
+                                                                a.btn.btn-primary.btn-sm(href='/user/technician/viewSingelJobs/#{offerList.offerId}', data-toggle='tooltip', title='View Offer') 
+                                                                    i.fa.fa-eye
+                                                               
+                                                               
+                                                else
+                                                    tr.danger.text-center
+                                                        td(colspan='8') You don't have any offer yet !
+                                                          
+                                                       

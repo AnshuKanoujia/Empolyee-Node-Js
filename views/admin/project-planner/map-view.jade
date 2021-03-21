@@ -1,0 +1,711 @@
+extends ./../../layout/admin-layout
+
+block content
+            #page-wrapper
+                .row.page-titles
+                    .col-md-5.align-self-center
+                        h3.text-themecolor Project Planner
+                    .col-md-7.align-self-center
+                        ol.breadcrumb
+                            li.breadcrumb-item.active Map View
+                .container-fluid
+                    .row
+                        .col-md-12.col-sm-12
+                            // General Information
+                            .card
+                                .card-header
+                                    .row
+                                        .col-md-8
+                                            h4 Maps
+                                        .col-md-4.text-right
+                                            button.open-close-button#legendBtn  Legend
+                                .card-body
+                                    .row
+                                        .col-md-12
+                                            #legend
+                                            #map(class="googleMap")
+                #listModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='exampleModalLabel')
+                    .modal-dialog.modal-sm(role='document')
+                        .modal-content
+                            .modal-header
+                                button.close(type='button', data-dismiss='modal', aria-label='Close')
+                                    span(aria-hidden='true') ×
+                                h4#exampleModalLabel.modal-title Projects
+                            .modal-body
+                            .modal-footer
+                                button.btn.btn-default(type='button', data-dismiss='modal') Close
+                                button.btn.btn-primary(type='button') Ok
+
+                #userDetailsModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='exampleModalLabel')
+                    .modal-dialog.modal-sm(role='document')
+                        .modal-content
+                            .modal-header
+                                button.close(type='button', data-dismiss='modal', aria-label='Close')
+                                    span(aria-hidden='true') ×
+                                h4#exampleModalLabel.modal-title Techinician List
+                            .modal-body
+ 
+                            .modal-footer
+                                button.btn.btn-default(type='button', data-dismiss='modal') Close
+                                button.btn.btn-primary(type='button') Ok
+
+                   #attachmentModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='exampleModalLabel')
+                    .modal-dialog.modal-sm(role='document')
+                        .modal-content
+                            .modal-header
+                                button.close(type='button', data-dismiss='modal', aria-label='Close')
+                                    span(aria-hidden='true') ×
+                                h4#exampleModalLabel.modal-title Attachment
+                            form#jobForm(accept-charset='utf-8', method='post', action='/admin/project-planner/uploadProject', enctype='multipart/form-data')
+                                .modal-body
+                                    .form-group
+                                        label.control-label(for='description') Name:
+                                        input#name.form-control(type='text', placeholder="Attachment name" ,name='description')
+                                    .form-group
+                                        label.control-label(for='message-text') Attachment:
+                                            span.text-danger  *
+                                        input#message-text.form-control(type="file", name='attachment', accept='image/pdf/*',required)
+                                input.form-control(type='hidden', id='jobId', name='jobId')
+    
+                                .modal-footer
+                                    button.btn.btn-default(type='button', data-dismiss='modal') Close
+                                    button.btn.btn-primary(type='submit') Submit
+                        
+                script(src='https://maps.googleapis.com/maps/api/js?key='+apiKey+'&callback=initMap' async defer)
+                //- script(src='../../admin/js/dashboard-4.js')
+                script(type='text/javascript').
+                        function initMap() {
+                            var data = !{JSON.stringify(list)};
+                            console.log(data)
+                            // The location of Uluru
+                            var cordinates = {lat: 39.025398, lng: -94.522827};
+                            
+                            // The map, centered at Uluru
+                            var map = new google.maps.Map(
+                                document.getElementById('map'), 
+                                    {zoom: 5, center: cordinates,  mapTypeId: 'roadmap'}
+                                );
+                        
+                    
+                        var iconBase = '/admin/img/icons/';
+                        /*dynamic code*/
+                        var icons = {}
+                        var features= [];
+                        var contentString = [];
+                        var infoString = [];
+
+                        //////////////////
+                        var contentStringDup = [];
+                        var infoStringDup = [];
+                        /////////////
+                        $.each(data, function(i, userData){
+                           //icons list //
+                           var iconId;
+                           if(userData.role != undefined && userData.type_name != undefined){
+                               if(userData.role=="1" && userData.type_name=="Electrical"){
+                                    iconId = 
+                                    'user2.png'
+
+                                } else if(userData.role=="1" && userData.type_name=="Mechanical"){
+                                    iconId = 
+                                    'user1.png'
+
+                                } else if(userData.role=="3" && userData.type_name=="Electrical"){
+                                        iconId = 
+                                        'user212.png'
+                                } else if(userData.role=="3" && userData.type_name=="Mechanical"){
+                                        iconId = 
+                                        'user222.png'
+                                }
+
+                           }else {
+                               
+                                //- if(userData['sitesCode'] != null){
+                                if(userData['sitesCodeCpy'] != null){
+                                    iconId = 'sites.png'
+                                }
+                                
+                           }
+                           
+                        //-    var id = parseInt(i)+1;
+                           icons['user'+userData.id] = {icon: iconBase + iconId}
+                           
+                           //features list //
+                            var label = new google.maps.LatLng(userData.latitude, userData.longitude);
+                            var featuresList = {position: label, type: 'user'+userData.id};
+                            features.push(featuresList);
+                     
+
+                            var  content, profile, badges, pullLeft, ratings, mobileNumber, designationName, testScore, achorBtn, listBtn, ancrbtnDiv, address,achorBtnDup, ancrbtnDivDup,profileDup,pullLeftDup;
+                        
+                        
+                            var list= document.createElement('div')
+                            list.className = "list";
+
+                            var listDup= document.createElement('div')
+                            listDup.className = "list";
+
+                            content= document.createElement('div')
+                            content.className = "content";
+
+                            contentDup= document.createElement('div')
+                            contentDup.className = "content";
+
+                            profile= document.createElement('div');
+                            profile.className = "profile";
+
+                            profileDup= document.createElement('div');
+                            profileDup.className = "profile";
+
+                            if(userData['profileImg'] !== undefined){
+                                profile.innerHTML = '<img src="/admin/img/avatar.jpg" />';   
+                            } else{
+                                 profile.innerHTML = '<img src="/uploads/profile_img/'+userData.profileImg+'" />'; 
+                            }
+
+                            if(userData['profileImg'] !== undefined){
+                                profileDup.innerHTML = '<img src="/admin/img/avatar.jpg" />';   
+                            } else{
+                                profileDup.innerHTML = '<img src="/uploads/profile_img/'+userData.profileImg+'" />'; 
+                            }
+                            
+                            content.appendChild(profile);
+
+                            pullLeft= document.createElement('div');
+                            pullLeftDup= document.createElement('div');
+                            //- new_class= document.createElement('div');
+                            
+                            if(userData.name !== undefined){
+                                pullLeft.className = 'pull-left';
+                                pullLeft.innerHTML = '<h3 class="firstHeading">'+userData.name+'</h3>';
+
+                                pullLeftDup.className = 'pull-left';
+                                pullLeftDup.innerHTML = '<h3 class="firstHeading">'+userData.name+'</h3>';
+
+                            } else if(userData.siteName !== undefined){
+                                    pullLeft.innerHTML = '<h3 class="firstHeading">'+userData.siteName+ ' [' +userData.sitesCodeCpy + ']' +
+                                    //- pullLeft.innerHTML = '<h3 class="firstHeading">'+userData.siteName+ ' [' +userData.sitesCode + ']' +
+                                    '</h3>';
+
+                                    pullLeftDup.innerHTML = '<h3 class="firstHeading">'+userData.siteName+ ' [' +userData.sitesCodeCpy + ']' +
+                                    //- pullLeftDup.innerHTML = '<h3 class="firstHeading">'+userData.siteName+ ' [' +userData.sitesCode + ']' +
+                                    '</h3>';
+                            }
+                             
+                             
+
+                            if(userData['type_name'] !== undefined){
+                                badges= document.createElement('span');
+                                badges.className = "badges badge-info";
+                                badges.innerText = userData.type_name;
+                                pullLeft.appendChild(badges);
+                            }
+
+                            if(userData['plannerName'] !== undefined && userData['plannerLastName'] !== undefined){
+                                badges = document.createElement('div');
+                                badges.className = "mb-2";
+                                badges.innerText = 'Planner name:';
+                                var span= document.createElement('span');
+                                span.className = "badges badge-info";
+                                span.innerText = userData.plannerName+' '+userData.plannerLastName;
+                                badges.appendChild(span);
+                                pullLeft.appendChild(badges);
+                            }
+                            if(userData['supervisorName'] !== undefined && userData['supervisorLastName'] !== undefined){
+                                badges = document.createElement('div');
+                                badges.className = "mb-2";
+                                badges.innerText = 'Supervisor name:';
+                                var span=  document.createElement('span');
+                                span.className = "badges badge-info";
+                                span.innerText = userData.supervisorName+' '+userData.supervisorLastName;
+                                badges.appendChild(span);
+                                pullLeft.appendChild(badges);
+                            }
+                            if(userData['predicated_budget'] !== undefined){
+                                badges = document.createElement('div');
+                                badges.className = "mb-2";
+                                //- badges.innerText = 'Predicated Budget:';
+                                var span=  document.createElement('span');
+                                //- span.className = "badges badge-info";
+                                //- span.innerText = userData.predicated_budget;
+                                span.innerHTML = '<i class="fa fa-credit-card"></i> ' + '$ '+parseFloat(userData.predicated_budget).toFixed(2);
+                                badges.appendChild(span);
+                                pullLeft.appendChild(badges);
+                            }
+
+                            if(userData['ratings'] !== undefined){
+                                 if(userData['ratings'] == 0){
+
+                                    ratings= document.createElement('span');
+                                    ratings.className = "ratings pull-right"
+                                    ratings.innerHTML = '<i class="ti ti-star text-danger"></i>&nbsp;<span class="j-type internship">New</span>';
+                                    pullLeft.appendChild(ratings);
+                                } else{
+                                    ratings= document.createElement('span');
+                                    ratings.className = "ratings pull-right"
+                                    ratings.innerHTML = '<i class="ti ti-star text-danger"></i> 4.5';
+                                    pullLeft.appendChild(ratings);
+                                }
+                            }
+
+                            if(userData['phone_number'] !== undefined){
+                                mobileNumber= document.createElement('div');
+                                mobileNumber.className = 'mobileNumber';
+                                mobileNumber.innerHTML = '<i class="fa fa-phone"></i> ' + userData.phone_number;
+                            }
+                            
+                            if(userData['designation'] !== undefined){
+                                designationName= document.createElement('div');
+                                designationName.className = 'designationName';
+                                designationName.innerHTML = '<i class="fa fa-user-secret"></i> ' +userData.designation;
+                                
+                            }
+
+                            if(userData['total_score'] !== undefined){
+                                if(userData['role'] == 1){
+                                  if( userData.total_score !==  null){
+                                      var testData = userData.total_score -(userData.wrong_answer_count * userData.neg_mark);
+
+                                  } else{
+                                    var testData = "This user have not given exam";
+
+                                  }
+                                    testScore= document.createElement('div');
+                                    testScore.className = 'testScore';
+                                    testScore.innerHTML = '<i class="fa fa-list"></i> ' + testData ;
+
+                                }
+                                
+                            }
+
+                            if(userData['newAddress'] !== undefined){
+                                address= document.createElement('div');
+                                address.className = 'address';
+                                address.innerHTML = '<i class="fa fa-map-marker"></i> ' +userData.newAddress;
+                                
+                            }
+
+                            ancrbtnDiv= document.createElement('div');
+                            ancrbtnDiv.className = 'ancrbtnDiv';
+
+                            ancrbtnDivDup= document.createElement('div');
+                            ancrbtnDivDup.className = 'ancrbtnDiv eyeCl';
+                            
+
+                            if(userData.role == 1){
+                                achorBtn= document.createElement('a');
+                                achorBtn.className = 'achorBtn pull-right';
+                                achorBtn.href = '/admin/project-planner/viewTechProfile/'+userData.id+'';
+                                achorBtn.innerText = 'Visit Profile';
+                                achorBtn.setAttribute('data-toggle', 'tooltip')
+                                achorBtn.innerHTML =  '<img src="/admin/img/view.png">';
+
+                                achorBtnDup= document.createElement('a');
+                                achorBtnDup.className = 'achorBtn pull-right';
+                                achorBtnDup.href = '/admin/project-planner/viewTechProfile/'+userData.id+'';
+                                achorBtnDup.innerText = 'Visit Profile';
+                                achorBtnDup.setAttribute('data-toggle', 'tooltip')
+                                achorBtnDup.innerHTML =  '<img src="/admin/img/view.png">';
+                            }
+
+                            if(userData.role == 3){
+                                achorBtn= document.createElement('a');
+                                achorBtn.className = 'achorBtn pull-right';
+                                achorBtn.href = '/admin/project-planner/view-supervisorProfile/'+userData.id+'';
+                                achorBtn.innerText = 'Visit Profile';
+                                achorBtn.setAttribute('data-toggle', 'tooltip')
+                                achorBtn.innerHTML =  '<img src="/admin/img/view.png">';
+
+                                achorBtnDup= document.createElement('a');
+                                achorBtnDup.className = 'achorBtn pull-right';
+                                achorBtnDup.href = '/admin/project-planner/view-supervisorProfile/'+userData.id+'';
+                                achorBtnDup.innerText = 'Visit Profile';
+                                achorBtnDup.setAttribute('data-toggle', 'tooltip')
+                                achorBtnDup.innerHTML =  '<img src="/admin/img/view.png">';
+                            }
+                            if(userData.role == null){
+                               
+
+                                achorBtn= document.createElement('a');
+                                achorBtn.className = 'achorBtn new-btn pull-right';
+                                achorBtn.href = '#';
+                                //- achorBtn.innerText = 'Visit Profile';
+                                //- achorBtn.setAttribute('data-toggle', 'tooltip')
+                                //- achorBtn.innerHTML = ' <button type="button">browse</button><label class="upload-img"> <i class="fa fa-upload"></i> upload document <input type="file" class="input-file"></input> </label> ';
+                                profile.className += ' no-img-class';
+
+                                achorBtnDup= document.createElement('a');
+                                achorBtnDup.className = 'achorBtn new-btn pull-right';
+                                achorBtnDup.href = '#';
+                                //- achorBtnDup.innerText = 'Visit Profile';
+                                //- achorBtnDup.setAttribute('data-toggle', 'tooltip')
+                                //- achorBtnDup.innerHTML = ' <button type="button">browse</button><label class="upload-img"> <i class="fa fa-upload"></i> upload document <input type="file" class="input-file"></input> </label> ';
+                                profileDup.className += ' no-img-class';
+
+                            }
+                            if(userData.id && userData.role == null){
+                                listBtn= document.createElement('a');
+                                listBtn.className = 'listBtn btn btn-sm btn-primary pull-left img-circle';
+                                listBtn.innerHTML = '<i class="fa fa-list"></i>';
+                                listBtn.dataset.id = userData.id;
+                                ancrbtnDiv.appendChild(listBtn)
+                            }
+                            
+                            profile.appendChild(pullLeft);
+                            content.appendChild(profile); 
+
+                            profileDup.appendChild(pullLeftDup);
+                            contentDup.appendChild(profileDup); 
+
+                            userData['phone_number'] !== undefined ? content.appendChild(mobileNumber) : null ;
+
+                            userData['designation'] !== undefined ? content.appendChild(designationName) : null ;
+
+                            userData['newAddress'] !== undefined ? content.appendChild(address) : null ;
+
+                            userData['total_score'] !== undefined ? content.appendChild(testScore) : null ;
+
+                            content.appendChild(ancrbtnDiv);
+
+                            contentDup.appendChild(ancrbtnDivDup);
+
+                            userData.role !== undefined ? ancrbtnDiv.appendChild(achorBtn, listBtn) : null;
+
+                            userData.role !== null ? ancrbtnDiv.appendChild(achorBtn, listBtn) : null;
+
+                            userData.role !== undefined ? ancrbtnDivDup.appendChild(achorBtnDup) : null;
+
+                            userData.role !== null ? ancrbtnDivDup.appendChild(achorBtnDup) : null;
+
+                             
+
+                            //Technicial List
+                            //- if(userData.sitesCodeCpy !== undefined && userData['technicianList'] !== undefined  && userData['technicianList'] !== null){
+                            //- //- if(userData.sitesCode !== undefined && userData['technicianList'] !== undefined  && userData['technicianList'] !== null){
+                            //-     mobileNumber= document.createElement('div');
+                            //-     mobileNumber.className = 'mobileNumber';
+                            //-     var name =  userData.technicianList.split(',');
+                            //-     var element = "";
+                            //-     $.each(name, function(i,eleNode){
+                            //-          element += eleNode + '<br />';
+                            //-     })
+                                
+
+                            //-     mobileNumber.innerHTML = element;
+                            //-     content.appendChild(mobileNumber);
+                                
+                                
+                            //- }
+
+                            
+                            var contentData = list.appendChild(content);
+                            var contentDataDup = listDup.appendChild(contentDup);
+                      
+                            //- var contentData = '<div class="content">'+
+                            //-     '<div class="profile">'+
+                            //-     '<img  src="/uploads/profile_img/'+userData.profileImg+'">'  + 
+                            //-     '<div class="pull-left"><h3 class="firstHeading">'+userData.name+'</h3>'+
+                            //-     '<span class="badges badge-info">'+userData.type_name+'</span>' +
+                            //-     '<span class="ratings pull-right"><i class="ti ti-star text-danger"></i> 4.5</span>' +
+                            //-     '</div>'+
+                            //-     '<div class="mobileNumber">'+userData.phone_number+'</div>'+
+                            //-     '</div>'+
+                            //-     '</div>'
+
+                           
+                            contentString.push(contentData);
+                            contentStringDup.push(contentDataDup);        
+                            
+
+                            if(userData.role != undefined){
+                                if(userData['sitesCodeCpy'] == null){
+                                //- if(userData['sitesCode'] == null){
+                                    var infoData = '<div class="content">'+
+                                    '<div class="profile">'+
+                                    '<div class=""><h3 class="firstHeading">'+userData.name+'</h3>'+
+                                    '<span class="badges badge-info">'+userData.type_name+'</span>' +
+                                    '</div></div>'+
+                                    '</div>'
+
+                                    var infoDataDup = '<div class="content">'+
+                                    '<div class="profile">'+
+                                    '<div class=""><h3 class="firstHeading">'+userData.name+'</h3>'+
+                                    '<span class="badges badge-info">'+userData.type_name+'</span>' +
+                                    '</div></div>'+
+                                    '</div>'
+
+                                    infoString.push(infoData);
+                                    infoStringDup.push(infoDataDup);
+
+                                }
+                                
+                            }
+
+
+                            
+
+                        });
+                        ///////////////////////////
+                        var markers = [];
+                        var infoStringMultiple='';
+                        var contentStringMultiple=[];
+                        var contentStringMultipleDup='';
+                        ///////////////////////////////////
+                        for (var i = 0; i < features.length; i++) {
+                            var is_dup=0;
+                            var posMarker=features[i].position;
+                            infoStringMultiple = infoString[i];
+                            
+                           // contentStringMultiple=contentStringDup[i].innerHTML;
+                            contentStringMultiple=contentString[i].innerHTML;
+                            contentStringMultipleDup=contentStringDup[i].innerHTML;
+                            if(markers.length != 0) 
+                            {
+                                for (J=0; J < markers.length; J++) {
+                                    var existingMarker = markers[J];
+                                    var pos = existingMarker.getPosition();
+
+                                    if (posMarker.equals(pos)) {
+
+                                        ++is_dup;
+                                        infoStringMultiple+=infoStringDup[J];
+                                        contentStringMultipleDup+=contentStringDup[J].innerHTML;
+
+                                    }
+                                }
+                                if(is_dup>0){
+                                        contentStringMultiple=contentStringMultipleDup;
+                                        icons[features[i].type] = {icon: iconBase + 'circle.png'}
+                                }
+                                
+                            }
+
+
+                            var contentwindow = new google.maps.InfoWindow({
+                                content: contentStringMultiple,
+                                maxWidth: 300
+                            });
+
+
+                            var marker = new google.maps.Marker({
+                                position: posMarker,
+                                icon: icons[features[i].type].icon,
+                                map: map
+                            });
+
+                                bindContentwindow(marker, map, contentwindow,contentStringMultiple);
+
+                                if(infoString[i] != undefined){
+                                    var infomationwindow = new google.maps.InfoWindow({
+                                        content: infoStringMultiple,
+                                        maxWidth: 300
+                                    });
+                                    bindInfowindow(marker, map, infomationwindow, infoStringMultiple);
+                                }
+
+                                markers.push(marker);
+                                
+                            };
+                              
+                            var iconBase = '/admin/img/icons/';
+
+                            var iconsLegend = {
+                                //- Planner: {
+                                //-     icon: iconBase + 'user3.png'
+                                //- },
+                                M_Technician: {
+                                    icon: iconBase + 'user1.png'
+                                },
+                                E_Technician: {
+                                    icon: iconBase + 'user2.png'
+                                },
+                                M_Supervisor: {
+                                    icon: iconBase + 'user222.png'
+                                },
+                                E_Supervisor: {
+                                    icon: iconBase + 'user212.png'
+                                },
+                                Site: {
+                                    icon: iconBase + 'sites.png'
+                                }
+                            };
+
+
+                            var legend = document.getElementById('legend');
+                            for (var key in iconsLegend) {
+                                var type = iconsLegend[key];
+                                var name = key;
+                                var icon = type.icon;
+                                var div = document.createElement('div');
+                                div.innerHTML = '<img src="' + icon + '"> ' + name.charAt(0).toUpperCase() + name.slice(1);;
+                                legend.appendChild(div);
+                            }
+
+                            map.controls[google.maps.ControlPosition.RIGHT_TOP].push(legend);
+                        }
+
+                        function bindContentwindow(marker, map, contentwindow, contentString) {
+                            marker.addListener('click', function() {
+                                contentwindow.setContent(contentString);
+                                contentwindow.open(map, this);
+
+                              
+                            });
+                            
+                        }
+
+                        function bindInfowindow(marker, map, infomationwindow, infoString) {
+                            marker.addListener('mouseover', function() {
+                                infomationwindow.setContent(infoString);
+                                infomationwindow.open(map, this);
+                            });
+
+                            marker.addListener('mouseout', function() {
+                                infomationwindow.setContent(infoString);
+                                infomationwindow.close(map, this);
+                            });
+                        }
+
+                       
+                        (function () {
+                            var openclose;
+                            openclose = function () {
+                                return $(".open-close-button").click(function () {
+                                return $(this).toggleClass("open"),  $('#legend').slideToggle();
+                                });
+                            };
+
+                            jQuery(document).ready(function ($) {
+                                return openclose();
+                            });
+
+                            }).call(this);
+
+                            // List details
+                            var k = !{JSON.stringify(url)};
+
+                            //listClick
+                            $(document).on('click', '.listBtn', function(){
+                                //- alert();
+                                let id = $(this).attr('data-id');
+                                console.log(id, k+'projectList/'+id);
+
+                                $.ajax({
+                                    type: "GET",
+                                    url: k+'projectList/'+id,
+                                    data: id,
+                                    //- cache: false,
+                                    success: function(data){
+                                        console.log(data.projectList,'success');
+                                        if(data.success){
+                                            $('#listModal  .modal-body').empty()
+                                            $.each(data.projectList, function(i, data){
+
+                                                let statusClass = data.status == 10 ? 'bg-success' : data.status == 12 ? 'bg-warning' :  data.status == 14 ? 'bg-danger' : 'bg-primary';
+                                                console.log(data, statusClass)
+                                                 $('#listModal  .modal-body').append(
+                                                    $('<div />',{'class': 'row'}).append(
+                                                                            
+                                                        $('<div />',{'class': 'col-md-12'}).append(
+                                                            $('<h5 />').text(data.jobName).append(
+                                                                $('<span />',{'class': 'badge ml-1 '+statusClass+''}).text(data.status)
+                                                            )
+                                                        ),
+                                                            $('<div />',{'class': 'col-md-12'}).append(
+                                                                $('<a />', {'class': 'attach-icons btn-primary btn btn-primary' , 'data-jobId': data.jobId}).append(
+                                                                    $('<i />',{'class': 'fa fa-paperclip fa-lg'})
+                                                                ),
+                                                                $('<a />', {'class': 'users-icons btn-primary btn', 'data-jobId': data.jobId}).append(
+                                                                    $('<i />',{'class': 'fa fa-user fa-lg'})
+                                                                )
+                                                        ),
+                                                        $('<div />',{'class': 'col-md-12'}).append(
+                                                            $('<hr />')
+                                                        ),
+                                                    ),
+                                                )
+                                            })
+
+                                               
+                                        }
+
+                                        //- $("#resultarea").text(data);
+                                    }
+                                })
+
+                                $('#listModal').modal('show');
+                            })
+
+                            // technician user list
+                            $(document).on('click', '.users-icons', function(){
+                                //- alert();
+                                let jobId = $(this).attr('data-jobId');
+                                
+                                $.ajax({
+                                    type: "GET",
+                                    url: k+'userList/'+jobId,
+                                    data: jobId,
+                                    success: function(data){
+                                        console.log(data , 'success');
+                                        if(data.success){
+                                            $('#userDetailsModal  .modal-body').empty()
+                                            $.each(data.userList, function(i, data){
+     
+                                                $('#userDetailsModal  .modal-body').append(
+                                                    $('<div />',{'class': 'row'}).append(
+                                                                            
+                                                        $('<div />',{'class': 'col-md-12'}).append(
+                                                            $('<h5 />').text(data.name)
+                                                        ),
+                                                       $('<div />',{'class': 'col-md-12'}).append(
+                                                            $('<hr />')
+                                                        ),
+                                                    ),
+                                                )
+                                            })                                              
+                                        }
+                                    }
+                                })
+
+
+                                $('#userDetailsModal').modal('show');
+                            });
+
+                            $(document).on('click', '.attach-icons', function(){
+                                //- alert();
+                                let jobId = $(this).attr('data-jobId');
+                                $("#jobId").val(jobId);
+
+                                
+                                $('#attachmentModal').modal('show');
+
+
+                              
+                            })
+
+                        //-    $('#jobForm').on('submit', function (e) {
+                        //-             e.preventDefault();
+                        //-             //- $('#jobForm').submit();
+                        //-             $.ajax({
+                        //-                 type: 'POST',
+                        //-                 url: '/admin/project-planner/uploadProject',
+                        //-                 data: $('#jobForm').serializeArray(),
+                        //-                 //- contentType: "application/json; charset=utf-8",
+                        //-                 //- dataType: "json",
+                        //-                 success: function () {
+                        //-                     alert('form was submitted');
+                        //-                 }
+                        //-         });
+                            
+
+                        //-     });
+
+                            
+
+
+
+
+                        
+
+
+                        

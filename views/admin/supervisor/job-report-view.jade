@@ -1,0 +1,110 @@
+extends ./../../layout/supervisor-layout
+
+block content
+      #page-wrapper
+            .row.page-titles
+                .col-md-5.align-self-center
+                    h3.text-themecolor Supervisor
+                .col-md-7.align-self-center
+                    ol.breadcrumb
+                        li.breadcrumb-item.active View Reports
+            .container-fluid
+                    -if(messages.msg_error)
+                        .alert.alert-danger #{messages.msg_error}
+                    -else if(messages.msg_info)
+                       .alert.alert-success #{messages.msg_info}
+                    .row
+                        .col-md-12
+                            form#ratingForm(accept-charset='utf-8', method='post', name='ratingForm', action='/admin/supervisor/addRating/#{id}', enctype='multipart/form-data')
+                                .card
+                                    .card-header
+                                        h4  Please rate the employee as per his qualities on following attributes during the job.
+                                    .card-body
+
+                                        b Ratings
+                                        .row.rating_row
+                                            .col-md-8
+                                                - labels = ['Workmanship Quality', 'Attendance / Punctuality', 'Organization / Cleanliness', 'Communication / Updates', 'Worked Safe', 'Followed Instructions & Schedule', 'Team Player']
+                                                - labels.forEach(function(label, i) {
+                                                    - i +=1
+                                                    .row
+                                                        .col-sm-4
+                                                            label #{label} : 
+                                                        .col-sm-8
+                                                            .rating
+                                                                input.form-control(type='radio', value="5", id="#{i}a5" name='rating#{i}')
+                                                                label(for="#{i}a5")
+
+                                                                input.form-control(type='radio', value="4", id="#{i}a4" name='rating#{i}')
+                                                                label(for="#{i}a4")
+
+                                                                input.form-control(type='radio', value="3", id="#{i}a3" name='rating#{i}')
+                                                                label(for="#{i}a3")
+
+                                                                input.form-control(type='radio', value="2", id="#{i}a2" name='rating#{i}')
+                                                                label(for="#{i}a2")
+
+                                                                input.form-control(type='radio', value="1", id="#{i}a1" name='rating#{i}')
+                                                                label(for="#{i}a1")
+                                                - })                     
+                                                .row
+                                                    .col-sm-4
+                                                        label Review / Comment :  
+                                                    .col-sm-8
+                                                        textarea.form-control(name="review", rows="5")
+                                            .col-md-4.text-center.rating_row.column-direction.align-center
+                                                h4 Overall Rating 
+                                                h1(style="font-size: 7rem;") 
+                                                    span(id="rating_avg") 4
+                                                    /5
+                                                
+                                            input.form-control(type='hidden',name='job_id', value=job_id)
+                                                
+                                        .col-md-12
+                                            .text-right
+                                                button.btn.btn-success(type='submit', name="status" value="5", onclick="return confirm('Do you really want to approve?');") Approve
+                                                &#32;
+                                                button.btn.btn-danger(type='submit', name="status" value="6", onclick="return confirm('Do you really want to reject?');") Reject
+
+                #myModal.modal.fade(tabindex="-1", role="dialog", aria-labelledby="myModalLabel", aria-hidden="true")
+                    .modal-dialog
+                        .modal-content
+                            .modal-header
+                                button.close(type="button", data-dismiss="modal", aria-hidden="true") &times;
+                                h4.modal-title View Report Description
+                            .modal-body
+                                div
+                            .modal-footer
+                                button.btn.btn-default(type="button", data-dismiss="modal") Close
+                script(type='text/javascript').
+                    $(document).ready(function(){
+                        $(".btn-desc").click(function(){
+                            $("#myModal .modal-body div").empty().append($(this).data('description'));
+                        })
+                        
+
+
+                     
+                        $('.rating > input').on('click', function(){
+                            var $this = $(this);
+                            ratingAverage($this);
+                        })
+                      
+                    })   
+
+                    function ratingAverage($this , data){
+                        var data = [];
+                        $this.closest('.row').parent().find('.row').each(function(){
+                          data.push($(this).find('input[type="radio"]:checked').length ? parseInt($(this).find('input[type="radio"]:checked').val()) : 0);
+                        })
+                        var sum = data.reduce(function(i , val){
+                           
+                            return  i + val; 
+                        })
+
+                        $('#rating_avg').text(Math.round( (sum/7) * 10 ) / 10);
+
+                      
+
+
+                    }                          

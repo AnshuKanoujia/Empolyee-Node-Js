@@ -1,0 +1,135 @@
+extends ./../../layout/admin-layout
+block content
+      #page-wrapper
+            .row.page-titles
+                .col-md-5.align-self-center
+                    h3.text-themecolor Project Planner
+                .col-md-7.align-self-center
+                    ol.breadcrumb
+                        li.breadcrumb-item.active Account Details - Dashboard
+            .container-fluid
+              .row
+                .col-md-12.col-sm-12
+                form#newSiteForm(accept-charset='utf-8', method='post', name='loginForm', action='/admin/super-admin/add-supervisor')
+                  -if(messages.msg_error)
+                    each error in messages.msg_error
+                      .alert.alert-danger #{error}
+                  -else if(messages.msg_info)
+                    .alert.alert-success #{messages.msg_info}
+                  // General Information
+                  .card
+                    .card-header
+                      h4 Account Summary 
+                    .card-body
+                      .row
+                        .col-md-12
+                          .row
+                            .col-sm-4
+                              label First Name
+                                span.text-danger  *
+                              input.form-control(type='text', name='firstName', required)
+                            .col-sm-4
+                              label Last Name
+                                span.text-danger  *
+                              input.form-control(type='text', name='lastName', required)
+                            .col-sm-4
+                                label Birthday
+                                  span.text-danger  *
+                                input.form-control(type='text', data-toggle='datepicker', placeholder='YYYY-MM-DD', name='dob', required)
+                            .col-sm-4
+                                label Email
+                                  span.text-danger  *
+                                input.form-control(type='email', name='email', required)
+                            .col-sm-4
+                                label Password
+                                  span.text-danger  *
+                                input.form-control(type='password', name='password', required)
+                  
+                  // General Information
+                  .card
+                    .card-header
+                      h4 Personal Skill 
+                    .card-body
+                      .row
+                        .col-md-12
+                            label Experience
+        
+                        .col-sm-6.m-clear
+                                .row  
+                                    .col-md-6
+                                        label Year
+                                        select.form-control(name='year')
+                                          option(value='0') YEARS
+                                          option(value='1') 1 Year
+                                          option(value='2') 2 Years
+                                          option(value='3') 3 Years
+                                          option(value='4') 4 Years
+                                          option(value='5') 5 Years
+                                          option(value='6') 6 Years
+                                          option(value='7') 7 Years
+                                          option(value='8') 8 Years
+                                          option(value='9') 9 Years
+                                          option(value='10') 10 Years
+        
+                                    .col-md-6
+                                        label Month
+                                        select.form-control(name='month')
+                                          option(value='0') MONTHS
+                                          option(value='1') 1 Month
+                                          option(value='2') 2 Months
+                                          option(value='3') 3 Months
+                                          option(value='4') 4 Months
+                                          option(value='5') 5 Months
+                                          option(value='6') 6 Months
+                                          option(value='7') 7 Months
+                                          option(value='8') 8 Months
+                                          option(value='9') 9 Months
+                                          option(value='10') 10 Months
+                                          option(value='10') 11 Months
+                        .col-sm-6.m-clear
+                            label Project Trade
+                              span.text-danger  *
+                            select.wide.form-control(id='jobType', name='jobType', onchange='getSkills(this.value)', required)
+                                  //- option(value="0") Select Project Trade
+                                  each jobTypes in jobType
+                                    option(value=jobTypes.id) #{jobTypes.type_name}
+                        .col-sm-12.m-clear.skills-field(style="display: none")
+                            label Skills
+                              span.text-danger  *
+                            .custom-checkbox(id='skills')
+                       
+                  .text-right
+                    button.btn.btn-m.btn-success(type='submit') Submit & Exit
+        script(type="text/javascript").
+            $(document).ready(function(){
+              $('[data-toggle="datepicker"]').datepicker({
+                    autoHide: true,
+                    zIndex: 2048,
+                });
+                $('#jobType').on('change', function(){
+                    if($(this).val() !== "0"){
+                        $('.skills-field').slideDown();
+                    } else{
+                       $('.skills-field').slideUp();
+                    }
+                })
+            })
+            var k = !{JSON.stringify(url)};
+            function getSkills(val) {
+              var url = k+"getSkill/"+val;
+                $.ajax({
+                  type: "GET",
+                  url: url,
+                  data: val,
+                    success: function(data){
+                    var data = data.data;
+                    var htmld= " ";
+                    data.forEach(function(val, index){
+                      htmld += "<input type='checkbox', name='skills[]', value ='"+val.id+"'> <label>" +val.name + " </label>"
+                    })
+                    htmld += "<br><br>"
+                    $("#skills").html(htmld);
+                  }
+                });
+            }
+            

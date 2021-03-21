@@ -1,0 +1,211 @@
+extends ./../../layout/admin-layout
+
+block content
+				#page-wrapper
+						.row.page-titles
+								.col-md-5.align-self-center
+										h3.text-themecolor Project Planner
+								.col-md-7.align-self-center
+										//- ol.breadcrumb
+										//-     li.breadcrumb-item.active View Account Details - Dashboard
+						.container-fluid
+							.row
+								-if(messages.msg_error)
+									each error in messages.msg_error
+										.alert.alert-danger #{error}
+								-else if(messages.msg_info)
+									.alert.alert-success #{messages.msg_info}
+								.col-md-12.col-sm-12
+									form#newSiteForm(accept-charset='utf-8', method='post', name='loginForm', action='/admin/project-planner/create-sites')
+										// General Information
+										.card
+											.card-header
+												h4 Create New Location 
+											.card-body
+												.row
+													.col-md-12
+														.col-sm-4
+															label Location Name
+																span.text-danger  *
+															input.siteName.form-control(type='text', name='siteName', id='siteName', required)
+														//- .col-sm-4
+														//- 	label Location Number
+														//- 		span.text-danger  *
+														//- 	input.siteCode.form-control(type='number', name='sitesCode', id='siteCode', min='0', placeholder='0' required)
+														.col-sm-4
+															label Mechanical Supervisor
+															select.form-control(name='mSupervisor')
+																	option(value="0") Select Mechanical Supervisor
+																		each supervisors in supervisor
+																			if(supervisors.jobType == 1)
+																				option(value=supervisors.id) #{supervisors.firstName}
+														.col-sm-4
+															label Electrical Supervisor
+															select.form-control(name='eSupervisor')
+																	option(value="0") Select Electrical Supervisor
+																		each supervisors in supervisor
+																			if(supervisors.jobType == 2)
+																				option(value=supervisors.id) #{supervisors.firstName}
+													.col-sm-12
+														.form-group.col-md-12
+															label Add Address 
+																span.text-danger  *
+															input#address(type="text", name='newAddress', class="form-control"  placeholder="Add your location here" onFocusout="codeAddress()", required) 
+														.col-md-6
+															input#latitude(type="hidden", name='latitude', class="form-control" readonly)
+														.col-md-6
+															input#longitude(type="hidden", name='longitude', class="form-control" readonly)
+														.col-sm-12
+															label Description Of Location
+															textarea#report.form-control.height-120.textarea(placeholder='About Sites', name='description', minlength='5')
+															.text-right
+																button#submit.btn.btn-success(type='submit', disabled) Submit & Exit
+				script(src="https://maps.googleapis.com/maps/api/js?key="+apiKey+"&libraries=places") 
+				script(type='text/javascript').
+						var k = !{JSON.stringify(url)};
+						$(document).ready(function(){
+							$('#submit').attr('disabled',true).prop('data-toggle' , 'tooltip').prop('title' ,'Please select at least one supervisor');
+						});
+						$('select[name="mSupervisor"], select[name="eSupervisor"]').on('change', function(){
+							var mSupervisor =$('select[name="mSupervisor"]').val(),
+								eSupervisor =$('select[name="eSupervisor"]').val();
+							if(mSupervisor != 0 || eSupervisor != 0){
+								$('#submit').attr('disabled', false);
+							} else{
+								$('#submit').attr('disabled', true);
+							}
+						});
+						codeAddress();
+						
+						function activatePlaceSearch(){ 
+							let autocomplete = new google.maps.places.Autocomplete(document.getElementById('address'));                   
+							autocomplete.setTypes(['geocode']);
+								google.maps.event.addListener(autocomplete, 'place_changed', function() {
+									var place = autocomplete.getPlace();
+									if (!place.geometry) {
+										return;
+									}
+
+								var address = '';
+								if (place.address_components) {
+									address = [
+										(place.address_components[0] && place.address_components[0].short_name || ''),
+										(place.address_components[1] && place.address_components[1].short_name || ''),
+										(place.address_components[2] && place.address_components[2].short_name || '')
+										].join(' ');
+								}
+							});
+						}
+						function codeAddress() {
+							geocoder = new google.maps.Geocoder();
+							var address = document.getElementById("address").value;
+							if(address == ""){
+								$('#latitude, #longitude').val("")
+							} else{
+									geocoder.geocode( { 'address': address}, function(results, status) {
+									if (status == google.maps.GeocoderStatus.OK) {
+										$('#latitude').val(results[0].geometry.location.lat())
+										$('#longitude').val(results[0].geometry.location.lng())
+
+									//- alert("Latitude: "+results[0].geometry.location.lat());
+									//- alert("Longitude: "+results[0].geometry.location.lng());
+									} 
+
+									else {
+										alert("Geocode was not successful for the following reason: " + status);
+									}
+									});
+
+							}
+
+						}
+
+						google.maps.event.addDomListener(window, 'load', activatePlaceSearch);
+
+						$(document).ready(function(){
+							//- $('.siteName').on('blur', function() {
+							//- 	var inputValue = $(this).val();
+							//- 	var url= k+"getSiteName/"+inputValue;
+							//- 	$.ajax({
+							//- 			type: "GET",
+							//- 			url: url,
+							//- 			success: function(data){
+							//- 				var siteName = data.data;
+
+
+							//- 				if(siteName == 1){
+													
+							//- 						$('.siteName').next('span').remove();
+							//- 						$('.siteName').after('<span style="color:red">This name has already taken.</span>')
+							//- 				} else {
+							//- 					$('.siteName').next('span').remove();
+							//- 				}
+							//- 			}
+							//- 		});
+							//- });
+					
+							$('.siteCode').on('blur', function() {
+								var inputValue = $(this).val();
+								var url= k+"getSiteCode/"+inputValue;
+								$.ajax({
+										type: "GET",
+										url: url,
+										success: function(data){
+											var siteCode = data.data;
+
+
+											if(siteCode == 1){
+													$('.siteCode').next('span').remove();
+													$('.siteCode').after('<span style="color:red">This code has already taken.</span>')
+											} else {
+													$('.siteCode').next('span').remove();
+											}
+										}
+									});
+							});
+
+						})
+
+						//- function getState(val) {
+						//- 		var url= k+"getState/"+val;
+						//- 				$.ajax({
+						//- 						type: "GET",
+						//- 						url: url,
+						//- 						data: val,
+						//- 								success: function(data){
+						//- 									var data = data.data;                              
+						//- 									var htmld= " ";                              
+						//- 									data.forEach(function(val, index){
+						//- 										htmld += "<option value ='"+val.id+"'>" +val.name + "</option>"
+						//- 									})
+						//- 									$("#state").html(htmld);
+						//- 						}
+						//- 				});
+						//- }
+
+						//- function getCity(val) {
+						//- 	var url= k+"getCity/"+val;
+						//- 		$.ajax({
+						//- 				type: "GET",
+						//- 				url: url,
+						//- 				data: val,
+						//- 								success: function(data){
+						//- 									var data = data.data;                              
+						//- 									var htmld= " ";                              
+						//- 									data.forEach(function(val, index){
+						//- 										htmld += "<option value ='"+val.id+"'>" +val.name + "</option>"
+						//- 									})
+						//- 									$("#city").html(htmld);
+						//- 						}
+						//- 				});
+						//- }
+							
+						
+						
+
+				
+
+
+	 
+
+

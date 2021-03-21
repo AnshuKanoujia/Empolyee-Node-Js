@@ -1,0 +1,132 @@
+extends ./../../layout/user-layout
+
+block content
+      #page-wrapper
+            .row.page-titles
+                .col-md-5.align-self-center
+                    h3.text-themecolor Technician
+                .col-md-7.align-self-center
+                    ol.breadcrumb
+                        li.breadcrumb-item.active Report Card
+            .container-fluid
+                -if(messages.msg_error)
+                    .alert.alert-danger #{messages.msg_error}
+                -else if(messages.msg_info)
+                    .alert.alert-success #{messages.msg_info}
+                .row
+                    .col-md-12
+                        .card
+                            .card-header 
+                                .col-sm-6
+                                    h4  Report Details
+                                .col-sm-6.text-right
+                                    a.btn.btn-info.btn-lg(href="#testScoreModal", data-toggle="modal") View Result
+                                    &nbsp;
+                                    a.btn.btn-success.btn-sm(href='/user/technician/view-reviews', title='View Reviews', data-toggle='tooltip')  
+                                        i.fa.fa-comments
+                            .card-body
+                                .col-md-12
+                                    .col-md-12
+                                        input(type="text" hidden)#skills-data
+                                    .col-md-12
+                                        .col-md-4
+                                            .contact-img(style="margin:0; width: 100%;position:relative")
+                                                if(value.profileImg)
+                                                    img#user_img.img-circle.img-responsive(src='/uploads/profile_img/#{value.profileImg}', alt='' style="margin: 20px 0;width:64px;height:64px")
+                                                else
+                                                    img#user_img.img-circle.img-responsive(src='/admin/img/avatar.jpg', alt='' style="margin: 20px 0;width:64px;height:64px")
+                                        .table-responsive
+                                            table.table.table-borderless.job-details
+                                            
+                                                tbody
+                                                    tr
+                                                        th User Name:
+                                                        td= value.firstName+' '+value.lastName
+                                                        th Project Trade:
+                                                        td= jobType.length ? jobType[0].type_name : '--'
+                        .card
+                            .card-header
+                                h4  Ratings
+                            .card-body
+                                h5 All Ratings
+                                .table-responsive
+                                    table.table.table-striped.table-bordered
+                                        tbody
+                                            tr
+                                                th Overall Ratings:
+                                                td= rating.total_rating ? Math.round(rating.total_rating) : '--'
+                                            tr
+                                                th Total Rating of Workmanship Quality:
+                                                td= rating.Workmanship_Quality ? Math.round(rating.Workmanship_Quality) : '--'
+                                            tr
+                                                th Total Rating of Attendance / Punctuality:
+                                                td= rating.Attendance_Punctuality ? Math.round(rating.Attendance_Punctuality) : '--'
+                                            tr
+                                                th Total Rating of Organization / Cleanliness:
+                                                td= rating.Organization_Cleanliness ? Math.round(rating.Organization_Cleanliness) : '--'
+                                            tr
+                                                th Total Rating of Communication / Updates:
+                                                td= rating.Communication_Updates ? Math.round(rating.Communication_Updates) : '--'
+                                            tr
+                                                th Total Rating of Worked Safe:
+                                                td= rating.Worked_Safe ? Math.round(rating.Worked_Safe) : '--'
+                                            tr 
+                                                th Total Rating of Followed Instructions & Schedule
+                                                td= rating.Followed_Instructions_Schedule ? Math.round(rating.Followed_Instructions_Schedule) : '--'
+                                            tr 
+                                                th Total Rating of Team Player
+                                                td= rating.Team_Player ? Math.round(rating.Team_Player) : '--'
+            #testScoreModal.modal.fade(tabindex="-1", role="dialog", aria-labelledby="myModalLabe", aria-hidden="true")
+                .modal-dialog
+                    .modal-content
+                        .modal-header
+                            button.close(type="button", data-dismiss="modal", aria-hidden="true") &times;
+                            h4.modal-title Report Card
+                        .modal-body
+                            if(typeof(userResult) !== 'undefined')
+                                table.table.table-bordered
+                                    tbody
+
+                                        tr
+                                            th Exam Date:
+                                            td= moment(userResult.exam_date).isValid() ? moment(userResult.exam_date).format('MM/DD/YYYY') : "--" 
+                                        //- tr
+                                        //-     th Time Taken:
+                                        //-     td= Math.abs(userResult.end_time - userResult.start_time) / 1000 
+                                        tr
+                                            th Questions Attempt:
+                                            td= userResult.no_of_given_answer ? userResult.no_of_given_answer : '--'
+                                        //- tr
+                                        //-     th No. Of Questions:
+                                        //-     td= userResult.question ? userResult.question : '--'
+                                        tr
+                                            th Easy Correct Answer:
+                                            td= userResult.level_1_score ? userResult.level_1_score : '0'
+                                        tr
+                                            th Medium Correct Answer:
+                                            td= userResult.level_2_score ? userResult.level_2_score : '0'
+                                        tr 
+                                            th Difficult Correct Answer:
+                                            td= userResult.level_3_score ? userResult.level_3_score : '0'
+                                        tr 
+                                            th Wrong Answer:
+                                            td= userResult.wrong_answer_count ? userResult.wrong_answer_count : '0'
+                                        tr 
+                                            th Total Correct Answer:
+                                            td= userResult.total_score ? userResult.total_score : '0'
+                                        tr  
+                                            th Total Score:
+                                            td
+                                                span.score-div= parseFloat(userResult.total_score -(userResult.wrong_answer_count * userResult.neg_mark)).toFixed(2)
+                                                if(userResult.wrong_answer_count !== 0)
+                                            
+                                                    span.text-danger *
+                                                    span.text-div= 'after deduction of '+userResult.neg_mark +' for each wrong answer.'
+                                    
+                            else
+                                label You have not given exam !
+                        .modal-footer
+                            button.btn.btn-default(type="button", data-dismiss="modal") Close 
+                                                                
+                                                            
+                                                            

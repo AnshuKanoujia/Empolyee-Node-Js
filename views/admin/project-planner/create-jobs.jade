@@ -1,0 +1,290 @@
+extends ./../../layout/admin-layout
+
+block content
+            #page-wrapper
+                .row.page-titles
+                    .col-md-5.align-self-center
+                        h3.text-themecolor Project Planner
+                    .col-md-7.align-self-center
+                        ol.breadcrumb
+                            li.breadcrumb-item.active Create/ Select Project
+                -if(messages.msg_error)
+                    each error in messages.msg_error
+                        .alert.alert-danger #{error}
+                -else if(messages.msg_info)
+                    .alert.alert-success #{messages.msg_info}
+                form#newSiteForm(accept-charset='utf-8', method='post', name='jobForm', action='/admin/project-planner/create-jobs/#{id}')
+                        //- each value in currShift
+                        //- 	option(value=value.id) #{value.shift}
+                        .container-fluid
+                            // /row
+                            .row
+                                .col-md-12
+                                    .card
+                                        .card-header
+                                            h4 Project Information
+                                        .card-body
+                                            .row
+                                                .col-sm-4
+                                                    label Project Name
+                                                        span.text-danger  *
+                                                    input.form-control(type='text', name='jobName', placeholder="Project Name", required)
+                                                .col-sm-4
+                                                    label Project Number
+                                                        span.text-danger  *
+                                                    input.form-control(type='text', name='jobCode', id='jobCode',placeholder="Job Code", required)
+                                                .col-sm-4
+                                                    label Project Trade
+                                                        span.text-danger  *
+                                                    select.wide.form-control(id='jobType', name='jobType', required, onchange='getSkills(this.value)')
+                                                            //- option(value="0") Select Project Trade
+                                                            each jobTypes in jobType
+                                                                option(value=jobTypes.id) #{jobTypes.type_name}
+                                                //- .col-sm-12.m-clear.skills-field(style="display: none")
+                                                //-     label Skills
+                                                //-         span.text-danger  *
+                                                //-     .custom-checkbox(id='allSkills')
+                                                //-         input(type="checkbox", id="selectAll")
+                                                //-         label(for="selectAll") Select All;
+                                                //-     .custom-checkbox(id='skills')
+                                            .row
+                                                .col-sm-4.m-clear
+                                                    label Working Hours per Day
+                                                    input.form-control(type='number', name='workingHoursPerDay', class='calculate_days', id='workingHoursPerDay' placeholder='Value', min='1', max='24', autocomplete="off", step='any')
+                                                .col-sm-4.m-clear
+                                                    label Working Days per Week
+                                                    input.form-control(type='number', name='workingDayPerWeek', class='calculate_days', id='workingDayPerWeek' placeholder='Value', min='1', max='7', autocomplete="off")
+                                                .col-sm-4.m-clear
+                                                    label Hours per Week
+                                                    input.form-control(type='number', class='hoursCount', readonly)
+                                            
+                                            .row
+                                                .col-sm-4.m-clear
+                                                    label Proposed Start Date
+                                                        span.text-danger  *
+                                                    input.form-control(type='text',placeholder='MM/DD/YYYY', name='proposedStartDate', data-toggle='datepicker', class='caculate_days', id='proposedStartDate', autocomplete='off', required)
+                                                .col-sm-4.m-clear
+                                                    label Proposed End Date
+                                                        span.text-danger  *
+                                                    input.form-control(type='text',placeholder='MM/DD/YYYY', name='proposedEndDate', data-toggle='datepicker', class='caculate_days', id='proposedEndDate', autocomplete='off', required)
+                                                .col-sm-4.m-clear
+                                                    label Total No. Of Days
+                                                    input.form-control(type='number', class='daysCount', name='days_count', readonly)
+                                            .row
+                                                .col-sm-4.m-clear
+                                                    label Proposed Budget (In $)
+                                                        span.text-danger  *
+                                                    input.form-control(type='number',placeholder='For eg: 123456', min='1',name='proposed_budget', autocomplete='off', step='any', required)
+                                            .row
+                                                .col-sm-12
+                                                    label Description Of Project
+                                                        span.text-danger  *
+                                                    textarea.form-control.height-200.textarea(rows='5', placeholder='Project Description', name='description', minlength='5', required)
+
+                        .container-fluid
+                            .row
+                                .col-md-12
+                                    .card.phase-information
+                                        .card-header
+                                            h4 Additional Information
+                                        .card-body
+                                            .row
+                                                .col-sm-6
+                                                    label No. Of Vacancies
+                                                    input.form-control.vacancy-field(type='number', min='1', value='1', name='noOfVacancy')
+                                                //- .col-sm-6
+                                                //-     label Number of Phases :
+                                                //-     select.form-control#noPhase(name='noOfPhases')
+                                                //-         option(value='1') 1
+                                                //-         option(value='2') 2
+                                                //-         option(value='3') 3
+                                                //-         option(value='4') 4
+                                                //-         option(value='5') 5
+                                                //-         option(value='6') 6
+                                                //-         option(value='7') 7
+                                                //-         option(value='8') 8
+                                                //-         option(value='9') 9
+                                                //-         option(value='10') 10
+                                                .col-sm-12
+                                                    .text-right.form-group.btnSubmit
+                                                        button.btn.btn-success(type='submit') Submit & Exit
+
+            script(type="text/javascript").
+                $(document).ready(function(){
+                    $(".caculate_days").on('change', function(e) {
+                        var start_date = $('#proposedStartDate').val(), 
+                            endDate = $('#proposedEndDate').val(), 
+                            date1 = new Date(start_date); 
+                            date2 = new Date(endDate); 
+                            // To calculate the time difference of two dates 
+                        var Difference_In_Time = date2.getTime() - date1.getTime(); 
+                        
+                        // To calculate the no. of days between two dates 
+                        var Difference_In_Days = Difference_In_Time / (1000 * 3600 * 24); 
+                        $(".daysCount").val(Difference_In_Days)
+                    });
+
+                    $(".calculate_days").on('change', function(e) {
+                        var hoursPerDay = $('#workingHoursPerDay').val(), 
+                            dayPerWeek = $('#workingDayPerWeek').val(), 
+                            hours = hoursPerDay; 
+                            days = dayPerWeek; 
+                        //- var Difference_In_Hours = (Math.round(hours)) * days; 
+                        var Difference_In_Hours = hours * days; 
+                        $(".hoursCount").val(Math.round(Difference_In_Hours))
+                    });
+
+                    $('[data-toggle="datepicker"]').datepicker({
+                        autoHide: true,
+                        zIndex: 2048,
+                    });
+
+                    $('#selectAll').click(function(){
+                        if($(this).is(':checked')){
+                            $('#skills').find('input[type="checkbox"]').prop('checked', true);
+                        } else{
+                            $('#skills').find('input[type="checkbox"]').prop('checked', false);
+                        }
+                    })
+
+                    $('#jobType').on('change', function(){
+                        if($(this).val() !== "0"){
+                            $('.skills-field').slideDown();
+                        } else{
+                        $('.skills-field').slideUp();
+                        }
+                    })
+                    
+                    $(document).find('[name="proposedStartDate"],[name="proposedEndDate"]').datepicker('setStartDate', new Date());
+
+                    $('body').find('[name="proposedStartDate"]').datepicker().change(function(e){
+                        $(document).find('[name="proposedEndDate"]').datepicker('setStartDate', new Date(e.target.value));
+                    }) 
+
+                    $('body').find('[name="proposedEndDate"]').datepicker().change(function(e){
+                        $(document).find('[name="proposedStartDate"]').datepicker('setEndDate', new Date(e.target.value));
+                    }) 
+
+                    //- $('#noPhase').on('change', function(){
+                    //-     let val =  $(this).val();
+                    //-      var btnSubmit = $('body').find('.btnSubmit').detach();
+                    //-        $(this).closest('.phase-information').nextAll('.phase-information').remove();
+                       
+                    //-         //- var k = !{JSON.stringify(currShift)};
+                    //-        var options = [];
+                    //-     var i;
+                    //-     for(i=0; i < val; i++){
+                             
+                    //-         $(document).find('.phase-information').last().after(
+                    //-             $('<div>',{'class': 'card phase-information' ,}).append(
+                    //-                 $('<div>', {'class': 'card-header'}).append(
+                    //-                 $('<h4>').text('Phase').append(
+                    //-                     $('<span>',{'class':'close fa fa-close fa-fw pull-right text-danger'})
+                    //-                 )
+                    //-                 ),
+                    //-                 $('<div>',{'class': 'card-body'}).append(
+                    //-                 $('<div>', {'class':'row'}).append(
+                    //-                         $('<div>',{ 'class': 'col-md-4'}).append(
+                    //-                             $('<label>').text('Phase Name'),
+                    //-                             $('<input>', {'type': 'text', 'name': 'phaseName', 'class': 'form-control'}).val($('input[name="jobName"]').val()+'_Phase'+(i+1))
+
+                    //-                         ),
+                    //-                         $('<div>',{ 'class': 'col-md-4'}).append(
+                    //-                             $('<label>').text('Start Date'),
+                    //-                             $('<input>', {'type': 'text', 'name': 'startDate', 'class': 'form-control', 'data-toggle' : 'datepicker', 'placeholder' : 'MM/DD/YYYY'})
+
+                    //-                         ),
+                    //-                         $('<div>',{ 'class': 'col-md-4'}).append(
+                    //-                             $('<label>').text('End Date'),
+                    //-                             $('<input>', {'type': 'text', 'name': 'endDate', 'class': 'form-control' , 'data-toggle':'datepicker', 'placeholder' : 'MM/DD/YYYY'})
+
+                    //-                         ),
+                    //-                         $('<div>',{ 'class': 'col-md-4'}).append(
+                    //-                             $('<label>').text('Phase Discription'),
+                    //-                             $('<input>', {'type': 'text', 'name': 'phaseDescription', 'class': 'form-control'})
+                    //-                         ),
+                                        
+                    //-                 )
+                    //-                 )
+                    //-             ),
+                            
+                    //-         )
+                            
+                    //-         $(document).find('.phase-information').last().find('.card-body').append(btnSubmit);
+                    //-         $('[data-toggle="datepicker"]').datepicker({
+                    //-             autoHide: true,
+                    //-             zIndex: 2048,
+                    //-         });
+
+                            
+
+                            
+
+
+                    //-         $(document).find('[name="startDate"],[name="endDate"]').datepicker('setStartDate', new Date());
+
+                    //-         $('body').find('[name="startDate"]').datepicker().change(function(e){
+                    //-             $(document).find('[name="endDate"]').datepicker('setStartDate', new Date(e.target.value));
+                    //-         }) 
+
+                    //-         $('body').find('[name="endDate"]').datepicker().change(function(e){
+                    //-             $(document).find('[name="startDate"]').datepicker('setEndDate', new Date(e.target.value));
+                    //-         }) 
+                        
+                    //-     }
+
+                    //-     $.each(k, function(i, data){
+                    //-         options.push($('<option>',{'value': data.id}).text(data.shift))
+                    //-     });
+                    //-     $('[name="availableShifts"]').append(options);
+                    //- })
+
+                })
+
+                $(document).on('click','.close', function(){
+                    var btnSubmit = $('body').find('.btnSubmit').detach();
+                    $(this).closest('.card.phase-information').remove();
+                    $(document).find('.phase-information').last().append(btnSubmit);
+                })
+
+                var k = !{JSON.stringify(url)};
+                //- function getSkills(val) {
+                //-     var url = k+"getSkill/"+val;
+                //-         $.ajax({
+                //-             type: "GET",
+                //-             url: url,
+                //-             data: val,
+                //-                 success: function(data){
+                //-                 var data = data.data;
+                //-                 var htmld= " ";
+                //-                 data.forEach(function(val, index){
+
+
+                //-                     htmld += "<div class='col-md-6'><input type='checkbox', name='skills', value ='"+val.id+"'> <label>" +val.name + " </label></div>"
+                //-                 })
+                //-                 htmld += "<br><br>"
+                //-                 $("#skills").html(htmld);
+                //-             }
+                //-         });
+                //- }
+                
+                $('#jobCode').on('blur', function() {
+                    var inputValue = $(this).val();
+                    var url= k+"getjobCode/"+inputValue;
+                    $.ajax({
+                        type: "GET",
+                        url: url,
+                        success: function(data){
+                            var jobCode = data.data;
+
+
+                            if(jobCode == 1){
+                                $('#jobCode').next('span').remove();
+                                $('#jobCode').after('<span style="color:red">This code has already taken.</span>')
+                            } else {
+                                
+                                $('#jobCode').next('span').remove();
+                            }
+                        }
+                    });
+                  });

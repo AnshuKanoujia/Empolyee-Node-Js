@@ -1,0 +1,100 @@
+extends ./../../layout/admin-layout
+
+block content
+      #page-wrapper
+            .row.page-titles
+                .col-md-5.align-self-center
+                    h3.text-themecolor Project Planner
+                .col-md-7.align-self-center
+                    ol.breadcrumb
+                        li.breadcrumb-item.active Project Name
+            .container-fluid
+                .row
+                    .col-md-12
+                        each viewReportLists in viewReportList
+                            .card
+                                .card-header 
+                                    h4  #{viewReportLists.jobName+' ('+viewReportLists.jobCode+')'}
+                                .card-body
+                                
+                                    .table-responsive
+                                        table.table.table-borderless.job-details
+                                        
+                                            tbody
+                                                tr
+                                                    th Location Name:
+                                                    td= viewReportLists.siteName
+                                                    //- td= viewReportLists.siteName+' ('+viewReportLists.sitesCode+')'
+                                                    th Started Date:
+                                                    td= moment(viewReportLists.startDate).format('MM/DD/YYYY') +'  -  '+moment(viewReportLists.endDate).format('MM/DD/YYYY') 
+                                                        span(data-toggle='modal', class="manage-btn-sm ml-1", data-target='#view-timeDuration', data-id=viewReportLists.jobId ,)
+                                                            button.btn.btn-info.manage-btn-sm(data-toggle='tooltip',title='View Duration', data-placement='top') 
+                                                                i.fa.fa-calendar
+                                                tr
+                                                    th Supervisor:
+                                                    td= viewReportLists.SupervisorName  
+                                                    th Current Status:
+                                                    td <span class="j-type full-time">#{viewReportLists.jobStatus}</span>
+                                                tr
+                                                    th Trade:   
+                                                    td(colspan="4")= viewReportLists.type_name
+                                                tr
+                                                    th No of Phases:
+                                                    td= viewReportLists.noOfPhases 
+                                                    th Location:
+                                                    td= viewReportLists.newAddress ? viewReportLists.newAddress : '--'
+                                                tr 
+                                                    th Description Of Project:
+                                                    td(colspan="4")= viewReportLists.description  
+                                                       
+            .modal#view-timeDuration.fade(tabindex='-1', role='dialog' aria-labelledby="delete-skill" aria-hidden="true")
+                    .modal-dialog(role='document')
+                        .modal-content
+                            .modal-header.theme-bg
+                                h4.modal-title Duration Time Period
+                                button.close(type='button', data-dismiss='modal', aria-label='Close')
+                                    span(aria-hidden='true') ×
+                            .modal-body
+                                table.table.table-borderless.job-details
+                                    tbody
+                                        tr
+                                            th Duration In Days:
+                                            td.days
+                                        tr
+                                            th Duration In Months:
+                                            td.months
+                                        tr
+                                            th Duration In Weeks:
+                                            td.weeks
+                            .modal-footer
+                                button.btn.btn-default(type='button', data-dismiss='modal') Cancel
+                                    
+
+                script(type="text/javascript").
+                    $(document).ready(function(){
+                        $(document).on('click', "span.manage-btn-sm[data-toggle='modal']", function() {
+                            var k = !{JSON.stringify(viewReportList)};
+                            var d1 = new Date(k[0].startDate);
+                            var d2 = new Date(k[0].endDate);
+                            var timeDiff = d2.getTime() - d1.getTime();
+                            var milliseconds = parseInt(timeDiff);
+                            var hours = Math.floor(milliseconds / 3600000);
+                            var days =  hours / 24; 
+                            $('.days').text(days);                            
+                            if(days >= 30){
+                                 var months = Math.floor(days/30);
+                                $('.months').text(months);
+                            } else{
+                                $('.months').text('-');
+                            }
+                            if(days >= 7){
+                                var weeks = Math.floor(days/7);
+                                $('.weeks').text(weeks);
+                            } else{
+                                $('.weeks').text('-');
+                            }
+                          
+                            
+                          
+                        });
+                    });

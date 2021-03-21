@@ -1,0 +1,58 @@
+extends ./../../layout/admin-layout
+
+block content
+      #page-wrapper
+            .row.page-titles
+                .col-md-5.align-self-center
+                    h3.text-themecolor Project Planner
+                .col-md-7.align-self-center
+                    ol.breadcrumb
+                        li.breadcrumb-item.active Supervisor
+            -if(messages.msg_error)
+                .alert.alert-danger #{messages.msg_error}
+            -else if(messages.msg_info)
+                .alert.alert-success #{messages.msg_info}
+            .container-fluid
+                    .row
+                        .col-md-12
+                            .card
+                                .card-header
+                                    .row
+                                        .col-sm-6
+                                            h4  Supervisors List
+                                        .col-sm-6.text-right
+                                            a.btn.btn-primary.block.btn-sm(href='/admin/project-planner/supervisorMap-view', title='View On Map') View On Map
+                                .card-body
+                                    //- h4  Supervisors List
+                                    .table-responsive
+                                        table.table.table-striped.table-bordered
+                                            thead
+                                                tr
+                                                    th #
+                                                    //- th E_Code
+                                                    th Name
+                                                    th Trade
+                                                    //- th Location
+                                                    th Action
+                                            tbody
+                                                if(users.length)
+                                                    each user, i in users
+                                                        tr
+                                                            td= i+1
+                                                            //- td= user.eCode ? user.eCode : '--'
+                                                            td= user.name ? user.name : '--'
+                                                            td= user.type_name ? user.type_name : '--'
+                                                            //- td= user.siteName ? user.siteName : '--'
+                                                            td
+                                                                //- a.btn.btn-primary.btn-sm(href='#', title='View Profile') View Profile
+                                                                a.btn.btn-primary.btn-sm(href='/admin/project-planner/view-supervisorProfile/#{user.id}', data-toggle='tooltip', title='View Profile') 
+                                                                    i.fa.fa-eye
+                                                                if (user.pending_reports != 0)
+                                                                    &nbsp;
+                                                                    a.btn.btn-success.block.btn-lg(href='/admin/project-planner/submitted-reports/#{user.id}', data-toggle='tooltip', title='View Time Sheet')  View Time Sheet 
+                                                                else
+                                                                    label.mr-10   This supervisor doesn't have any time sheets pending.  
+                                                            
+                                                else
+                                                    tr.danger.text-center
+                                                        td(colspan=4) Sorry, no record found!

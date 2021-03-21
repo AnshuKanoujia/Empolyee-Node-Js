@@ -1,0 +1,88 @@
+extends ./../../layout/hr-layout
+
+block content
+            #page-wrapper
+                .row.page-titles
+                    .col-md-5.align-self-center
+                        h3.text-themecolor Hr
+                    .col-md-7.align-self-center
+                        ol.breadcrumb
+                            li.breadcrumb-item.active Question Answer
+                -if(messages.msg_error)
+                    each error in messages.msg_error
+                        .alert.alert-danger #{error}
+                -else if(messages.msg_info)
+                    .alert.alert-success #{messages.msg_info}
+                form#newSiteForm(accept-charset='utf-8', method='post', name='jobForm', action='/admin/hr/edit-ques_ans/#{quesId}', enctype='multipart/form-data')
+                        .container-fluid
+                            // /row
+                            .row
+                                .col-md-12
+                                    .card
+                                        .card-header
+                                            h4 Add Question Details
+                                        .card-body
+                                            .row
+                                                .col-sm-4
+                                                    label Select Subjects
+                                                        span.text-danger  *
+                                                    select.wide.form-control(id='sub_id', name='sub_id', required)
+                                                            each subList in subject
+                                                                if listOfSubject.subId == subList.subId
+                                                                    option(selected="true",value=subList.subId) #{subList.sub_name}
+                                                                else
+                                                                    option(value=subList.subId) #{subList.sub_name}
+
+                                                .col-sm-4
+                                                    label Select Difficulty Level
+                                                        span.text-danger  *
+                                                    select.wide.form-control(id='exam_level', name='exam_level', required)
+                                                            each ques_level in quesLevel
+                                                                if listOfSubject.exam_level == ques_level.id
+                                                                    option(selected="true",value=ques_level.id) #{ques_level.ques_level}
+                                                                else
+                                                                    option(value=ques_level.id) #{ques_level.ques_level}
+                                                .col-sm-4
+                                                    label Attachment
+                                                    input.form-control(type='file', name='quesImg_attach', accept='image/pdf/*')
+                                                       
+                                            .row
+                                                .col-sm-12
+                                                   label Add Question
+                                                        span.text-danger  *
+                                                    textarea.form-control.height-100.textarea(rows='3', name='question', minlength='5', required) #{listOfSubject.question}
+                                            .row
+                                                .col-sm-3.m-clear
+                                                   label Add Choice 1 
+                                                    span.text-danger  *
+                                                    input.form-control(type='text', name='ch1', value=listOfSubject.ch1, required)
+                                                .col-sm-3.m-clear
+                                                    label Add Choice 2
+                                                        span.text-danger  *
+                                                    input.form-control(type='text', name='ch2', value=listOfSubject.ch2, required)
+                                                .col-sm-3.m-clear
+                                                    label Add Choice 3
+                                                    input.form-control(type='text', name='ch3', value=listOfSubject.ch3)
+                                                .col-sm-3.m-clear
+                                                    label Add Choice 4
+                                                    input.form-control(type='text', name='ch4', value=listOfSubject.ch4)
+                                            .row
+                                                .col-sm-12
+                                                    //- i.fa.fa-check
+                                                    label Add Correct Answer    
+                                                        i.fa.fa-check
+                                                        span.text-danger  *
+                                                    //- input.form-control(type='text', name='correct_ans', value=listOfSubject.correct_ans, required)
+                                                    select.wide.form-control(id='correct_ans', name='correct_ans', required)
+                                                        option(value='', hidden='hidden') Select choice
+                                                        option(value='ch1') choice 1
+                                                        option(value='ch2') choice 2
+                                                        option(value='ch3') choice 3
+                                                        option(value='ch4') choice 4
+                                                        
+
+                                    .text-right
+                                        button.btn.btn-success(type='submit') Submit & Exit
+
+                                
+                            

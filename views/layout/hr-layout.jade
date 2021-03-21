@@ -1,0 +1,300 @@
+doctype html
+html
+    head
+        title Employee Tracker
+        meta(charset='utf-8')
+        meta(name='viewport', content='width=device-width, initial-scale=1, maximum-scale=1')
+        link(rel="stylesheet", href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.css")
+
+        //- link(rel='stylesheet', href='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.css')
+        link(rel='stylesheet', href='https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css')
+
+        // Favicon====================================
+        link(rel="icon", href="/admin/img/favicon.png", type="image/vnd.microsoft.icon")
+        // CSS==================================================
+        link(rel='stylesheet', href='/admin/plugins/css/plugins.css')
+        // Custom CSS
+        link(rel='stylesheet', href='/admin/css/style.css')
+        // jQuery
+        script(src='/admin/plugins/js/jquery.min.js')
+        script(src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js")
+        script(src='/admin/plugins/js/bootstrap.min.js')
+        script(src='/admin/plugins/js/bootstrap-datetimepicker.js')
+        script(src='/admin/plugins/js/datepicker.js')
+        //- script(src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js")
+    body
+        #wrapper
+            .fakeLoader(style="position: fixed; width: 100%; height: 100%; top: 0px; left: 0px; background-color: #172533; z-index: 999; display: block;")
+                // Navigation
+            nav.navbar.navbar-default.navbar-static-top(style='margin-bottom: 0')
+                .navbar-header
+                    button.navbar-toggle(type='button', data-toggle='collapse', data-target='.navbar-collapse')
+                        span.sr-only Toggle navigation
+                        span.icon-bar
+                        span.icon-bar
+                        span.icon-bar
+                    a.navbar-brand(href='#')
+                        img.img-responsive(src='/admin/img/logo.png', alt='Logo')
+                // /.navbar-header
+                //- ul.nav.navbar-top-links.navbar-left.header-search-form.hidden-xs
+                //-     li
+                //-         a#menu-toggle.menu-brand
+                //-             span.ti-view-grid
+                //-     li.hidden-sm.hidden-xs
+                //-         .header-search-form.input-group
+                //-             span.input-group-addon
+                //-                 span.ti-search
+                //-             input.form-control(type='text', placeholder='Search & Enter')
+                ul.nav.navbar-top-links.navbar-right
+                    li.dropdown
+                        //- a.dropdown-toggle.notification-show(data-toggle='dropdown', href='#')
+                        //-   i.ti-email
+                        //-   span.email-notify.noti-count 4
+                        //- ul.dropdown-menu.dropdown-messages.right-swip
+                        //-   li.external
+                        //-     h3
+                        //-       span.bold All Messages
+                        //-     span.notification-label.bg-success New 6
+                        //-   li
+                        //-     a(href='#!')
+                        //-       .message-apt
+                        //-         .user-img
+                        //-           img.img-responsive.img-circle(src='../../admin/img/avatar.jpg', alt='')
+                        //-           span.profile-status.online
+                        //-         .message-body
+                        //-           strong John Smith
+                        //-           span.pull-right.text-muted
+                        //-             | Just Now
+                        //-           p I am John Smith Ckeck My...
+                        //-   li
+                        //-     a(href='#!')
+                        //-       .message-apt
+                        //-         .user-img
+                        //-           img.img-responsive.img-circle(src='../../admin/img/user-2.jpg', alt='')
+                        //-           span.profile-status.warning
+                        //-         .message-body
+                        //-           strong Daniel Luke
+                        //-           span.pull-right.text-muted
+                        //-             | 2 Min Ago
+                        //-           p Can You Send Me your Bugdet...
+                        //-   li
+                        //-     a(href='#!')
+                        //-       .message-apt
+                        //-         .user-img
+                        //-           img.img-responsive.img-circle(src='../../admin/img/user-3.jpg', alt='')
+                        //-           span.profile-status.busy
+                        //-         .message-body
+                        //-           strong Litha Lilly
+                        //-           span.pull-right.text-muted
+                        //-             | 7 Min Ago
+                        //-           p I have Check Your Design Like...
+                        //-   li
+                        //-     a(href='#!')
+                        //-       .message-apt
+                        //-         .user-img
+                        //-           img.img-responsive.img-circle(src='../../admin/img/user-4.jpg', alt='')
+                        //-           span.profile-status.offline
+                        //-         .message-body
+                        //-           strong Adam Kruel
+                        //-           span.pull-right.text-muted
+                        //-             | 1 Hour Ago
+                        //-           p Heelo! I need best web design...
+                        //-   li
+                        //-     a.text-center(href='#')
+                        //-       strong Read All Messages
+                        //-       i.fa.fa-angle-right
+                        // /.dropdown-messages
+                        // /.dropdown
+                        //- li.dropdown
+                        //-   a.dropdown-toggle.notification-show(data-toggle='dropdown', href='#')
+                        //-     i.ti-bell
+                        //-     span.task-notify.noti-count 7
+                        //-   ul.task.dropdown-menu.dropdown-tasks.right-swip
+                        //-     li.external
+                        //-       h3
+                        //-         span.bold Show Notifications
+                        //-       span.notification-label.bg-success New 4
+                        //-     li
+                        //-       a(href='#')
+                        //-         .task-overview
+                        //-           .alpha-box.alpha-a
+                        //-             span A
+                        //-           .task-detail
+                        //-             p Hello, I am Maryam.
+                        //-             span.task-time 2 Min Ago
+                        //-     li
+                        //-       a(href='#')
+                        //-         .task-overview
+                        //-           .alpha-box.alpha-d
+                        //-             span D
+                        //-           .task-detail
+                        //-             p Hello, I am Maryam.
+                        //-             span.task-time 2 Min Ago
+                        //-     li
+                        //-       a(href='#')
+                        //-         .task-overview
+                        //-           .alpha-box.alpha-g
+                        //-             span G
+                        //-           .task-detail
+                        //-             p Hello, I am Maryam.
+                        //-             span.task-time 2 Min Ago
+                        //-     li
+                        //-       a(href='#')
+                        //-         .task-overview
+                        //-           .alpha-box.alpha-h
+                        //-             span H
+                        //-           .task-detail
+                        //-             p Hello, I am Maryam.
+                        //-             span.task-time 2 Min Ago
+                        //-     li
+                        //-       a.text-center(href='#')
+                        //-         strong See All Tasks
+                        //-         i.fa.fa-angle-right
+                        //-   // /.dropdown-tasks
+                    li.dropdown
+                        a.dropdown-toggle(data-toggle='dropdown', href='#')
+                            if(applications.profileImg)
+                                img.img-responsive.img-circle(src='/uploads/profile_img/#{applications.profileImg}', alt='user')
+                            else
+                                img.img-responsive.img-circle(src='/admin/img/avatar.jpg', alt='user')
+                        ul.dropdown-menu.dropdown-user.right-swip
+                            li
+                                a(href='/admin/hr/edit-profile')
+                                    i.fa.fa-user.fa-fw
+                                    |  User Profile
+                            li
+                                a(href='/logout')
+                                    i.fa.fa-sign-out.fa-fw
+                                    |  Logout
+                        // /.dropdown-user
+                        // /.dropdown
+                        // /.navbar-top-links
+                // Sidebar Navigation
+                .navbar-default.sidebar(role='navigation')
+                    .sidebar-nav.navbar-collapse
+                        ul#side-menu.nav
+                            li.active
+                                a(href='/admin/hr/dashboard')
+                                    i.fa.fa-dashboard
+                                    | Dashboard
+
+
+                            li
+                                a(href='/admin/hr/edit-profile')
+                                    i.ti.ti-user
+                                    | Profile
+                           
+                            li
+                                a(href='/admin/hr/map-view')
+                                    i.ti.ti-map
+                                    | Map
+                            //- li
+                            //-     a(href='javascript:void(0)')
+                            //-         i.fa.fa-building
+                            //-         | Company
+                            //-         span.fa.arrow
+                            //-     ul.nav.nav-second-level
+                            //-         li
+                            //-             a(href="/admin/hr/add-company") Add Company
+                            //-         li
+                            //-             a(href="/admin/hr/view-company") Manage Companies
+                            li
+                                a(href='javascript:void(0)')
+                                    i.fa.fa-file-text
+                                    | Exam 
+                                    span.fa.arrow
+                                ul.nav.nav-second-level
+                                    //- li
+                                    //-     a(href="/admin/hr/subject") Add Subject
+                                    li
+                                        a(href="/admin/hr/add-ques_ans") Add Question
+                                    li
+                                        a(href="/admin/hr/manage_ques-ans") Manage Questions
+                                    li
+                                        a(href="/admin/hr/set-exam_rules") Set Rules
+                            li
+                                a(href='javascript:void(0)')
+                                    i.fa.fa-th-list
+                                    | Planner
+                                    span.fa.arrow
+                                ul.nav.nav-second-level
+                                    li
+                                        a(href="/admin/hr/add-planner") Create Planner
+                                    li
+                                        a(href="/admin/hr/view-planner") View Planners
+
+                            li
+                                a(href='javascript:void(0)')
+                                    i.ti.ti-ruler-pencil
+                                    | Supervisor
+                                    span.fa.arrow
+                                ul.nav.nav-second-level
+                                    li
+                                        a(href="/admin/hr/add-supervisor") Create Supervisor
+                                    li
+                                        a(href="/admin/hr/view-supervisor") View Supervisors
+
+                            li
+                                a(href='/admin/hr/view-technician')
+                                    i.fa.fa-users
+                                    | View Technicians
+                            li
+                                a(href='/admin/hr/manage-designation')
+                                    i.ti.ti-user
+                                    | Manage Designation
+                            li
+                                a(href='javascript:void(0)')
+                                    i.fa.fa-tasks
+                                    | Roles & Skills
+                                    span.fa.arrow
+                                ul.nav.nav-second-level
+                                    li
+                                        a(href="/admin/hr/addRoles") Add Roles / Jobs Type
+                                    li
+                                        a(href="/admin/hr/manageRoles") Manage Roles
+                                    li
+                                        a(href="/admin/hr/addSkills") Add Skills
+                                    li
+                                        a(href="/admin/hr/manageSkills") Manage Skills
+                            li
+                                a(href='/admin/hr/chat')
+                                    i.ti.ti-comment
+                                    | Chat
+                            li
+                                a(href='/../../logout')
+                                    i.fa.fa-sign-out
+                                    | Log Out
+                // render pages//
+
+            block content
+
+            footer.footer ©Copyright 2019 Employee Tracker
+        // /#wrapper
+        //- script(type='text/javascript').
+        //-     $(document).ready(function () {
+        //-         $('[data-toggle="datepicker"]').datepicker({
+        //-             autoHide: true,
+        //-             zIndex: 2048,
+        //-         });
+        //-         $('.timepicker').datetimepicker({
+        //-             format: 'LT'
+        //-             });
+        //-     })
+        script(src='/admin/plugins/js/metisMenu.min.js')
+        script(src='/admin/plugins/js/jquery.slimscroll.js')
+        script(src='/admin/plugins/js/sweetalert.js')
+        script(src='/admin/plugins/js/ckeditor.js')
+        script(src='/admin/plugins/js/select2.min.js')
+        script(src='/admin/js/loader.js')
+        // Morris.js charts
+        script(src='/admin/plugins/js/raphael.min.js')
+        script(src='/admin/plugins/js/morris.min.js')
+        script(src='/admin/js/script.js')
+        // Custom Theme JavaScript
+        script(src='/admin/js/custom.js')
+        script(src='https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js')
+        script(src='https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js')
+        
+       
+       
+

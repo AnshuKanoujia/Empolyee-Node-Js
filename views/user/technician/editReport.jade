@@ -1,0 +1,73 @@
+extends ./../../layout/user-layout
+
+block content
+            #page-wrapper
+                .row.page-titles
+                    .col-md-5.align-self-center
+                        h3.text-themecolor Technician
+                    .col-md-7.align-self-center
+                        ol.breadcrumb
+                            li.breadcrumb-item.active Submit Report - Dashboard
+                each value in reports
+                    .container-fluid
+                        form#newSiteForm(accept-charset='utf-8', method='post', name='loginForm', action='/user/technician/editReport/#{value.id}', enctype='multipart/form-data')
+                            -if(messages.msg_error)
+                                .alert.alert-danger #{messages.msg_error}
+                            -else if(messages.msg_info)
+                                .alert.alert-success #{messages.msg_info}
+                            .row
+                                .col-md-12.col-sm-12
+                                    .card
+                                            .card-header
+                                                .row
+                                                    .col-sm-6
+                                                        h4 Submit Report
+                                                    .col-sm-6.text-right
+                                                        label 
+                                                         b In Time
+                                                         &nbsp;
+                                                        label
+                                                            value=value.inTime
+                                            .card-body
+                                                .row
+                                                    .col-md-12
+                                                        .row
+                                                            .col-sm-3
+                                                                label Date
+                                                                input.form-control(type='text', name='date', value=moment(value.date).format('MM/DD/YYYY'), readonly)
+                                                            .col-sm-3
+                                                                label Out Time
+                                                                    span.text-danger  *
+                                                                input#outTime.timepicker.form-control(type='text',  name='outTime', required)
+                                                            .col-sm-3
+                                                                label In Time
+                                                                    span.text-danger  *
+                                                                input#inTime.timepicker.form-control(type='text', name='inTime', required)
+                                                            .col-sm-3
+                                                                label Attachment
+                                                                input.form-control(type='file', name='attachment')
+                                                    .col-sm-12
+                                                        label description Of Report
+                                                        textarea#report.form-control.height-120.textarea(placeholder='About Report', name='description',minlength='5') #{value.description}
+                                                    
+                                            .col-md-12
+                                                .text-right
+                                                    button.btn.btn-success(type='submit') Submit & Exit
+                    script(type='text/javascript').
+                        //- let inTime = $('value').text();
+                        //-  console.log(inTime)
+                        let report =   !{JSON.stringify(reports)},
+                            inTime = report[0]['inTime'],
+                            outTime = report[0]['outTime'];
+                     
+                        $('#outTime').datetimepicker({
+                            minDate : new Date(inTime),
+                            date: new Date(outTime)
+                        })
+
+                        $('#inTime').datetimepicker({
+                            maxDate : new Date(outTime),
+                            date: new Date(inTime)
+                        })
+
+

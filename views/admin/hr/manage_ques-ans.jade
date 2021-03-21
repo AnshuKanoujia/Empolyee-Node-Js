@@ -1,0 +1,116 @@
+extends ./../../layout/hr-layout
+
+block content
+      #page-wrapper
+            .row.page-titles
+                .col-md-5.align-self-center
+                    h3.text-themecolor Hr
+                .col-md-7.align-self-center
+                    ol.breadcrumb
+                        li.breadcrumb-item.active Questions & Answers
+            .container-fluid
+                -if(messages.msg_error)
+                    each error in messages.msg_error
+                        .alert.alert-danger #{error}
+                -else if(messages.msg_info)
+                    .alert.alert-success #{messages.msg_info}
+                .row
+                    .col-md-12
+                        .card
+                            .card-header 
+                                .col-sm-6
+                                    h4 
+                                        i.fa.fa-filter  Filter
+                            .card-body
+                                    .col-sm-12
+                                        .row
+                                            //- form#newSiteForm(accept-charset='utf-8', method='post', name='searchQuesAns', action='/admin/hr/search_ques-ans')
+                                            //-     .col-sm-4
+                                            //-         label Select Subject
+                                            //-         select.wide.form-control(id='sub_id', name='sub_id')
+                                            //-             each lists in listOfSubject
+                                            //-                 option(value=lists.sub_id) #{lists.sub_name}
+                                            //-     .col-sm-12
+                                            //-         .text-right
+                                            //-             button.btn.btn-success(type='submit') Search
+                                            form#newSiteForm.d-inline-block(accept-charset='utf-8', method='post', name='searchQuesAns', action='/admin/hr/search_ques-ans')
+                                                input(type="hidden" name="sub_id" value="1")
+                                                button.btn.btn-primary.btn-sm(type="submit", data-toggle='tooltip', title='Search mechanical user') Mechanical
+                                            form#newSiteForm.d-inline-block(accept-charset='utf-8', method='post', name='searchQuesAns', action='/admin/hr/search_ques-ans')
+                                                input(type="hidden" name="sub_id" value="2")
+                                                button.btn.btn-primary.btn-sm(type="submit", data-toggle='tooltip', title='Search electrical user') Electrical
+                                            form#newSiteForm.d-inline-block(accept-charset='utf-8', method='get', name='searchQuesAns', action='/admin/hr/manage_ques-ans')
+                                                button.btn.btn-primary.btn-sm(type="submit", data-toggle='tooltip', title='Search all user') All
+                                            
+                .row
+                    .col-md-12
+                        .card
+                            .card-body
+                                    .col-sm-6
+                                        a.btn.btn-success.btn-sm(href='/admin/hr/add-ques_ans', title='Add Question & Answer')  
+                                            i.fa.fa-plus &nbsp; Add Question & Answer
+                               .table-responsive.table-fixed-new
+                                    table#manage_ques.table.table-striped.table-bordered
+                                        thead
+                                            tr
+                                                td # 
+                                                td Difficulty Level
+                                                td Question
+                                                td Images
+                                                td Choice 1
+                                                td Choice 2
+                                                td Choice 3
+                                                td Choice 4
+                                                td Correct Answer
+                                                td Date
+                                                td Action
+                                        tbody
+                                            if(subjectList.length)
+                                                each list, i in subjectList
+                                                    tr
+                                                        td= i+1
+                                                        td= list.exam_level
+                                                        td= list.question
+                                                        //- td= list.quesImg_attach ? list.quesImg_attach: "No Image"
+                                                        //- span(data-toggle='modal',
+                                                        td
+                                                            if(list.quesImg_attach)
+                                                                a.btn.btn-sm(href='#view-image',
+                                                                data-img='/uploads/Question_Img/#{list.quesImg_attach}', data-toggle='modal', data-id=list.quesId, data-image=list.quesImg_attach, title='View Image')
+                                                                    img#user_img.img-circle.img-responsive(src='/uploads/Question_Img/#{list.quesImg_attach}', alt='' style="margin: 5px 0;width:40px;height:40px")
+                                                                        
+                                                            else
+                                                                label No Image
+                                                        td= list.ch1
+                                                        td= list.ch2
+                                                        td= list.ch3
+                                                        td= list.ch4
+                                                        td= list.correct_ans
+                                                        td= moment(list.date).isValid() ? moment(list.date).format('MM/DD/YYYY') : '--'
+                                                        td
+                                                            a.btn.btn-primary.mr-3.btn-sm(href='/admin/hr/edit-ques_ans/#{list.quesId}', data-toggle='tooltip', title='Edit Question & Answer') 
+                                                                i.fa.fa-edit
+                                                            a.btn.btn-danger.btn-sm(href='/admin/hr/delete-ques_ans/#{list.quesId}', data-toggle='tooltip', title='Delete Question & Answer') 
+                                                                i.fa.fa-trash
+                                            else
+                                                tr.danger.text-center
+                                                    td(colspan='10') Sorry, no record found!
+
+            .modal#view-image.fade(tabindex='-1', role='dialog' aria-labelledby="delete-skill" aria-hidden="true")
+                        .modal-dialog.modal-300(role='document')
+                            .modal-content
+                                .modal-header.theme-bg
+                                    h4.modal-title Image
+                                    button.close(type='button', data-dismiss='modal', aria-label='Close')
+                                        span(aria-hidden='true') ×
+                                .modal-body
+                                    .row
+                                        .form-group.col-md-12
+                                            img#modal-img.full-modal-img.img-responsive(src='/uploads/profile_img/#{image}', alt='')
+            script(type='text/javascript').
+                $(document).on('click', "a[href='#view-image']", function() {
+
+                    let {id, img} = $(this).data();
+                    $("#id").val(id);
+                    $("#modal-img").attr('src', img);
+                });

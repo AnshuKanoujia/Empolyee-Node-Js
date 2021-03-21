@@ -1,0 +1,112 @@
+extends ./../../layout/supervisor-layout
+
+block content
+      #page-wrapper
+            .row.page-titles
+                .col-md-5.align-self-center
+                    h3.text-themecolor Supervisor
+                .col-md-7.align-self-center
+                    ol.breadcrumb
+                        //- li.breadcrumb-item.active Project Name
+            .container-fluid
+                -if(messages.msg_error)
+                    .alert.alert-danger #{messages.msg_error}
+                -else if(messages.msg_info)
+                    .alert.alert-success #{messages.msg_info}
+                .row
+                    .col-md-12
+                        .card
+                            .card-header
+                                .col-md-6
+                                    h4  Your Location Project
+                                .col-sm-6.text-right
+                                    a.btn.btn-primary.block.btn-lg(href='/admin/supervisor/view-finishJob', title='Finished Projects List') View Finished Projects
+                            .card-body
+                                .table-responsive
+                                    table.table.table-striped.table-bordered
+                                        thead
+                                            tr
+                                                th Sr No. 
+                                                th Location 
+                                                th Project 
+                                                //- th No.Of Phases
+                                                th No.Of employees
+                                                th Start Date
+                                                th End Date
+                                                th Total No. Of Days
+                                                th Total Predicted Budget
+                                                th Action
+
+                                        tbody
+                                            if (jobList.length)
+                                                each viewJobList, i in jobList
+                                                    tr
+                                                        td= i+1
+                                                        td= viewJobList.siteName
+                                                        //- td= viewJobList.siteName+' ('+ viewJobList.sitesCode+')'
+                                                        td= viewJobList.jobName ? viewJobList.jobName+' ('+ viewJobList.jobCode+')' : '--'
+                                                        //- td= viewJobList.noOfPhases
+                                                        td= viewJobList.empCount+'/'+viewJobList.noOfVacancy
+                                                        td= moment(viewJobList.startDate).isValid() ? moment(viewJobList.startDate).format('MM/DD/YYYY') : '--'
+                                                        td= moment(viewJobList.endDate).isValid() ? moment(viewJobList.endDate).format('MM/DD/YYYY') : '--'
+                                                        td= viewJobList.days_count ?  viewJobList.days_count : '--'
+                                                        td= viewJobList.predicated_budget ?  '$ '+Number(parseFloat(viewJobList.predicated_budget).toFixed(2).toString()).toLocaleString() : '--'
+                                                        td
+                                                            a.btn.btn-info.btn-sm(href='/admin/supervisor/viewSingelJobs/#{viewJobList.jobid}', data-toggle='tooltip', title='View Project') 
+                                                                i.fa.fa-eye
+                                                            &nbsp;
+                                                            a.btn.btn-primary.btn-lg(href='/admin/supervisor/userMap-view/#{viewJobList.jobid}', data-toggle='tooltip', title='Request Employee')
+                                                                i.fa.fa-user 
+                                                            //- span(data-toggle='modal',  class='manage-btn-sm', data-target='#view-dest', data-jobid=viewJobList.jobid, data-des_name=viewJobList.des_name, data-des_id=viewJobList.des_id)
+                                                            //-     button.btn.btn-primary.manage-btn-sm(data-toggle='tooltip', title='Select Employee', data-placement='top')
+                                                            //-         i.fa.fa-user
+                                                            &nbsp;
+                                                            a.btn.btn-info.btn-sm(href='/admin/supervisor/edit-jobs/#{viewJobList.jobid}', data-toggle='tooltip', title='Edit Project') 
+                                                                i.fa.fa-edit
+                                                            &nbsp;
+                                                            a.btn.btn-success.btn-sm(href='/admin/supervisor/upload-attachment/#{viewJobList.jobid}', data-toggle='tooltip', title='Upload Attachment') 
+                                                                i.fa.fa-upload
+                                                            &nbsp;
+                                                            a.btn.btn-success.btn-sm(href='/admin/supervisor/job-finish/#{viewJobList.jobid}', data-toggle='tooltip', title='Mark Project Finished') Finish Project
+                                                            
+                                            else
+                                                tr.danger.text-center
+                                                    td(colspan='10') Sorry, no record found!
+                //- .modal#view-dest.fade(tabindex='-1', role='dialog' aria-labelledby="delete-skill" aria-hidden="true")
+                //-     .modal-dialog(role='document')
+                //-         .modal-content
+                //-             .modal-header.theme-bg
+                //-                 h4.modal-title Select Employee
+                //-                 button.close(type='button', data-dismiss='modal', aria-label='Close')
+                //-                     span(aria-hidden='true') ×
+                //-             form#ViewDesignationForm(accept-charset='utf-8', method='post', name='ViewDesignationForm', action='/admin/supervisor/add-userDesignation')
+                //-                 .modal-body
+                //-                         h4 Designation
+                //-                         .col-md-12.from-group
+                                        
+                //-                             select.form-control(id='desId', name='designation_name')
+                //-                             input.form-control(type='hidden', id='jobid', name='jobid')
+                                            
+                //-                 .modal-footer
+                //-                     button.btn.btn-default(type='button', data-dismiss='modal') Cancel
+                //-                     button#delete.btn.btn-primary(type='submit') Submit
+                
+                script(type="text/javascript").
+                     $(document).on('click', "span.manage-btn-sm[data-toggle='modal']", function() {
+                                let jobid = $(this).data('jobid');
+                                let des_id = $(this).data('des_id');
+                                var res_desId = des_id.split(",");
+                                let des_name = $(this).data('des_name');
+                                var res_desName = des_name.split(",");
+                                
+                                $("#jobid").val(jobid);
+                                $('#desId').empty();
+                                $.each(res_desId, function(key, value) {   
+                                    
+                                    $('#desId').append(
+                                        $("<option></option>").attr("value",value).text(res_desName[key])); 
+                                });
+                               
+
+                                $('#view-dest').modal('show');
+                            });

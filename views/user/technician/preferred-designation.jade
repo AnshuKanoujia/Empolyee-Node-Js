@@ -1,0 +1,64 @@
+extends ./../../layout/user-layout
+
+block content
+            #page-wrapper
+                .row.page-titles
+                    .col-md-5.align-self-center
+                        h3.text-themecolor Technician
+                    .col-md-7.align-self-center
+                        ol.breadcrumb
+                            li.breadcrumb-item.active Customize Search - Dashboard
+                .container-fluid
+                    form#add-PredesignationForm(accept-charset='utf-8', method='post', name='add-Predesignation', action='/user/technician/add-Predesignation')
+                        -if(messages.msg_error)
+                            .alert.alert-danger #{messages.msg_error}
+                        -else if(messages.msg_info)
+                            .alert.alert-success #{messages.msg_info}
+                        .row
+                            .col-md-12.col-sm-12
+                                .card
+                                        .card-header
+                                            .row
+                                                .col-sm-4
+                                                    h4 Preferred Designation
+                                                .col-md-8.text-right
+                                                    label.lBlock Mark Unavailable
+                                                    &nbsp;&nbsp;
+                                                    a.btn.btn-danger.block.btn-sm(href='/user/technician/block-UnblockTech', title='Change Availability', data-toggle='tooltip', onclick="return confirm('Do you really want to Change Availability Status?');")  
+                                                                i.fa.fa-ban
+                                        .card-body
+                                            .row
+                                                .col-md-12
+                                                    .row
+                                                        .col-sm-6
+                                                            label Preferred Designation
+                                                                span.text-danger  *
+                                                    .custom-checkbox         
+                                                        each selected_data in selecteddata 
+                                                            div.col-md-6
+                                                                if (showdesignation.indexOf(selected_data.id.toString())!= -1)                                                             
+                                                                    input(type='checkbox' id='designation_id' checked name='designation_id', value=selected_data.id)
+                                                                    label(for='designation_id') #{selected_data.designation_name}
+                                                                else
+                                                                    input(type='checkbox', id='designation_id',  name='designation_id', value=selected_data.id)
+                                                                    label(for='designation_id') #{selected_data.designation_name}
+                                                                    
+                                            .col-md-12
+                                                .text-right
+                                                    button.btn.btn-success(type='submit') Submit & Exit
+                
+                script(type="text/javascript").
+                        $(document).ready(function(){
+                            var k = !{JSON.stringify(userSearch)};
+                            if(k == "0"){
+
+                                $(this).find('.lBlock').removeClass('btn-primary').text('Mark Available').attr('title', 'Unblock Technician');
+
+                                $(this).find('.block').removeClass('btn-primary').html('<i class="fa fa-search-plus"></i>').attr('title', 'Change Availability');
+
+                            } else{
+                                $(this).find('.block').removeClass('btn-danger').addClass('btn-info').text('Mark Unavailable')
+                                $(this).find('.block').removeClass('btn-danger').addClass('btn-info').html('<i class="fa fa-search-plus"></i>')
+                            }
+                           
+                        });

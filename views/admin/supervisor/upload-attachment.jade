@@ -1,0 +1,40 @@
+extends ./../../layout/supervisor-layout
+
+block content
+            #page-wrapper
+                .row.page-titles
+                    .col-md-5.align-self-center
+                        h3.text-themecolor Supervisor
+                    .col-md-7.align-self-center
+                        ol.breadcrumb
+                            li.breadcrumb-item.active Certification - Dashboard
+                .container-fluid
+                    form#newSiteForm(accept-charset='utf-8', method='post', name='loginForm', action='/admin/supervisor/upload-attachment/#{id}', enctype='multipart/form-data')
+                        -if(messages.msg_error)
+                            .alert.alert-danger #{messages.msg_error}
+                        -else if(messages.msg_info)
+                            .alert.alert-success #{messages.msg_info}
+                        .row
+                            .col-md-12.col-sm-12
+                                .card
+                                        .card-header
+                                            .row
+                                                .col-sm-6
+                                                    h4 My Attachment
+                                        .card-body
+                                            .row
+                                                .col-md-12
+                                                    .row
+                                                        .col-sm-3
+                                                            label Attachment
+                                                                span.text-danger  *
+                                                            input.form-control(type='file', name='attachment', accept='image/pdf/*',required)
+                                                
+                                                .col-sm-12
+                                                    label Description Of Project Attachment
+                                                    textarea.form-control.height-120(placeholder='About Project Attachment', name='description', minlength='5')
+                                                
+                                        .col-md-12
+                                            .text-right
+                                                    button.btn.btn-success(type='submit') Submit & Exit
+                    

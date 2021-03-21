@@ -1,0 +1,48 @@
+extends ./../../layout/user-layout
+
+block content
+      #page-wrapper
+            .row.page-titles
+                .col-md-5.align-self-center
+                    h3.text-themecolor Technician
+                .col-md-7.align-self-center
+                    ol.breadcrumb
+                        li.breadcrumb-item.active Project
+            .container-fluid
+                .row
+                    .col-md-12
+                        each jobList in singleJob
+                            .card
+                                .card-header 
+                                    .row
+                                        .col-sm-6
+                                            h4 #{jobList.jobName+' ('+jobList.jobCode+')'}
+                                        .col-sm-6.text-right
+                                            a.btn.btn-primary.block.btn-sm(href='/user/technician/search-jobs', title='Back To View Supervisors List')  
+                                                i.ti-angle-left Back
+                                .card-body
+                                
+                                    .table-responsive
+                                        table.table.table-borderless.job-details
+                                        
+                                            tbody
+                                                tr
+                                                    th Location Name:
+                                                    td= jobList.siteName
+                                                    //- td= jobList.siteName+' ('+jobList.sitesCode+')'
+                                                    th Date:
+                                                    td= moment(jobList.createDate).format('YYYY/MM/DD')
+                                                tr
+                                                    th Experience:
+                                                    td= jobList.experience ? jobList.experience : '--' 
+                                                    th No Of Vacancy:
+                                                    td= jobList.noOfVacancy ? jobList.noOfVacancy : '--' 
+                                                    
+                                                tr 
+                                                    th Location:
+                                                    td(colspan="4")= jobList.newAddress ? jobList.newAddress : '--'
+                                                tr 
+                                                    th Description Of Project
+                                                    td(colspan="4")= jobList.description  
+                                                       
+                        

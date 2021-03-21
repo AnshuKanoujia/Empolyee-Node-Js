@@ -1,0 +1,60 @@
+extends ./../../layout/supervisor-layout
+
+block content
+			#page-wrapper
+				.row.page-titles
+					.col-md-5.align-self-center
+						h3.text-themecolor Supervisor
+					.col-md-7.align-self-center
+						ol.breadcrumb
+							li.breadcrumb-item.active Edit Job - Dashboard
+				.container-fluid
+					.row
+						.col-md-12.col-sm-12
+								//- form#updateJob(accept-charset='utf-8', method='post', name='updateJob', action='/admin/supervisor/updateJob')
+								-if(messages.msg_error)
+									.alert.alert-danger #{messages.msg_error}
+								-else if(messages.msg_info)
+									.alert.alert-success #{messages.msg_info}
+
+								.card
+									.card-header
+										form#updateJob(accept-charset='utf-8', method='post', name='updateJob', action='/admin/supervisor/updateJob')
+											.col-sm-6
+												h4 Edit Job  
+											.col-sm-6.text-right
+												input.form-control(type='hidden',name='user_id', value=user_id)
+												input.form-control(type='hidden',name='job_id', value=job_id)
+												button.btn.btn-danger.btn-sm(type='submit',name='suspend',value='2', onclick="return confirm('Do you really want to suspend employee?');") Suspend Emp
+												button.btn.btn-success.btn-sm(type='submit', name='finish',value='0', onclick="return confirm('Do you really want to finish the job?');") Job Finish 
+									.card-body
+										form#updateJob(accept-charset='utf-8', method='post', name='updateJob', action='/admin/supervisor/updateJobTime')
+											.row
+												.col-md-12
+													.col-md-6
+														input.form-control(type='hidden',name='user_id', value=user_id)
+														input.form-control(type='hidden',name='job_id', value=job_id)
+														label Enroll In Date
+															span.text-danger  *
+														input.form-control(type='text',name='enroll_Indate', data-toggle='datepicker', value=moment(rows.enroll_Indate).format('MM/DD/YYYY'), required )
+													.col-sm-6
+														label Enroll Out Date
+															span.text-danger  *
+														input.form-control(type='text',name='enroll_Outdate', data-toggle='datepicker',  value= moment(rows.enroll_Outdate).format('MM/DD/YYYY'), required)
+													
+														
+												
+											.text-right
+												button.btn.btn-success(type='submit') Submit & Exit
+			script(type='text/javascript').
+				 $(document).ready(function(){
+					$(document).find('[name="enroll_Indate"],[name="enroll_Outdate"]').datepicker('setStartDate', new Date());
+
+					$('body').find('[name="enroll_Indate"]').datepicker().change(function(e){
+						$(document).find('[name="enroll_Outdate"]').datepicker('setStartDate', new Date(e.target.value));
+					}) 
+
+					$('body').find('[name="enroll_Outdate"]').datepicker().change(function(e){
+						$(document).find('[name="enroll_Indate"]').datepicker('setEndDate', new Date(e.target.value));
+					}) 
+				 })

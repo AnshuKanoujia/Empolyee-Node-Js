@@ -1,0 +1,62 @@
+extends ./../../layout/supervisor-layout
+
+block content
+            #page-wrapper
+                .row.page-titles
+                    -if(messages.msg_error)
+                        .alert.alert-danger #{messages.msg_error}
+                    -else if(messages.msg_info)
+                        .alert.alert-success #{messages.msg_info}
+                    .col-md-5.align-self-center
+                        h3.text-themecolor Supervisor
+                    .col-md-7.align-self-center
+                        ol.breadcrumb
+                            li.breadcrumb-item.active Submit Time Sheet - Dashboard
+                    .container-fluid
+                        form(accept-charset='utf-8', method='post', action='/admin/supervisor/clockOut', enctype='multipart/form-data')
+                            input.form-control(type='hidden', name='jobId', id=jobId, value=reports.jobId)
+                            input.form-control(type='hidden', name='inTime', id=inTime, value=reports.inTime)
+                            
+                            .row
+                                .col-md-12.col-sm-12
+                                    .card
+                                            .card-header
+                                                .row
+                                                    .col-sm-6
+                                                        h4 Submit Time Sheet
+                                                    .col-sm-6.text-right
+                                                        label 
+                                                            b In Time
+                                                            &nbsp;
+                                                        label
+                                                            value=reports.inTime
+                                            .card-body
+                                                .row
+                                                    .col-md-12
+                                                        .row
+                                                            .col-sm-4
+                                                                label Date
+                                                                    span.text-danger  *
+                                                                input.form-control(type='text', name='date', value=moment(reports.date).format('MM/DD/YYYY'), data-toggle='datepicker', autocomplete="off")
+                                                            .col-sm-4
+                                                                label Out Time
+                                                                    span.text-danger  *
+                                                                input#outTime.timepicker.form-control(type='text', name='outTime', required, autocomplete="off")
+                                                            .col-sm-4
+                                                                label Attachment
+                                                                input.form-control(type='file', name='attachment')
+                                                    .col-sm-12
+                                                        label Description Of Time Sheet
+                                                        textarea#report.form-control.height-120.textarea(placeholder='About Report', name='description', minlength='5')
+                                                    
+                                .col-md-12
+                                    .text-right
+                                            button.btn.btn-success(type='submit') Submit & Exit
+                    script(type='text/javascript').
+                        let inTime = $('value').text();
+                        $('#outTime').datetimepicker({
+                            minDate : new Date(inTime)
+                        })
+                                                
+                        
+

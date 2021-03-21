@@ -1,0 +1,302 @@
+extends ./../../layout/hr-layout
+
+block content
+      #page-wrapper
+            .row.page-titles
+                .col-md-5.align-self-center
+                    h3.text-themecolor Hr
+                .col-md-7.align-self-center
+                    ol.breadcrumb
+                        li.breadcrumb-item.active Time Sheet
+            .container-fluid
+                    -if(messages.msg_error)
+                        .alert.alert-danger #{messages.msg_error}
+                    -else if(messages.msg_info)
+                       .alert.alert-success #{messages.msg_info}
+                    .row
+                        .col-md-12
+                            .card
+                                .card-body
+                                    .row
+                                        .col-md-4
+                                            h4  Time Sheet
+                                        .col-md-8.text-right
+                                            if(timeSheet)
+                                                a.excel_expot.btn.btn-primary.btn-lg(href='/admin/hr/excel-export/#{timeSheet}') Excel
+                                                    &#32;
+                                                    i.fa.fa-download
+                                            &#32;
+                                            button#weekly.show_data.btn.btn-primary.btn-lg(value="weekly") Weekly
+                                            &#32;
+                                            button#monthly.show_data.btn.btn-primary.btn-lg(value="monthly") Monthly
+                                            &#32;
+                                            button#all.show_data.btn.btn-primary.btn-lg(value="all") all
+                                    
+                                    .table-responsive
+                                        table#pickle.table.table-striped.table-bordered
+                                            thead
+                                                tr
+                                                    th #
+                                                    th Project Name
+                                                    th Date 
+                                                    th Clock In 
+                                                    th Clock Out 
+                                                    th Total Hours 
+                                                    th Action
+                                            tbody
+                                                if(timeSheetDetails.length)
+                                                     each timeSheetList, i in timeSheetDetails
+                                                        tr
+                                                            td= i+1
+                                                            td= timeSheetList.jobName
+                                                            td= moment(timeSheetList.date).format('MM/DD/YYYY')
+                                                            td= timeSheetList.inTime
+                                                            td= timeSheetList.outTime
+                                                            td= timeSheetList.hours_count
+                                                            td
+                                                                if (timeSheetList.attachment)
+                                                                    a.btn.btn-info.btn-sm(href='/uploads/#{timeSheetList.attachment}', title='View Attachment', target="_blank") View Attachment
+                                                                else 
+                                                                    label No attachment.
+                                                                &#32;
+                                                                a.btn.btn-info.btn-lg(href="#myModal", class="btn-timesheet" data-toggle="modal", data-id=timeSheetList.taskreportingId,data-job=timeSheetList.jobName,data-time=timeSheetList.inTime,data-out=timeSheetList.outTime,
+                                                                data-hours=timeSheetList.hours_count,
+                                                                data-date=moment(timeSheetList.date).format('MM/DD/YYYY'),data-description=timeSheetList.description, titile='View TimeSheet') View TimeSheet
+                                                                &#32;
+                                                                button.btn.btn-primary.btn-lg(data-toggle='modal', data-placement='top', data-id=timeSheetList.taskreportingId , title='Edit Time', data-target='#manage-timeSheet') Edit Time
+                                                                input.form-control(type='hidden', id='taskreportingId', name='taskreportingId' value=timeSheetList.taskreportingId)
+                                                else
+                                                    tr.danger.text-center
+                                                        td(colspan='7') User haven't entered any timesheet record yet!
+                                        .flexbox.padd-10
+                                            ul.pagination
+                                                li.page-item
+                                                    a.page-link(aria-label='Previous')
+                                                        i.ti-arrow-left
+                                                        span.sr-only Previous
+                                                li.page-item
+                                                    a.page-link(aria-label='Next')
+                                                        i.ti-arrow-right
+                                                        span.sr-only Next
+           
+                #myModal.modal.fade(tabindex="-1", role="dialog", aria-labelledby="myModalLabel", aria-hidden="true")
+                    .modal-dialog
+                        .modal-content
+                            .modal-header
+                                button.close(type="button", data-dismiss="modal", aria-hidden="true") &times;
+                                h4.modal-title View Time Sheet
+                            .modal-body
+                                table.table.table-borderless.job-details
+                                    tbody
+                            .modal-footer
+                                button.btn.btn-default(type="button", data-dismiss="modal") Close
+                 
+
+                .modal#manage-timeSheet.fade(tabindex='-1', role='dialog' aria-labelledby="delete-skill" aria-hidden="true")
+                        .modal-dialog(role='document')
+                            .modal-content
+                                .modal-header.theme-bg
+                                    h4.modal-title Reporting
+                                    button.close(type='button', data-dismiss='modal', aria-label='Close')
+                                        span(aria-hidden='true') ×
+                                form#SupervisorForm(accept-charset='utf-8', method='post', name='superviosrForm', action='/admin/hr/InTime-OutTime')
+                                    .modal-body
+                                            .row
+                                                .col-md-6
+                                                    label Enter InTime
+                                                        span.text-danger  *
+                                                    input.timepicker.form-control(type='text', name='inTime', id='inTime', required, autocomplete="off")
+                                                .col-md-6
+                                                    label Enter OutTime
+                                                        span.text-danger  *
+                                                    input.timepicker.form-control(type='text', name='outTime', id='outTime', required, autocomplete="off")
+
+                                            input.form-control(type='hidden', id='id', name='id')
+                                            input.form-control(type='hidden', id='userId',  name='userId')
+                                    .modal-footer
+                                        button.btn.btn-default(type='button', data-dismiss='modal') Cancel
+                                        button#delete.btn.btn-primary(type='submit') Manage Time
+
+                script(type='text/javascript').
+                
+                    function showData(data, attachment){
+                        var data = JSON.parse(data.data);
+                        if(data.length){
+                            
+                            $('#pickle tbody').empty();
+                            $.each(data,function(i, val){
+                                console.log('e')
+                                if(attachment[i].attachment !== null){
+                                    var  getData =   $('<a>', {'class': 'btn btn-success btn-sm', 'href': '/uploads/'+ attachment[i].attachment, 'title': 'View Attachment', 'target': '_blank' }).text('View Attachment')
+                                } else{
+                                    var getData =   $('<label>').text("No Attachment.")
+                                }
+
+                                    $('#pickle tbody').append(
+                                        $('<tr>').append(
+                                            $('<td>').text(i+1),
+                                            $('<td>').text(val.jobName),
+                                            $('<td>').text(moment(val.date).format('MM/DD/YYYY')),
+                                            $('<td>').text(val.inTime),
+                                            $('<td>').text(val.outTime),
+                                            $('<td>').text(val.hours_count),
+                                        $('<td>').append(
+                                            getData,$('<a>', {'class': 'btn btn-info btn-sm btn-timesheet', 'href':'#myModal', 'data-toggle':'modal', 'data-id': val.taskreportingId, 'data-job': val.jobName, 'data-time': val.inTime, 'data-out': val.outTime,'data-date': moment(val.date).format('MM/DD/YYYY'), 'data-hours': val.hours_count,'data-description': val.description, 'data-supervisors_name': val.supervisors_name, 'title': 'View TimeSheet',}).html('<i class="fa fa-calendar"></i>'),
+                                            $('<button>', {'class': 'btn btn-primary btn-sm ', 'data-toggle':'modal', 'data-id': val.taskreportingId, 'data-userId': val.userId, 'data-time': val.inTime, 'data-out': val.outTime, 'title': 'Edit Time', 'data-target': '#manage-timeSheet'}).html('<i class="fa fa-edit"></i>'),
+                                            
+                                        ) 
+                                        )
+                                    )
+
+                            })
+
+                        } else{
+                                $('#pickle tbody').empty();
+                                $('#pickle tbody').append(
+                                    $('<tr>').append(
+                                        $('<td>', {'colspan': '7'}).text('There is no record found.')
+                                    )
+                                )
+
+                        }
+                        
+                        
+                    }
+            
+                    $(document).on('click', "button.btn-sm[data-toggle='modal']", function() {
+                        let id = $(this).data('id');
+                        let userId = $(this).data('userid');
+                        let intime = $(this).data('time');
+                        let outtime = $(this).data('out');
+                        $("#id").val(id);
+                        $("#userId").val(userId);
+                        $('input[name="inTime"]').val($(this).data('time'));
+                        $('input[name="outTime"]').val($(this).data('out'));
+                        //- $('.timepicker').datetimepicker({
+                        //-     format: 'LT'
+                        //- });
+                        
+                        $('#manage-timeSheet').modal('show');
+
+                        $('#outTime').datetimepicker({
+                            minDate : new Date(intime),
+                        });
+                        $('#inTime').datetimepicker({
+                            maxDate : new Date(outtime)
+                        });
+
+                        $('#outTime').on('change blur',function(){
+                            $('#inTime').datetimepicker({
+                                maxDate : new Date($(this).val()),
+                            })
+                        });
+                        $('#inTime').on('change blur',function(){
+                            $('#outTime').datetimepicker({
+                                minDate : new Date($(this).val()),
+                            })
+                        })
+                    });
+
+                    $(document).ready(function(){
+                        var k = !{JSON.stringify(url)};
+                        var attachment = !{JSON.stringify(timeSheetDetails)};
+                        
+                     
+                        if(attachment.length){
+                            var href = "uploads/" + attachment;
+                        } 
+                        
+                        setTimeout(function(){
+                                $("#weekly").click();
+                        },500)
+                        
+
+                        $(document).on('click', '.btn-timesheet', function(){
+                            let {id,job,supervisors_name,time,out,date,description} = $(this).data();
+                            var markup = "<tr><th>Job_Name</th><td>" + job + "</td><th>supervisors_name</th><td>" + supervisors_name + "</td></tr></<tr><tr><th>inTime</th><td>" + time + "</td><th>outTime</th><td>" + out + "</td></tr></<tr><tr><th>Date</th><td colspan='4'>" + date + "</td></tr></<tr><tr><th>Description Of Time Sheet</th><td colspan='4'>" + description + "</td></tr></<tr>";
+                            $("#myModal .modal-body table tbody").empty().append(markup);
+                        })
+
+                        $('.show_data').on('click', function(){
+                            
+                            count = 0;
+                            $(this).siblings().removeClass('active');
+                            $(this).addClass('active');
+
+                            var id = $(this).attr('id');
+                            var limit = "";
+                            url = k+"timeSheet/";
+
+
+                            if(id == 'weekly'){
+                                limit = 7;
+                            } else if(id == 'monthly'){
+                                limit = 31;
+                            } else{
+                                limit = 100;
+                            } 
+
+                          
+
+                            $.ajax({
+                                type: "POST",
+                                url: url,
+                                //- async: false,
+                                data:{
+                                    userId: attachment[0].userId,
+                                    off: 0,
+                                    limit: limit
+                                },
+                                success: function(data){
+                                   
+                                    showData(data , attachment)
+                                }
+                            })
+                        })
+
+                        var count = 0;
+                        //- var offset = "";
+                        $('.page-link').on('click', function(){
+                           
+                                var type = $(this).attr('aria-label');
+                                var limit = "";
+                                var id = $('.show_data.active').attr('id');
+                                if(id == "weekly"){
+                                    limit = 7;                                            
+                                } else if(id =='monthly'){
+                                    limit = 31;                                       
+                                } else{
+                                    limit = 100;
+                                } 
+
+                                if(type == "Next"){
+                                    count = count += 1;
+                                    var offset = parseInt(limit) * parseInt(count);
+                                    url = k+"timeSheet/"
+                                    
+                                } else{
+                                    count = count -= 1;
+                                    url = k+"timeSheet-previous";
+                                    var offset = parseInt(limit) * parseInt(count);
+                                }
+                                $.ajax({
+                                    type: "POST",
+                                    url: url,
+                                    data:{
+                                        userId: attachment[0].userId,
+                                        off: offset > 0 ? offset : 0,
+                                        limit: limit
+                                    },
+                                    success: function(data){
+                                        showData(data , attachment)
+                                    }
+                                })
+        
+                        }) 
+
+                        
+                    });
+
+                        
+
+                        

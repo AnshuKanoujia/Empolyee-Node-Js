@@ -1,0 +1,79 @@
+extends ./../../layout/supervisor-layout
+
+block content
+      #page-wrapper
+            .row.page-titles
+                .col-md-5.align-self-center
+                    h3.text-themecolor Project Planner 
+                .col-md-7.align-self-center
+                    ol.breadcrumb
+                        li.breadcrumb-item.active Project Name
+            .container-fluid
+                .row
+                    .col-md-12
+                       
+                        .card
+                            .card-header 
+                                .row
+                                    .col-sm-6
+                                        h4 Location Profile
+                                    .col-sm-6.text-right
+                                        a.btn.btn-primary.block.btn-sm(href='/admin/supervisor/manage-sites', data-toggle='tooltip', title='Back To View Manage Sites')  
+                                            i.ti-angle-left Back
+                                        
+                            .card-body
+                            
+                                .table-responsive
+                                    table.table.table-borderless.job-details
+                                    
+                                        tbody
+                                            each viewSiteLists in siteLists
+                                                tr
+                                                    th Location Name:
+                                                    td=viewSiteLists.siteName
+                                                    //- td=viewSiteLists.siteName+' ('+ viewSiteLists.sitesCode+')'
+                                                    th Created Date:
+                                                    td=moment(viewSiteLists.createDate).isValid() ? moment(viewSiteLists.createDate).format('MM/DD/YYYY') : '--'
+                                                tr
+                                                    th Supervisor:
+                                                    td= viewSiteLists.name
+                                                    th Planner:
+                                                    td= viewSiteLists.plannerName
+                                                tr
+                                                    th Location:
+                                                    td(colspan="4")= viewSiteLists.newAddress ? viewSiteLists.newAddress : '--'
+                                                tr 
+                                                    th Description
+                                                    td(colspan="4")= viewSiteLists.description ? viewSiteLists.description : '--'
+                                                
+
+                        .card
+                            .card-body
+                                h4  Projects List
+                                .table-responsive
+                                    table.table.table-striped.table-bordered
+                                        thead
+                                            tr
+                                                th Project Code
+                                                th Project Name
+                                                //- th No.Of Phases
+                                                th End Date
+                                                th Action
+
+                                        tbody
+                                            if(jobList.length)
+                                                each viewJobList in jobList
+                                                    tr
+                                                        td= viewJobList.jobCode
+                                                        td= viewJobList.jobName
+                                                        //- td= viewJobList.noOfPhases
+                                                        td= moment(viewJobList.endDate).format('MM/DD/YYYY')
+                                                        td
+                                                            a.btn.btn-info.block.btn-sm(href='/admin/supervisor/viewSingelJobs/#{viewJobList.id}', data-toggle='tooltip', title='View Project') 
+                                                                i.fa.fa-eye
+                                                   
+                                            else
+                                                tr.danger.text-center
+                                                    td(colspan='6') Sorry, no record found!
+
+                                a.btn.btn-info.btn-sm(href='/admin/supervisor/view-jobs/#{siteLists[0].id}', title='Add New Project') View All Projects

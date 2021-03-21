@@ -1,0 +1,83 @@
+extends ./../../layout/admin-layout
+
+block content
+      #page-wrapper
+            .row.page-titles
+                .col-md-5.align-self-center
+                    h3.text-themecolor Project Planner
+                .col-md-7.align-self-center
+                    ol.breadcrumb
+                        li.breadcrumb-item.active Certification
+            .container-fluid
+                    -if(messages.msg_error)
+                        .alert.alert-danger #{messages.msg_error}
+                    -else if(messages.msg_info)
+                       .alert.alert-success #{messages.msg_info}
+                    .row
+                        .col-md-12
+                            .card
+                                .card-body
+                                    h4  Certificates List
+                                    .table-responsive
+                                        table.table.table-striped.table-bordered
+                                            thead
+                                                tr
+                                                    th #
+                                                    th Certification Name
+                                                    th Certificate Image
+                                                    th Authorized
+                                                    th Expire Date
+                                                    th Action
+                                            tbody
+                                                if(certificateList.length)
+                                                    each list, i in certificateList
+                                                        tr
+                                                            td= i+1
+                                                            td= list.certification_name
+                                                            td
+                                                                -var value = list.certificate_attachment.substr(list.certificate_attachment.lastIndexOf('.') + 1);
+                                                                if(value == 'jpg' || value == 'JPG' || value == 'jpeg' || value == 'JPEG' || value == 'png' || value == 'PNG')
+                                                                    a.btn.btn-sm(href='#view-image',
+                                                                    data-img='/uploads/certificate_attachment/#{list.certificate_attachment}', data-toggle='modal', data-id=list.id, data-image=list.certificate_attachment, title='View Image')
+                                                                        img#user_img.img-circle.img-responsive(src='/uploads/certificate_attachment/#{list.certificate_attachment}', alt='' style="margin: 5px 0;width:40px;height:40px")
+                                                                else if(value == 'pdf' || value == 'PDF')
+                                                                    a.btn.btn-sm(href='#view-image',
+                                                                    data-img='/uploads/certificate_attachment/#{list.certificate_attachment}', data-toggle='modal', data-id=list.id, data-image=list.certificate_attachment, title='View Image')
+                                                                        img#user_img.img-circle.img-responsive(src='/uploads/certificate_attachment/pdf.png', alt='' style="margin: 5px 0;width:40px;height:40px")         
+                                                                else
+                                                                    label No Image
+                                                            td= list.authority
+                                                            td= moment(list.exp_date).isValid() ? moment(list.exp_date).format('MM/DD/YYYY') : '--'
+                                                            td
+                                                                //- a.btn.btn-info.btn-sm(href='/admin/super-admin/view-certificateDetails/#{list.id}', title='View Certificate') View
+                                                                a.btn.btn-info.btn-sm(href='/uploads/certificate_attachment/#{list.certificate_attachment}', target='_blank', data-toggle='tooltip', title='View Certificate')
+                                                                    i.fa.fa-eye 
+                                                                &#32;
+                                                                a.btn.btn-primary.btn-sm(href='/admin/super-admin/edit-certificate/#{list.id}', data-toggle='tooltip', title='Edit Certificate') 
+                                                                    i.fa.fa-edit 
+                                                                &#32;
+                                                                a.btn.btn-danger.btn-sm(href='/admin/super-admin/deleteCertificate/#{list.id}', data-toggle='tooltip', title='Delete Certificate', onclick="return confirm('Do you really want to delete certificate?');")
+                                                                    i.fa.fa-trash
+                                                            
+                                                else
+                                                    tr.danger.text-center
+                                                        td(colspan='6') Sorry, no record found!
+                                                          
+            .modal#view-image.fade(tabindex='-1', role='dialog' aria-labelledby="delete-skill" aria-hidden="true")
+                        .modal-dialog.modal-300(role='document')
+                            .modal-content
+                                .modal-header.theme-bg
+                                    h4.modal-title Image
+                                    button.close(type='button', data-dismiss='modal', aria-label='Close')
+                                        span(aria-hidden='true') ×
+                                .modal-body
+                                    .row
+                                        .form-group.col-md-12
+                                            img#modal-img.full-modal-img.img-responsive(src='/uploads/profile_img/#{image}', alt='')
+            script(type='text/javascript').
+                $(document).on('click', "a[href='#view-image']", function() {
+
+                    let {id, img} = $(this).data();
+                    $("#id").val(id);
+                    $("#modal-img").attr('src', img);
+                });

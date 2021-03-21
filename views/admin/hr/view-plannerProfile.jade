@@ -1,0 +1,157 @@
+extends ./../../layout/hr-layout
+
+block content
+      #page-wrapper
+            .row.page-titles
+                .col-md-5.align-self-center
+                    h3.text-themecolor Hr
+                .col-md-7.align-self-center
+                    ol.breadcrumb
+                        li.breadcrumb-item.active Planner Profile
+            .container-fluid
+                -if(messages.msg_error)
+                    .alert.alert-danger #{messages.msg_error}
+                -else if(messages.msg_info)
+                    .alert.alert-success #{messages.msg_info}
+                .row
+                    .col-md-12
+                        .card
+                            .card-header 
+                                .row
+                                    .col-sm-6
+                                        h4 Profile
+                                    .col-sm-6.text-right
+                                        a.btn.btn-primary.block.btn-sm(href='/admin/hr/view-planner', data-toggle='tooltip', title='Back To View Planners List')  
+                                            i.ti-angle-left Back
+                                        span(data-toggle='modal', class="location-btn-sm", data-target='#changePassword', data-id=users[0].id)  
+                                            button.btn.btn-success.location-btn-sm(data-toggle='tooltip', data-placement='top', title='Change Password', data-target='#changePassword') Change Password
+                                        span(data-toggle='modal', data-placement='top',class="bt-sm", data-target='#sendMsg',  data-id=users[0].id)
+                                            button.btn.btn-primary.btn-sm(data-toggle='tooltip', data-placement='top', title='Send Message', data-target='#sendMsg') 
+                                                i.fa.fa-envelope
+                            .card-body
+                               
+                                .table-responsive
+                                    table.table.table-borderless.job-details
+                                        tbody
+                                            each plannerProfile in users
+                                                tr
+                                                    th Name:
+                                                    td= plannerProfile.name 
+                                                    th DOB:
+                                                    td= moment(plannerProfile.dob).isValid() ? moment(plannerProfile.dob).format('MM/DD/YYYY') : "--"  
+                                                tr
+                                                    th Email:
+                                                    td= plannerProfile.email
+                                                    th Experience:
+                                                    td= plannerProfile.experience
+                        .card
+                            .card-body
+                                h4  Certifications List
+                                .table-responsive
+                                    table.table.table-striped.table-bordered
+                                        thead
+                                            tr
+                                                th #
+                                                th Name
+                                                th Images
+                                                th Authority
+                                                th Action
+
+                                        tbody
+                                            if(certificatonList.length)
+                                                each viewCertificatonList, i in certificatonList
+                                                    tr
+                                                        td= i+1
+                                                        td= viewCertificatonList.certification_name
+                                                        td
+                                                            if(viewCertificatonList.certificate_attachment)
+                                                                    a.btn.btn-sm(href='#view-image',
+                                                                    data-img='/uploads/certificate_attachment/#{viewCertificatonList.certificate_attachment}', data-toggle='modal', data-id=viewCertificatonList.quesId, data-image=viewCertificatonList.certificate_attachment, title='View Image')
+                                                                        img#user_img.img-circle.img-responsive(src='/uploads/certificate_attachment/#{viewCertificatonList.certificate_attachment}', alt='' style="margin: 5px 0;width:40px;height:40px")
+                                                                            
+                                                                else
+                                                                    label No Image
+                                                        td= viewCertificatonList.authority
+                                                        td
+                                                            //- a.btn.btn-primary.btn-lg(href="#myModal", class="btn-attach" data-toggle="modal", data-img=viewCertificatonList.certificate_attachment,  data-attachment="/uploads/certificate_attachment/#{viewCertificatonList.certificate_attachment}") View Image
+                                                            a.btn.btn-primary.btn-lg(href="/uploads/certificate_attachment/#{viewCertificatonList.certificate_attachment}",target='_blank', data-toggle='tooltip', title='View Certificate') 
+                                                                i.fa.fa-eye
+                                            else
+                                                tr.danger.text-center
+                                                    td(colspan='6') Sorry, no record found!
+                                                    
+            .modal#sendMsg.modal.fade(tabindex='-1', role='dialog' aria-labelledby="delete-skill" aria-hidden="true")
+                    .modal-dialog(role='document')
+                        .modal-content
+                            .modal-header.theme-bg
+                                h4.modal-title Send Message
+                                button.close(type='button', data-dismiss='modal', aria-label='Close')
+                                    span(aria-hidden='true') ×
+                            form#SupervisorForm(accept-charset='utf-8', method='post', name='superviosrForm', action='/admin/hr/sendMsg')
+                                .modal-body
+                                       .row
+                                            .col-md-12
+                                                label Message
+                                                    span.text-danger  *
+                                                textarea.form-control.height-100.textarea(rows='3', placeholder='Enter Message', name='message', required)
+                                        input.form-control(type='hidden', id='id', name='id')
+                                .modal-footer
+                                    button.btn.btn-default(type='button', data-dismiss='modal') Cancel
+                                    button#delete.btn.btn-primary(type='submit') Submit
+            .modal#changePassword.fade(tabindex='-1', role='dialog' aria-labelledby="delete-skill" aria-hidden="true")
+                .modal-dialog(role='document')
+                    .modal-content
+                        .modal-header.theme-bg
+                            h4.modal-title Change Password
+                            button.close(type='button', data-dismiss='modal', aria-label='Close')
+                                span(aria-hidden='true') ×
+                        form#changePasswordForm(accept-charset='utf-8', method='post', name='changePasswordForm', action='/admin/hr/plannerChangePassword')
+                            .modal-body
+                                    .row
+                                        .col-md-12
+                                            label New Password
+                                                span.text-danger  *
+                                            input.form-control(type='password', name='newPassword', required, minlength='6', autocomplete="off")
+                                    .row
+                                        .col-md-12
+                                            label Confirm New Password
+                                                span.text-danger  *
+                                            input.form-control(type='password', name='confirmNewPassword', required, minlength='6', autocomplete="off")
+                                            
+                                    input.form-control.change_password_id(type='hidden', id='id', value='' name='id')
+                            .modal-footer
+                                button.btn.btn-default(type='button', data-dismiss='modal') Cancel	
+                                button#delete.btn.btn-primary(type='submit') Sumbit
+            .modal#view-image.fade(tabindex='-1', role='dialog' aria-labelledby="delete-skill" aria-hidden="true")
+                        .modal-dialog.modal-300(role='document')
+                            .modal-content
+                                .modal-header.theme-bg
+                                    h4.modal-title Image
+                                    button.close(type='button', data-dismiss='modal', aria-label='Close')
+                                        span(aria-hidden='true') ×
+                                .modal-body
+                                    .row
+                                        .form-group.col-md-12
+                                            img#modal-img.full-modal-img.img-responsive(src='/uploads/profile_img/#{image}', alt='')
+            script(type='text/javascript').
+                $(document).on('click', "a[href='#view-image']", function() {
+
+                    let {id, img} = $(this).data();
+                    $("#id").val(id);
+                    $("#modal-img").attr('src', img);
+                });
+                $(document).on('click', "span.bt-sm[data-toggle='modal']", function(event) {
+                        event.preventDefault();
+                    let userId = $(this).data('id');
+                    $("#id").val(userId);
+                    $('#sendMsg').modal('show');
+                });     
+                $(document).ready(function(){
+                    $(document).on('click', "span.location-btn-sm[data-toggle='modal']", function() {
+                        let id = $(this).data('id');
+                        $(".change_password_id").val(id);
+                        $('#changePassword').modal('show');
+                    });
+                });                                   
+                                               
+                                                        

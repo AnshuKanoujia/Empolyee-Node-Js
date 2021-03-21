@@ -1,0 +1,62 @@
+extends ./../../layout/admin-layout
+
+block content
+      #page-wrapper
+            .row.page-titles
+                .col-md-5.align-self-center
+                    h3.text-themecolor Technician
+                .col-md-7.align-self-center
+                    ol.breadcrumb
+                        li.breadcrumb-item.active Project Name
+            .container-fluid
+                .row
+                    .col-md-12
+                            //- each viewApplication in viewApplication
+                            .card
+                                .card-header 
+                                    .row
+                                        .col-sm-6
+                                            h4 Location Profile
+                                        .col-sm-6.text-right
+                                            a.btn.btn-primary.block.btn-sm(href='/admin/project-planner/manage-application', title='Back To View Supervisors List')  
+                                                i.ti-angle-left Back
+                                        //- h4  Report
+                                .card-body
+                                
+                                    .table-responsive
+                                        form#applicationForm(accept-charset='utf-8', method='post', name='applicationForm', action='/admin/project-planner/updateUserStatus')
+                                            input.form-control(type='hidden', name='id' value=viewApplication.id)
+                                            table.table.table-borderless.job-details
+                                        
+                                                tbody
+                                                    tr
+                                                        th Location:
+                                                        td=viewApplication.siteName
+                                                        //- td=viewApplication.siteName+' ('+viewApplication.sitesCode+')'
+                                                        th Project:
+                                                        td=viewApplication.jobName+' ('+viewApplication.jobCode+')'
+                                                    tr
+                                                        th Project Trade:
+                                                        td=viewApplication.type_name
+                                                        th experience:
+                                                        td=viewApplication.experience
+                                                    tr
+                                                        th Date:
+                                                        td=moment(viewApplication.date).format('YYYY/MM/DD')
+                                                        th Supervisor:
+                                                        td <span class="j-type full-time">#{viewApplication.statusName}</span>
+                                                    tr  
+                                                        th Location:
+                                                        td= viewApplication.city+', '+viewApplication.state+', '+viewApplication.country
+                                                    tr 
+                                                        th Address
+                                                        td(colspan="4") #{viewApplication.address}
+                                            button.btn.btn.btn-success.btn-sm(type='submit', name='status', value=5) Accept
+                                            &nbsp;
+                                            button.btn.btn-info.btn-sm(type='submit', name='status', value=2) Hold
+                                            &nbsp;
+                                            button.btn.btn-danger.btn-sm(type='submit', name='status', value=6) Reject
+                                            //- a.btn.btn-info.btn-sm(href='/admin/supervisor/viewApplication/#{userlist.id}', title='View Application') View
+                                                        
+
+                        

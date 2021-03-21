@@ -1,0 +1,154 @@
+doctype html
+html
+  head
+    //- title= title
+    //- link(rel='stylesheet', href='/stylesheets/style.css')
+     title Employee Tracker
+    meta(charset='utf-8')
+    meta(name='viewport', content='width=device-width, initial-scale=1, maximum-scale=1')
+    //- // CSS==================================================
+    link(rel='stylesheet', href='/plugins/css/plugins.css')
+    link(href='/stylesheets/styles.css', rel='stylesheet')
+    
+    link(rel="icon", href="images/favicon.png", type="image/vnd.microsoft.icon")
+    link#jssDefault(type='text/css', rel='stylesheet', href='/stylesheets/colors/green-style.css')
+  body
+    .Loader
+    .wrapper
+        // header //
+        nav.navbar.navbar-default.navbar-fixed.navbar-light.white.bootsnav
+          .container
+            button.navbar-toggle(type='button', data-toggle='collapse', data-target='#navbar-menu')
+              i.fa.fa-bars
+            .navbar-header
+              a.navbar-brand(href='/')
+                img.logo.logo-scrolled(src='images/logo.png', alt='')
+            #navbar-menu.collapse.navbar-collapse.pull-right
+              ul.nav.navbar-nav.navbar-left(data-in='fadeInDown', data-out='fadeOutUp')
+                li
+                  a(href='#') Home
+                li
+                  a(href='#') Why us
+                li
+                  a(href='#') Features
+                li
+                  a(href='#') Contact
+              ul.nav.navbar-nav.navbar-right(data-in='fadeInDown', data-out='fadeOutUp')
+                li
+                  a(href='/login')
+                    i.fa.fa-sign-in(aria-hidden='true')
+                    |  Login
+                li
+                  a(href='/sign-up')
+                    i.fa.fa-user-plus(aria-hidden='true')
+                    |  Sign Up
+          .clearfix
+
+        // render pages//
+        block content
+
+        //Footer//
+        footer.footer
+          .row.no-padding
+            .container
+              .col-md-3.col-sm-12
+                .footer-widget
+                  h3.widgettitle.widget-title About Best Jobs
+                  .textwidget
+                    p Sed ut perspiciatis unde omnis iste natus error sit voluptatem.
+                    p
+                      | 7860 North Park Place
+                      br
+                      | San Francisco, CA 94120
+                    p
+                      strong Email:
+                      a.__cf_email__(href='#', data-cfemail='5605232626392422163537243333243233253d') demo@gmail.com
+                    p
+                      strong Call:
+                      a(href='tel:+15555555555') 555-555-1234
+                    ul.footer-social
+                      li
+                        a(href='#')
+                          i.fa.fa-facebook
+                      li
+                        a(href='#')
+                          i.fa.fa-google-plus
+                      li
+                        a(href='#')
+                          i.fa.fa-twitter
+                      li
+                        a(href='#')
+                          i.fa.fa-instagram
+                      li
+                        a(href='#')
+                          i.fa.fa-linkedin
+              .col-md-3.col-sm-4
+                .footer-widget
+                  h3.widgettitle.widget-title All Navigation
+                  .textwidget
+                    .textwidget
+                      ul.footer-navigation
+                        li
+                          a(href='#', title='') example
+                        li
+                          a(href='#', title='') example
+                        li
+                          a(href='#', title='') example
+                        li
+                          a(href='#', title='') example
+                        li
+                          a(href='#', title='') example
+                        li
+                          a(href='#', title='') example
+              .col-md-3.col-sm-4
+                .footer-widget
+                  h3.widgettitle.widget-title All Categories
+                  .textwidget
+                    ul.footer-navigation
+                      li
+                        a(href='#', title='') example
+                      li
+                        a(href='#', title='') example
+                      li
+                        a(href='#', title='') example
+                      li
+                        a(href='#', title='') example
+                      li
+                        a(href='#', title='') example
+                      li
+                        a(href='#', title='') example
+              .col-md-3.col-sm-4
+                .footer-widget
+                  h3.widgettitle.widget-title Connect Us
+                  .textwidget
+                    form.footer-form
+                      input.form-control(type='text', placeholder='Your Name')
+                      input.form-control(type='text', placeholder='Email')
+                      textarea.form-control(placeholder='Message')
+                      button.btn.btn-primary(type='submit') Login
+          .row.copyright
+            .container
+              p Copyright Best Jobs © 2019. All Rights Reserved 
+        .clearfix
+        // Scripts==================================================
+        script(type='text/javascript', src='/plugins/js/jquery.min.js')
+        script(type='text/javascript', src='/plugins/js/viewportchecker.js')
+        script(type='text/javascript', src='/plugins/js/bootstrap.min.js')
+        script(type='text/javascript', src='/plugins/js/bootsnav.js')
+        script(type='text/javascript', src='/plugins/js/select2.min.js')
+        script(type='text/javascript', src='/plugins/js/wysihtml5-0.3.0.js')
+        script(type='text/javascript', src='/plugins/js/bootstrap-wysihtml5.js')
+        script(type='text/javascript', src='/plugins/js/datedropper.min.js')
+        script(type='text/javascript', src='/plugins/js/dropzone.js')
+        script(type='text/javascript', src='/plugins/js/loader.js')
+        script(type='text/javascript', src='/plugins/js/owl.carousel.min.js')
+        script(type='text/javascript', src='/plugins/js/slick.min.js')
+        script(type='text/javascript', src='/plugins/js/gmap3.min.js')
+        script(type='text/javascript', src='/plugins/js/jquery.easy-autocomplete.min.js')
+        script(src='/javascripts/custom.js')
+
+
+    //- div.container
+    //- p#hello Hello Pug!
+    //- button.btn.btn-blue Click Me
+    //-   block content

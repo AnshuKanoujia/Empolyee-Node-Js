@@ -1,0 +1,254 @@
+extends ./../../layout/hr-layout
+
+block content
+      #page-wrapper
+            .row.page-titles
+                .col-md-5.align-self-center
+                    h3.text-themecolor Hr
+                .col-md-7.align-self-center
+                    ol.breadcrumb
+                        //- li.breadcrumb-item.active Technician Profile
+            .container-fluid
+                -if(messages.msg_error)
+                    .alert.alert-danger #{messages.msg_error}
+                -else if(messages.msg_info)
+                    .alert.alert-success #{messages.msg_info}
+                .row
+                    .col-md-12
+                        .card-header 
+                            .row
+                                .col-sm-12.text-right
+                                    a.btn.btn-primary.block.btn-sm(href='/admin/hr/edit-TechnicianProfile/#{users[0].id}', data-toggle='tooltip', title='Edit Profile')  
+                                        i.fa.fa-edit  Profile
+                                    //- span(data-toggle='modal', class="location-btn-sm", data-target='#changePassword', data-id=users[0].id)  
+                                    //-     button.btn.btn-success.location-btn-sm(data-toggle='tooltip', data-placement='top', title='Change Passord', data-target='#changePassword') Change Password
+                                    span(data-toggle='modal') 
+                                        a.btn.btn-info.btn-sm(href="#ratingModal", data-toggle="modal") View All Ratings
+                                    if (typeof(designationRate) !== 'undefined') 
+                                        span(data-toggle='modal', data-placement='top',class="btn-sm", data-target='#change_rate',  data-id=designationRate.userId, data-hourly_rate=designationRate.hourly_rate, data-max_pertime_rate=designationRate.max_pertime_rate)
+                                            button.btn.btn-primary.btn-sm(data-toggle='tooltip', data-placement='top', title='Change Pay Rate', data-target='#change_rate') Change Pay Rate
+                                    else
+                                        label Please Provide Designation!
+                                    span(data-toggle='modal', data-placement='top',class="bt-sm", data-target='#sendMsg',  data-id=users[0].id)
+                                        button.btn.btn-primary.btn-sm(data-toggle='tooltip', data-placement='top', title='Send Message', data-target='#sendMsg') 
+                                            i.fa.fa-envelope
+                        .card
+                            .card-header 
+                                .row
+                                    .col-sm-6
+                                        h5 #{users[0].name}'s Profile : #{users[0].designation}
+                                    .col-sm-6.text-right
+                                        a.btn.btn-primary.block.btn-lg(href='/admin/hr/view-technician', data-toggle='tooltip', title='Back to View Technician list')  
+                                            i.ti-angle-left Back
+                            .card-body
+                               
+                                .table-responsive
+                                    table.table.table-borderless.job-details
+                                        tbody
+                                            each technicianProfile in users
+                                                tr
+                                                    th Name:
+                                                    td= technicianProfile.name
+                                                    th Overall Ratings:
+                                                    td
+                                                        if (rating.total_rating)
+                                                            <span class="j-type full-time"><i class="pd-5 fa fa-star" aria-hidden="true"> #{Math.round(rating.total_rating)}</i></span>
+                                                        else
+                                                            <span class="j-type internship">New</span> 
+                                                tr
+                                                    th Email:
+                                                    td= technicianProfile.email
+                                                    th DOB:
+                                                    td= moment(technicianProfile.dob).isValid() ? moment(technicianProfile.dob).format('MM/DD/YYYY') : "--" 
+                                                tr
+                                                    th Trade:
+                                                    td= technicianProfile.type_name ? technicianProfile.type_name : '--'
+                                                    th Location:
+                                                    td= technicianProfile.newAddress ? technicianProfile.newAddress : '--'
+                                                tr
+                                                    th Experience:
+                                                    td= technicianProfile.experience ? technicianProfile.experience : '--'
+                                                    th Exam Score:
+                                                    if (typeof(userResult) !== 'undefined') 
+                                                        td
+                                                            a.btn.btn-info.btn-sm(href="#testScoreModal", data-toggle="modal") View Result
+                                                    else
+                                                        td
+                                                            label This technician have not given exam yet !
+                                                //- tr 
+                                                //-     th Skills:
+                                                //-     td(colspan='4')= technicianProfile.skills ? technicianProfile.skills : '--'
+            //- .modal#changePassword.fade(tabindex='-1', role='dialog' aria-labelledby="delete-skill" aria-hidden="true")
+            //-     .modal-dialog(role='document')
+            //-         .modal-content
+            //-             .modal-header.theme-bg
+            //-                 h4.modal-title Change Password
+            //-                 button.close(type='button', data-dismiss='modal', aria-label='Close')
+            //-                     span(aria-hidden='true') ×
+            //-             form#changePasswordForm(accept-charset='utf-8', method='post', name='changePasswordForm', action='/admin/hr/techChangePassword')
+            //-                 .modal-body
+            //-                         .row
+            //-                             .col-md-12
+            //-                                 label New Password
+            //-                                     span.text-danger  *
+            //-                                 input.form-control(type='password', name='newPassword', required, autocomplete="off")
+            //-                         .row
+            //-                             .col-md-12
+            //-                                 label Confirm New Password
+            //-                                     span.text-danger  *
+            //-                                 input.form-control(type='password', name='confirmNewPassword', required, autocomplete="off")
+                                            
+            //-                         input.form-control(type='hidden', id='id', value='' name='id')
+            //-                 .modal-footer
+            //-                     button.btn.btn-default(type='button', data-dismiss='modal') Cancel	
+            //-                     button#delete.btn.btn-primary(type='submit') Sumbit
+            #ratingModal.modal.fade(tabindex="-1", role="dialog", aria-labelledby="myModalLabe", aria-hidden="true")
+                .modal-dialog
+                    .modal-content
+                        .modal-header
+                            button.close(type="button", data-dismiss="modal", aria-hidden="true") &times;
+                            h4.modal-title Ratings
+                        .modal-body
+                            label All Ratings
+                                table.table.table-borderless.job-details
+                                    tbody
+                                        tr
+                                            th Overall Ratings:
+                                            td= rating.total_rating ? Math.round(rating.total_rating) : '--'
+                                        tr
+                                            th Total Rating of Workmanship Quality:
+                                            td= rating.Workmanship_Quality ? Math.round(rating.Workmanship_Quality) : '--'
+                                        tr
+                                            th Total Rating of Attendance / Punctuality:
+                                            td= rating.Attendance_Punctuality ? Math.round(rating.Attendance_Punctuality) : '--'
+                                        tr
+                                            th Total Rating of Organization / Cleanliness:
+                                            td= rating.Organization_Cleanliness ? Math.round(rating.Organization_Cleanliness) : '--'
+                                        tr
+                                            th Total Rating of Communication / Updates:
+                                            td= rating.Communication_Updates ? Math.round(rating.Communication_Updates) : '--'
+                                        tr
+                                            th Total Rating of Worked Safe:
+                                            td= rating.Worked_Safe ? Math.round(rating.Worked_Safe) : '--'
+                                        tr 
+                                            th Total Rating of Followed Instructions & Schedule
+                                            td= rating.Followed_Instructions_Schedule ? Math.round(rating.Followed_Instructions_Schedule) : '--'
+                                        tr 
+                                            th Total Rating of Team Player
+                                            td= rating.Team_Player ? Math.round(rating.Team_Player) : '--'
+                        .modal-footer
+                            button.btn.btn-default(type="button", data-dismiss="modal") Close                                           
+            .modal#change_rate.fade(tabindex='-1', role='dialog' aria-labelledby="delete-skill" aria-hidden="true")
+                    .modal-dialog(role='document')
+                        .modal-content
+                            .modal-header.theme-bg
+                                h4.modal-title Edit Rate
+                                button.close(type='button', data-dismiss='modal', aria-label='Close')
+                                    span(aria-hidden='true') ×
+                            form#SupervisorForm(accept-charset='utf-8', method='post', name='superviosrForm', action='/admin/hr/updateRate')
+                                .modal-body
+                                       .row
+                                            .col-md-12
+                                                label Hourly Rate
+                                                    span.text-danger  *
+                                                input.form-control(type='text', name='hourly_rate', id='hourly_rate',value=designationRate ? designationRate.hourly_rate : '', required)
+                                                
+                                                label Per Dim Rate
+                                                    span.text-danger  *
+                                                input.form-control(type='text', name='max_pertime_rate', id='max_pertime_rate',value=designationRate ? designationRate.max_pertime_rate : '', required)
+                                            
+                                        input.form-control(type='hidden', id='userId' ,name='userId')
+                                .modal-footer
+                                    button.btn.btn-default(type='button', data-dismiss='modal') Cancel
+                                    button#delete.btn.btn-primary(type='submit') Submit
+            #testScoreModal.modal.fade(tabindex="-1", role="dialog", aria-labelledby="myModalLabe", aria-hidden="true")
+                .modal-dialog
+                    .modal-content
+                        if(typeof(userResult) !== 'undefined')
+                            .modal-header
+                                button.close(type="button", data-dismiss="modal", aria-hidden="true") &times;
+                                h4.modal-title Report Card
+                            .modal-body
+                                    table.table.table-bordered
+                                        tbody
+
+                                            tr
+                                                th Exam Date:
+                                                td= moment(userResult.exam_date).isValid() ? moment(userResult.exam_date).format('MM/DD/YYYY') : "--" 
+                                            //- tr
+                                            //-     th Time Taken:
+                                            //-     td= Math.abs(userResult.end_time - userResult.start_time) / 1000 
+                                            tr
+                                                th Questions Attempt:
+                                                td= userResult.no_of_given_answer ? userResult.no_of_given_answer : '--'
+                                            //- tr
+                                            //-     th No. Of Questions:
+                                            //-     td= userResult.question ? userResult.question : '--'
+                                            tr
+                                                th Easy Correct Answer:
+                                                td= userResult.level_1_score ? userResult.level_1_score : '0'
+                                            tr
+                                                th Medium Correct Answer:
+                                                td= userResult.level_2_score ? userResult.level_2_score : '0'
+                                            tr 
+                                                th Difficult Correct Answer:
+                                                td= userResult.level_3_score ? userResult.level_3_score : '0'
+                                            tr 
+                                                th Wrong Answer:
+                                                td= userResult.wrong_answer_count ? userResult.wrong_answer_count : '0'
+                                            tr  
+                                                th Total Correct Answer:
+                                                td= userResult.total_score
+                                            tr  
+                                                th Total Score:
+                                                td
+                                                    span.score-div= userResult.total_score -(userResult.wrong_answer_count * userResult.neg_mark)
+                                                    if(userResult.wrong_answer_count !== 0)
+                                                
+                                                        span.text-danger *
+                                                        span.text-div= ' after deduction of '+userResult.neg_mark +' for each wrong answer.'
+                            .modal-footer
+                                button.btn.btn-default(type="button", data-dismiss="modal") Close 
+           
+            .modal#sendMsg.modal.fade(tabindex='-1', role='dialog' aria-labelledby="delete-skill" aria-hidden="true")
+                    .modal-dialog(role='document')
+                        .modal-content
+                            .modal-header.theme-bg
+                                h4.modal-title Send Message
+                                button.close(type='button', data-dismiss='modal', aria-label='Close')
+                                    span(aria-hidden='true') ×
+                            form#SupervisorForm(accept-charset='utf-8', method='post', name='superviosrForm', action='/admin/hr/sendMsg')
+                                .modal-body
+                                       .row
+                                            .col-md-12
+                                                label Message
+                                                    span.text-danger  *
+                                                textarea.form-control.height-100.textarea(rows='3', placeholder='Enter Message', name='message', required)
+                                        input.form-control.chat_id(type='hidden', id='id', name='id')
+                                .modal-footer
+                                    button.btn.btn-default(type='button', data-dismiss='modal') Cancel
+                                    button#delete.btn.btn-primary(type='submit') Submit
+            script(type='text/javascript').
+                $(document).on('click', "span.btn-sm[data-toggle='modal']", function() {
+                        event.preventDefault();
+                    let userId = $(this).data('id');
+                    let changeHourRate = $(this).data('hourly_rate');
+                    let changeMaxRate = $(this).data('max_pertime_rate');
+                    $("#userId").val(userId);
+                    $("#hourly_rate").val(changeHourRate);
+                    $("#max_pertime_rate").val(changeMaxRate);
+                    $('#change_rate').modal('show');
+                });
+                $(document).on('click', "span.bt-sm[data-toggle='modal']", function(event) {
+                        event.preventDefault();
+                    let userId = $(this).data('id');
+                    $(".chat_id").val(userId);
+                    $('#sendMsg').modal('show');
+                });
+                //- $(document).ready(function(){
+                //-     $(document).on('click', "span.location-btn-sm[data-toggle='modal']", function() {
+                //-         let id = $(this).data('id');
+                //-         $("#id").val(id);
+                //-         $('#changePassword').modal('show');
+                //-     });
+                //- });

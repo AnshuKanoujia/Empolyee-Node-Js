@@ -1,0 +1,105 @@
+extends ./../../layout/user-layout
+
+block content
+            #page-wrapper
+                .row.page-titles
+                    .col-md-5.align-self-center
+                        h3.text-themecolor Technician
+                    .col-md-7.align-self-center
+                        ol.breadcrumb
+                            li.breadcrumb-item.active Exam - Dashboard
+                .container-fluid
+                    -if(messages.msg_error)
+                        .alert.alert-danger #{messages.msg_error}
+                    -else if(messages.msg_info)
+                        .alert.alert-success #{messages.msg_info}
+                    .row.examData
+                        .col-md-12.col-sm-12
+                            .card
+                                .row
+                                    .col-sm-12.text-center
+                                        h4(style=" color: red") Please Don't Refresh Or Go Back !          
+                            .card
+                                .card-header
+                                    .row
+                                        .col-sm-6
+                                            h4 Question - Answer
+                                        .col-sm-6.text-right
+                                            label Total No. Of Questions - #{questionAnswers.length}
+                            form#add-PredesignationForm(accept-charset='utf-8', method='post', name='add-Predesignation', action="/user/technician/save-QuestionAnser")
+
+                                input(type="hidden", name='userAnswers')
+                                input(type="hidden", name='testId', value=testId)
+                                each paper, i in questionAnswers
+                                    .row
+                                        .col-md-12.col-sm-12
+                                            .card
+                                                .card-body
+                                                    .col-sm-12
+                                                        label.mb-0(value=paper.q_id) #{i+1} . #{paper.question} 
+                                                    
+                                                    .col-md-6.lnh-0
+                                                        .contact-img.lnh-0
+                                                            if(paper.quesImg_attach)
+                                                                a.btn.btn-sm(href='#view-image',
+                                                                data-img='/uploads/Question_Img/#{paper.quesImg_attach}', data-toggle='modal', data-id=paper.q_id, data-image=paper.quesImg_attach, title='View Image')
+                                                                        img#user_img.img-responsive(src='/uploads/Question_Img/#{paper.quesImg_attach}', alt='')
+                                                    .col-sm-12
+                                                        .custom-radio  
+                                                            .col-sm-12
+                                                                                                
+                                                                input(id="noCheck1#{i+1}", type='radio', value='ch1', name='neg_marking_value#{i+1}')  
+                                                                label(for='noCheck1#{i+1}') #{paper.ch1}
+
+                                                            .col-sm-12
+                                                                input(id="noCheck2#{i+1}", type='radio', value='ch2',name='neg_marking_value#{i+1}')
+                                                                label(for='noCheck2#{i+1}') #{paper.ch2}
+                                                                
+                                                            if(paper.ch3)
+                                                                .col-sm-12
+                                                                    input(id="noCheck3#{i+1}", type='radio', value='ch3',name='neg_marking_value#{i+1}')
+                                                                    label(for='noCheck3#{i+1}') #{paper.ch3}
+
+                                                            if(paper.ch4)
+                                                                .col-sm-12
+                                                                    input(id="noCheck4#{i+1}" type='radio', value='ch4',name='neg_marking_value#{i+1}')
+                                                                    label(for='noCheck4#{i+1}') #{paper.ch4}
+                                
+                                .row
+                                    .col-md-12.col-sm-12
+                                        
+                                        .text-right
+                                            button.btn.btn-success(type='submit' , id="userSubmit") Submit & Exit
+                            
+                .modal#view-image.fade(tabindex='-1', role='dialog' aria-labelledby="delete-skill" aria-hidden="true")
+                        .modal-dialog.modal-300(role='document')
+                            .modal-content
+                                .modal-header.theme-bg
+                                    h4.modal-title Image
+                                    button.close(type='button', data-dismiss='modal', aria-label='Close')
+                                        span(aria-hidden='true') ×
+                                .modal-body
+                                    .row
+                                        .form-group.col-md-12
+                                            img#modal-img.full-modal-img.img-responsive(src='/uploads/profile_img/#{image}', alt='')
+                    
+                script(type='text/javascript').
+                    $(document).ready(function(){
+                        $("#userSubmit").on('click', function() { 
+                               var arr = [];
+                                $('.examData form > .row:not(:last-child) .custom-radio').each(function(){
+                                    arr.push($(this).find('input[type="radio"]:checked').val() == undefined ? "0" : $(this).find('input[type="radio"]:checked').val());
+                                });   
+                                $('input[name="userAnswers"]').val(arr);
+                        });
+
+                        $(document).on('click', "a[href='#view-image']", function() {
+
+                            let {id, img} = $(this).data();
+                            $("#id").val(id);
+                            $("#modal-img").attr('src', img);
+                        });
+
+                    })          
+
+                

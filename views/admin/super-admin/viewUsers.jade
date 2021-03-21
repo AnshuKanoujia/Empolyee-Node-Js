@@ -1,0 +1,216 @@
+extends ./../../layout/admin-layout
+
+block content
+                #page-wrapper
+                    .row.page-titles
+                        .col-md-5.align-self-center
+                            h3.text-themecolor Project Planner
+                        .col-md-7.align-self-center
+                            ol.breadcrumb
+                                li.breadcrumb-item.active Projects
+                    .container-fluid
+                        -if(messages.msg_error)
+                            .alert.alert-danger #{messages.msg_error}
+                        -else if(messages.msg_info)
+                            .alert.alert-success #{messages.msg_info}
+                        .row
+                            .col-md-12.col-sm-12
+                                .card
+                                    .card-header
+
+                                        form.col-md-12(accept-charset='utf-8', method='post', name='searchForm', id='form', action="/admin/project-planner/searchUsers")
+                                            .row
+                                                .col-sm-4
+                                                    input.form-control.keyEnter.wide-width(type='text', placeholder='Search Technician Name', name='search', value=search)
+                                                .col-sm-4
+                                                    label.switch
+                                                        input(type="checkbox",id="switch")
+                                                        span.slider.round
+                                                    span &nbsp; Search by skills
+                                                .col-sm-4.text-right
+                                                    a.btn.btn-primary.block.btn-lg(href='/admin/super-admin/userMap-view/#{jobId}', title='View On Map') View On Map
+                                                
+
+
+                                            .switch-element(style="display:none;padding-top:15px")
+                                                    label 
+                                                        h4 Designation
+                                                        .row.from-group.custom-checkbox
+                                                            each designationList in designation
+                                                                .col-md-6
+                                                                    input#designation(type="checkbox", name="designation", value=designationList.designationId) 
+                                                                    label(for="designation"+designationList.designationId+"") #{designationList.designation_name}
+                                                    .row
+                                                        label 
+                                                        h4 Minimum Ratings
+                                                        .col-md-12.from-group
+                                                            span(style='display:block;')
+                                                                div.custom-radio
+                                                                    input(type="radio", id="rating1", value="1" name="ratings")
+                                                                    label(for='rating1') 1
+                                                                    input(type="radio", id="rating2", value="1" name="ratings") 
+                                                                    label(for='rating2') 2
+                                                                    input(type="radio", id="rating3", value="3" name="ratings") 
+                                                                    label(for='rating3') 3
+                                                                    input(type="radio", id="rating4", value="4" name="ratings") 
+                                                                    label(for='rating4') 4
+                                                            input.form-control(type='hidden', name='jobId', id='jobId', value=jobId)
+                                                            .form-group
+                                                                button.btn.btn-success(type='submit') Submit & Exit
+
+                                    .card-body
+                                        if (users.length)
+                                            each usersList in users
+                                                ul.list.table-jobs
+                                                    li.manage-list-row.clearfix
+                                                        .job-info
+                                                            .job-img
+                                                                img.attachment-thumbnail(src="#{usersList.profileImg ? '/uploads/profile_img/' + usersList.profileImg : '/admin/img/avatar.jpg'}", alt='User Image')
+                                                            .job-details
+                                                                h3.job-name
+                                                                    a.job_name_tag(href='#') #{usersList.name} &nbsp;&nbsp;&nbsp;&nbsp; #{usersList.ratings}
+                                                                        i.ti-star(style='color:green')
+                                                                        
+                                                                small.job-sallery
+                                                                    i.ti-time
+                                                                    | #{usersList.experience} Year
+                                                                small.job-sallery
+                                                                    i.ti-map  Currently
+                                                                    | #{usersList.distance} mi From Job Location
+                                                                small.job-sallery
+                                                                    i.ti-location-pin
+                                                                    | #{usersList.newAddress}
+                                                                //- .candi-skill
+                                                                //-     - _skills = usersList.skills.split(',')
+                                                                //-     - _skills.forEach(function(a) {
+                                                                //-         span.skill-tag #{a}
+                                                                //-     - })
+                                                        .job-buttons
+                                                            //- button.btn.btn-primary.manage-btn(data-toggle='modal', data-placement='top', data-id=usersList.id , title='Show', data-target='#profile-view') View Profile
+                                                           
+                                                            a.btn.btn-info.delete-job.manage-btn-sm(href='/admin/project-planner/viewTechProfile/#{usersList.id}', role='button',data-toggle='tooltip', data-placement='top', target='_blank' title='View Profile')
+                                                                i.fa.fa-eye 
+
+                                                            a.btn.btn-info.delete-job.manage-btn-sm(href='/admin/project-planner/add?id=#{usersList.id}&distance=#{usersList.distance}&rates=#{usersList.rates}', role='button',data-toggle='tooltip', data-placement='top', title='Add To list')
+                                                                i.fa.fa-cart-plus  
+                                        else 
+                                            h3(style="text-align:center;") No results found for your search.
+
+                                        //- .flexbox.padd-10
+                                        //-     ul.pagination
+                                        //-         li.page-item
+                                        //-             a.page-link(href='#', aria-label='Previous')
+                                        //-                 i.ti-arrow-left
+                                        //-                 span.sr-only Previous
+                                        //-         li.page-item.active
+                                        //-             a.page-link(href='#') 1
+                                        //-         li.page-item
+                                        //-             a.page-link(href='#') 2
+                                        //-         li.page-item
+                                        //-             a.page-link(href='#') 3
+                                        //-         li.page-item
+                                        //-             a.page-link(href='#', aria-label='Next')
+                                        //-                 i.ti-arrow-right
+                                        //-                 span.sr-only Next
+                    
+                    //- .modal#profile-view.fade(tabindex='-1', role='dialog' aria-labelledby="delete-skill" aria-hidden="true")
+                    //-     .modal-dialog(role='document')
+                    //-         .modal-content
+                    //-             .modal-header.theme-bg
+                    //-                 h4.modal-title View Profile
+                    //-                 button.close(type='button', data-dismiss='modal', aria-label='Close')
+                    //-                     span(aria-hidden='true') ×
+                    //-             .modal-body
+                    //-                     //- each usersList in users
+                    //-                     .table-responsive
+                    //-                         table.table.table-borderless.job-details
+                    //-                                 tbody
+                    //-                                     tr
+                    //-                                         td(colspan=4)
+                    //-                                             .job-img
+                    //-                                                 img.attachment-thumbnail(src="#{users.profileImg ? '/uploads/profile_img/' + users.profileImg : '/admin/img/avatar.jpg'}", alt='User Image', style='margin: 10px 0')
+                    //-                                     tr
+                    //-                                         th User Name:
+                    //-                                         td= users.name
+                    //-                                         th Overall Ratings:
+                    //-                                         //- td <span class="j-type full-time">#{rating.total_rating ? Math.round(rating.total_rating) : 0}</span>
+                    //-                                         td
+                    //-                                             if (users.total_rating)
+                    //-                                                 <span class="j-type full-time" style ="display: inline-block;font-size: 14px"><i class="fa fa-star" aria-hidden="true"> #{Math.round(rating.total_rating)}/5</i></span>
+                    //-                                             else
+                    //-                                                 <span class="j-type internship"><i class="fa fa-star" aria-hidden="true">0/5</i></span>
+                                                                
+                                                                
+                    //-                                     tr
+                    //-                                         th Location:
+                    //-                                         td(colspan=3)= (users.city ? users.city : '--')+', '+ (users.state ? users.state : '--')+', '+ (users.country ? users.country : '--')
+                                                            
+                                                
+
+                    //-                     input.form-control(type='text', id='profileData' ,name='profileData')
+                    //-             .modal-footer
+                    //-                 button.btn.btn-default(type='button', data-dismiss='modal') Cancel
+                    script(type='text/javascript'). 
+                        $(document).on('click', "button.manage-btn[data-toggle='modal']", function() {
+                                    event.preventDefault();
+                                    // var button = $(this), text = $(this).text();
+                                    let profileData = $(this).data('id');
+                                    $("#profileData").val(profileData);
+                                    $('#profile-view').modal('show');
+                                });
+                        var btn = "";
+                        var val = $('#switch').val('1');
+                        $(document).ready(function(){
+                            $('.delete-job').on('click', function(){
+                                btn = $(this);
+                                $('#delete-job').modal('show');
+                            })
+                            $('#delete').on('click', function(){
+                                //alert('Successfully Deleted this skill');
+                                btn.closest('li').remove();
+                                $('#delete-job').modal('hide');
+                                if(!$('.table-jobs').find('li:not(.hide)').length){
+                                    $('.table-jobs').find('li.hide').removeClass('hide');
+                                }
+                            })
+                        })
+
+                        $('#switch').on('click', function(){
+                            if($(this).is(':checked')){
+                                var val = $(this).val();
+                                $('.switch-element').slideDown();
+                                //- getSkills(val);
+                            } else{
+                                $('.switch-element').slideUp();
+                            }
+                        })
+                        $('.keyEnter').keydown(function(event){
+                            var keycode = (event.keyCode ? event.keyCode : event.which);
+                            if(event.which == '13'){
+                                event.preventDefault();
+                                $('#form').submit();
+                            }
+                        });
+
+                        //- var k = !{JSON.stringify(url)};
+                        //- function getSkills(val) {
+                        //-     var getSkills = !{JSON.stringify(jobtype)};
+                        //-     var url = k+"getSkill/"+getSkills;
+                        //-     $.ajax({
+                        //-         type: "GET",
+                        //-         url: url,
+                        //-         data: val,
+                        //-         success: function(data){
+                        //-             var data = data.data;
+                        //-             var htmld= " ";
+                        //-             data.forEach(function(val, index){
+
+                        //-                 htmld += "<div class='col-md-6'><input type='checkbox', name='skills', value ='"+val.id+"'> <label>" +val.name + " </label></div>"
+                        //-             })
+                        //-             htmld += "<br><br>"
+                        //-             $("#skills").html(htmld);
+                        //-         }
+                        //-     });
+                        //- }
+                        
+                       

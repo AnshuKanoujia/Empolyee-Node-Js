@@ -1,0 +1,47 @@
+extends ./../../layout/supervisor-layout
+
+block content
+            #page-wrapper
+                .row.page-titles
+                    -if(messages.msg_error)
+                        .alert.alert-danger #{messages.msg_error}
+                    -else if(messages.msg_info)
+                        .alert.alert-success #{messages.msg_info}
+                    .col-md-5.align-self-center
+                        h3.text-themecolor Supervisor
+                    .col-md-7.align-self-center
+                        ol.breadcrumb
+                            li.breadcrumb-item.active Submit Time Sheet - Dashboard
+                    .container-fluid
+                        form(accept-charset='utf-8', method='post', action='/admin/supervisor/reportInTime', enctype='multipart/form-data')
+                                                        
+                            .row
+                                .col-md-12.col-sm-12
+                                    .card
+                                            .card-header
+                                                .row
+                                                    .col-sm-6
+                                                        h4 Submit Time Sheet
+                                                   
+                                                       
+                                            .card-body
+                                                .row
+                                                    .col-md-12
+                                                        .row
+                                                            .col-sm-4
+                                                                label Enter In Time
+                                                                    span.text-danger  *
+                                                                input.timepicker.form-control(type='text', name='inTime', required, autocomplete="off")
+                                                            .col-sm-4
+                                                                label Select Project
+                                                                    span.text-danger  *
+                                                                select.wide.form-control(id='jobId', name='jobId')
+                                                                        each list in projectList
+                                                                            option(value=list.jobId) #{list.jobName}
+                                .col-md-12
+                                    .text-right
+                                           button.btn.btn-success(type='submit') Submit & Exit
+                    script(type='text/javascript').
+                        
+                        
+

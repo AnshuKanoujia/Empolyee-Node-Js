@@ -1,0 +1,122 @@
+extends ./../../layout/hr-layout
+
+block content
+            #page-wrapper
+                .row.page-titles
+                    .col-md-5.align-self-center
+                        h3.text-themecolor Hr
+                    .col-md-7.align-self-center
+                        ol.breadcrumb
+                            li.breadcrumb-item.active Exam Rules
+                
+                .container-fluid
+                    form#newSiteForm(accept-charset='utf-8', method='post', name='jobForm', action='/admin/hr/set-exam_rules')
+                        -if(messages.msg_error)
+                            each error in messages.msg_error
+                                .alert.alert-danger #{error}
+                        -else if(messages.msg_info)
+                            .alert.alert-success #{messages.msg_info}
+                            // /row
+                        .row
+                            .col-md-12
+                                .card
+                                    .card-header
+                                        h4 Select No. Of Questions For Each Cataegory
+                                    .card-body
+                                        .row
+                                            .col-sm-4.m-clear
+                                                label Easy
+                                                input.form-control(type='number', name='easy', value=rulesData.easy ,min='1', max='20' onchange='getCataegory(this)')
+                                            .col-sm-4.m-clear
+                                                label Medium
+                                                input.form-control(type='number', name='medium', value=rulesData.medium, min='1', max='20' onchange='getCataegory(this)')
+                                            .col-sm-4.m-clear
+                                                label High
+                                                input.form-control(type='number', name='high', value=rulesData.high, min='1', max='20' onchange='getCataegory(this)')
+                                            
+                                        .row
+                                            .col-sm-12
+                                                label Negative Marking    
+                                                    i.fa.fa-check
+                                                .custom-radio
+                                                    input#noCheck(type='radio', name='negative_marking', value='1' checked=rulesData.negative_marking == 1 ? true : false)
+                                                    label(for='noCheck') Yes
+                                                    input#yesCheck(type='radio', name='negative_marking', value='0' checked=rulesData.negative_marking == 0 ? true : false)
+                                                    label(for='yesCheck') No
+                                            .col-sm-12.neg_mar(style='display:none')
+                                                //- i.fa.fa-check
+                                                label Set Negative Marking    
+                                                    i.fa.fa-check
+                                                .custom-radio
+                                                    input#noCheck1(type='radio', name='neg_marking_value', value='0.5',  checked=(rulesData.negative_marking == 1 && rulesData.neg_marking_value == '0.5' ) ? true : false)
+                                                    label(for='noCheck1') 1/2
+                                                    input#noCheck2(type='radio', name='neg_marking_value', value='0.33' checked=(rulesData.negative_marking == 1 && rulesData.neg_marking_value == '0.33' ) ? true : false)
+                                                    label(for='noCheck2') 1/3
+                                                    input#yesCheck3(type='radio', name='neg_marking_value', value='0.25' checked=(rulesData.negative_marking == 1 && rulesData.neg_marking_value == '0.25' ) ? true : false)
+                                                    label(for='yesCheck3') 1/4
+                                                    input#yesCheck4(type='radio', name='neg_marking_value', value='1.00' checked=(rulesData.negative_marking == 1 && rulesData.neg_marking_value == '1.00' ) ? true : false)
+                                                    label(for='yesCheck4') 1
+                                                
+                                        .row
+                                            .col-sm-12
+                                                .text-right
+                                                    button.btn.btn-success.btn_value(type='submit') Submit & Exit
+
+                script(type="text/javascript").
+                    $(document).ready(function(){
+                        if($("input[type=radio][name='negative_marking']:checked").val() == '1'){
+                            $('.neg_mar').slideDown();
+
+                        } else {
+                            $('.neg_mar').slideUp();
+                        }
+                        
+
+                        $('input[name="negative_marking"]').on('click', function(){
+                            
+                            if($(this).val() == "1"){
+                                $('.neg_mar').slideDown();
+                            } else{
+                                $('.neg_mar').slideUp();
+                            }
+                        })
+
+                        
+                    })
+
+                    var k = !{JSON.stringify(url)};
+                    function getCataegory(e) {
+                        var val = $(e).val();
+                        var name = $(e).attr('name');
+
+                        if(name == "easy"){
+                            var data = "1";
+                        } else if(name == "medium"){
+                             var data = "2";
+                        } else {
+                            var data = "3";
+                        }
+
+                    
+                        $.ajax({
+                            type: "POST",
+                            url:  k+'getNumberOfQuestion',
+                            dataType: 'json',
+                            data:{
+                                count: val,
+                                level: data,
+                                //- dataType: "json"
+                            },
+                            success: function(data){
+                               if(data.data !== 0){
+                                    alert(data.data);
+                                    $(".btn_value").attr("disabled", true);
+                               }
+                               else {
+                                   $(".btn_value").attr("disabled", false);
+                               }
+                            }
+                        })
+                      
+                    }
+

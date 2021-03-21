@@ -1,0 +1,76 @@
+doctype html
+html(lang='en')
+  head
+    // Required meta tags
+    meta(charset='utf-8')
+    meta(name='viewport', content='width=device-width, initial-scale=1, shrink-to-fit=no')
+    title Under construction
+    style.
+      body,html
+      {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      }
+      .main-wrapper
+      {
+      background:url("../../images/error/2.png");
+      width: 100%;
+      height:100vh;
+      display: block;
+      position: relative;
+      background-position: top center;
+      background-size: cover;
+      background-repeat: no-repeat;
+      }
+      .wrapper img
+      {
+      width: 250px;
+      position: absolute;
+      top: 20px;
+      -webkit-animation: spin 2s linear infinite; /* Safari 4.0 - 8.0 */
+      -webkit-animation-direction: alternate; /* Safari 4.0 - 8.0 */
+      animation: spin 2s  linear infinite;
+      animation-direction: alternate;
+      }
+      .new-img
+      {
+      bottom: 0px;
+      right: 100px;
+      position: absolute;
+      }
+      .back
+      {
+      right:20px;
+      }
+      .back2
+      {
+      position: absolute;
+      width: 92px;
+      left: 210px;
+      transform: rotate(-10deg);
+      top: 10px;
+      }
+      @-moz-keyframes spin
+      {
+      0% { -moz-transform: rotate(20deg); }
+      100% { -moz-transform: rotate(-20deg); }
+      }
+      @-webkit-keyframes spin
+      {
+      0% { -webkit-transform: rotate(20deg); }
+      100% { -webkit-transform: rotate(-20deg); }
+      }
+      @keyframes spin
+      {
+      0% { transform: rotate(20deg); }
+      100% { transform:rotate(-20deg); } }
+  body
+    .main-wrapper
+      img.new-img(src='../../images/error/1.gif')
+      img.back2(src='../../images/error/construct.png')
+      .wrapper
+        img(src='../../images/error/under-constrcution.png')
+        a(href='/')
+          img.back(src='../../images/error/back.png')

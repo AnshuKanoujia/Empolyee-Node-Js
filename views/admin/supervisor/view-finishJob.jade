@@ -1,0 +1,54 @@
+extends ./../../layout/supervisor-layout
+
+block content
+      #page-wrapper
+            .row.page-titles
+                .col-md-5.align-self-center
+                    h3.text-themecolor Supervisor
+                .col-md-7.align-self-center
+                    ol.breadcrumb
+                        //- li.breadcrumb-item.active Project Name
+            .container-fluid
+                -if(messages.msg_error)
+                    .alert.alert-danger #{messages.msg_error}
+                -else if(messages.msg_info)
+                    .alert.alert-success #{messages.msg_info}
+                .row
+                    .col-md-12
+                        .card
+                            .card-header
+                                .col-md-6
+                                    h4  Your Location Project
+                                .col-sm-6.text-right
+                                    a.btn.btn-primary.block.btn-lg(href='/admin/supervisor/view-finishJob', title='Finished Projects List') View Finished Projects
+                            .card-body
+                                .table-responsive
+                                    table.table.table-striped.table-bordered
+                                        thead
+                                            tr
+                                                th Sr No. 
+                                                th Location 
+                                                th Project 
+                                                //- th No.Of Phases
+                                                th No.Of employees
+                                                th Start Date
+                                                th End Date
+                                                th Actual Finish Date
+
+                                        tbody
+                                            if (jobList.length)
+                                                each viewJobList, i in jobList
+                                                    tr
+                                                        td= i+1
+                                                        td= viewJobList.siteName
+                                                        //- td= viewJobList.siteName+' ('+ viewJobList.sitesCode+')'
+                                                        td= viewJobList.jobName ? viewJobList.jobName+' ('+ viewJobList.jobCode+')' : '--'
+                                                        //- td= viewJobList.noOfPhases
+                                                        td= viewJobList.empCount+'/'+viewJobList.noOfVacancy
+                                                        td= moment(viewJobList.startDate).isValid() ? moment(viewJobList.startDate).format('YYYY/MM/DD') : '--'
+                                                        td= moment(viewJobList.endDate).isValid() ? moment(viewJobList.endDate).format('YYYY/MM/DD') : '--'
+                                                        td= moment(viewJobList.finishDate).isValid() ? moment(viewJobList.finishDate).format('YYYY/MM/DD') : '--'
+                                            else
+                                                tr.danger.text-center
+                                                    td(colspan='8') Sorry, no record found!
+               

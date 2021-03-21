@@ -1,0 +1,55 @@
+extends ./../../layout/admin-layout
+
+block content
+      #page-wrapper
+            .row.page-titles
+                .col-md-5.align-self-center
+                    h3.text-themecolor Technician
+                .col-md-7.align-self-center
+                    ol.breadcrumb
+                        //- li.breadcrumb-item.active View Application
+            -if(messages.msg_error)
+                .alert.alert-danger #{messages.msg_error}
+            -else if(messages.msg_info)
+                .alert.alert-success #{messages.msg_info}
+            .container-fluid
+                    .row
+                        .col-md-12
+                            .card
+                                .card-body
+                                    h4  Applications List
+                                    .table-responsive
+                                        table.table.table-striped.table-bordered
+                                            thead
+                                                tr
+                                                    
+                                                    th #
+                                                    th User Name
+                                                    th Project
+                                                    th Preferred Shift
+                                                    th Date
+                                                    th status
+                                                    th Action
+                                            tbody
+                                                if(userlists.length)
+                                                    each userlist, i in userlists
+                                                        //-   form#applicationForm(accept-charset='utf-8', method='post', name='applicationForm', action='/admin/supervisor/updateUserStatus')
+                                                        tr
+                                                            
+                                                            td= i+1
+                                                            td= userlist.firstName + '  ' + userlist.lastName
+                                                                    //- input.form-control(type='hidden', name='user_id' value=userlist.id)
+                                                            td= userlist.jobName
+                                                            td= userlist.shift
+                                                            td= moment(userlist.date).format('YYYY/MM/DD')
+                                                            td= userlist.statusName
+                                                            td 
+                                                                //- a.btn.btn.btn-success.btn-sm(type='submit', name='Accept', value='Accept') Accept
+                                                                //-     &nbsp;
+                                                                //- a.btn.btn-danger.btn-sm(type='submit', name='Reject', value='Reject') Reject
+                                                                //-     &nbsp;
+                                                                a.btn.btn-info.btn-sm(href='/admin/project-planner/viewApplication/#{userlist.id}', title='View Application') View
+                                                else
+                                                    tr.danger.text-center
+                                                        td(colspan='7') Sorry, no record found!
+                                                            

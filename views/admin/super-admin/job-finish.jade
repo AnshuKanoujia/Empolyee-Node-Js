@@ -1,0 +1,201 @@
+extends ./../../layout/admin-layout
+
+block content
+      #page-wrapper
+            .row.page-titles
+                .col-md-5.align-self-center
+                    h3.text-themecolor Project Planner
+                .col-md-7.align-self-center
+                    ol.breadcrumb
+                        //- li.breadcrumb-item.active View Reports
+            .container-fluid
+                    -if(messages.msg_error)
+                        .alert.alert-danger #{messages.msg_error}
+                    -else if(messages.msg_info)
+                       .alert.alert-success #{messages.msg_info}
+                    
+                    .row
+                        .col-md-12
+                            form#ratingForm(accept-charset='utf-8', method='post', name='ratingForm', action='/admin/super-admin/job-finish')
+                                input(type='hidden',id='postData', name='postData')
+                                input(type="hidden", name="jobId" value=jobId)
+                                .card
+                                    .card-header
+                                        h4 User List
+                                    .card-body
+                                        .row
+                                            .col-md-3
+                                                ul.nav.nav-tabs.block-list(role='tablist')                
+                                                
+                                            .col-md-9.tab-content
+                                if (userDetail.length)
+                                    .card.rating-reviews
+                                        .card-header
+                                            h4  Ratings & Reviews
+                                        .card-body
+                                            b Ratings
+                                            .row.rating_row
+                                                .col-md-8
+                                                    - labels = ['Workmanship Quality', 'Attendance / Punctuality', 'Organization / Cleanliness', 'Communication / Updates', 'Worked Safe', 'Followed Instructions & Schedule', 'Team Player']
+                                                    - labels.forEach(function(label, i) {
+                                                        - i +=1
+                                                        .row
+                                                            .col-sm-4
+                                                                label #{label} : 
+                                                            .col-sm-8
+                                                                .rating
+                                                                    input.form-control(type='radio', value="5", id="#{i}a5" name='rating#{i}')
+                                                                    label(for="#{i}a5")
+
+                                                                    input.form-control(type='radio', value="4", id="#{i}a4" name='rating#{i}')
+                                                                    label(for="#{i}a4")
+
+                                                                    input.form-control(type='radio', value="3", id="#{i}a3" name='rating#{i}')
+                                                                    label(for="#{i}a3")
+
+                                                                    input.form-control(type='radio', value="2", id="#{i}a2" name='rating#{i}')
+                                                                    label(for="#{i}a2")
+
+                                                                    input.form-control(type='radio', value="1", id="#{i}a1" name='rating#{i}')
+                                                                    label(for="#{i}a1")
+                                                    - })                     
+                                                    .row
+                                                        .col-sm-4
+                                                            label Review / Comment :  
+                                                        .col-sm-8
+                                                            textarea.form-control(name="review", rows="5")
+                                                .col-md-4.text-center.rating_row.column-direction.align-center
+                                                    h4 Overall Rating 
+                                                    h1(style="font-size: 7rem;") 
+                                                        span(id="rating_avg") 4
+                                                        /5
+                                                    
+                                                
+                                                    
+                                            .col-md-12
+                                                .text-right
+                                                    button.btn.btn-primary.send-data(type='submit') Job Finish
+                                                    //- button.btn.btn-success(type='submit', name="status" value="5") Approve
+                                                    //- &#32;
+                                                    //- button.btn.btn-danger(type='submit', name="status" value="6") Reject
+                                else 
+                                    h3(style="text-align:center;") No users found for your job.
+                script(type='text/javascript').
+                   
+                    $(document).ready(function(){
+                       var  k = !{JSON.stringify(userDetail)};  
+                        var cloneRating = $('.rating-reviews').clone(true); 
+                        $('.card.rating-reviews').remove();
+                                                       
+                        $.each(k, function(i, tabName){
+                             var li = $('<li>').append(
+                                    $('<a href="#list'+i+'" aria-controls="home", role="tab", data-toggle="tab">').text(tabName.name)
+                            )
+                            $('.block-list').append(li);
+                            $('body .block-list').find('li').first().addClass('active');
+
+                            var tabPane = $('<div id="list'+i+'" class="tab-pane">')
+                            $('.tab-content').append(tabPane);
+                            $('body .tab-content').find('.tab-pane').first().addClass('active')
+                            $('body .tab-content').find('.tab-pane').empty().append(cloneRating);
+                            var radioBtn1 = $('.rating-reviews').find('.rating input[type="radio"]');
+                            var radioBtn2 = $('.rating-reviews').eq(i).find('.rating_row > .col-md-8 > .row');
+                           
+                            radioBtn1.each(function(i) {
+                               $(this).attr('id', 'rating-'+i);
+                               $(this).next('label').attr('for', 'rating-'+i);
+                          
+                            })
+
+                        })
+
+                        let index = "";
+                        $('.tab-content .tab-pane').each(function(i){
+                            index = i;
+                            $(this).find('.rating-reviews').find('.rating_row > .col-md-8 > .row').each(function(i){
+                                if($(this).find('input[type="radio"]').length){
+                                    $(this).find('.rating input[type="radio"]').attr('name', 'rating-'+index+i);
+                                }
+
+                            })
+                        })
+
+                        $('.rating > input').on('click', function(){
+                            var $this = $(this);
+                            ratingAverage($this);
+                        });
+
+                        $('.send-data').on('click', function(e){
+                            getArrayList(k);
+                            //- e.preventDefault();
+                        });
+                        
+                    })   
+
+                    $(document).on('click', "span.btn-sm[data-toggle='modal']", function() {
+                             event.preventDefault();
+                            let {id, userid, intime, outtime} = $(this).data();
+                            $("#id").val(id);
+                            $("#userId").val(userid);
+                            $("#inTime").val(intime);
+                            $("#outTime").val(outtime);
+                            $('#manage-timeSheet').modal('show');
+                            
+                        });
+
+                    function ratingAverage($this , data){
+                        var data = [];
+                        $this.closest('.row').parent().find('.row').each(function(){
+                          data.push($(this).find('input[type="radio"]:checked').length ? parseInt($(this).find('input[type="radio"]:checked').val()) : 0);
+                        })
+                        var sum = data.reduce(function(i , val){
+                            return  i + val; 
+                        })
+                        $this.closest('.rating_row').find('#rating_avg').text(Math.round( (sum/7) * 10 ) / 10);
+                    }
+
+                    function getArrayList(k){
+                        var all_answered = true;
+                        $('.tab-content .tab-pane').find('input[type="radio"]').each(function(){
+
+                             var name = $(this).attr("name");
+                            if($("input:radio[name="+name+"]:checked").length == 0) {
+                                all_answered = false;
+                            }
+                        })
+
+                        if(all_answered){
+
+                        var arr = [];
+                        $('.tab-content .tab-pane').each(function(i){
+                            var userId = k[i].user_id;
+                            arr.push(userId);
+                            $(this).find('.rating-reviews').find('.rating_row > .col-md-8 > .row').each(function(){
+                            if($(this).find('input[type="radio"]').length){
+                                    if($(this).find('input[type="radio"]:checked').val() !== undefined){
+                                        arr.push($(this).find('input[type="radio"]:checked').val());
+                                    } 
+                                } else{
+                                    arr.push($(this).find('textarea').val());
+                                }
+
+                            })
+                        })
+
+                        var arrays = [], size = 9;
+                        while (arr.length > 0)
+                        arrays.push(arr.splice(0, size));
+                        var finalArray = [];
+                        $.each(k, function(i, tabName){
+                            var obj = {};
+                            obj[tabName.user_id] = arrays[i];
+                            finalArray.push(obj);
+                        })
+                        
+                        $('input[name="postData"]').val(JSON.stringify(finalArray));
+
+
+                        } else{
+                            alert('Please select each ratings for all list')
+                        }
+                    }            

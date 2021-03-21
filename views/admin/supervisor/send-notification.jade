@@ -1,0 +1,49 @@
+extends ./../../layout/supervisor-layout
+
+block content
+      #page-wrapper
+            .row.page-titles
+                .col-md-5.align-self-center
+                    h3.text-themecolor Send Notification
+                .col-md-7.align-self-center
+                    ol.breadcrumb
+                        li.breadcrumb-item.active  Send Notification
+            .container-fluid
+                -if(messages.msg_error)
+                    .alert.alert-danger #{messages.msg_error}
+                -else if(messages.msg_info)
+                    .alert.alert-success #{messages.msg_info}
+                form#sendMessage(accept-charset='utf-8', method='post', name='sendMessage', action='/admin/supervisor/sendMessage' , enctype='multipart/form-data')
+                    .row
+                        .col-md-12
+                            .card
+                                .card-body
+                                    h4.form-group  Send Notification
+                                    .row
+                                        .col-sm-12
+                                            label Subject 
+                                                span.text-danger  *
+                                            input.form-control(type='text',name='subject',required)
+                                        .col-sm-12
+                                            label  Body 
+                                                span.text-danger  *
+                                            textarea.form-control(name='body',required)
+                                    .row
+                                        .col-md-12
+                                            label Users
+                                                span.text-danger  *
+                                            select.wide.form-control(name='usersEmail', id='usersEmail',multiple,required)
+                                                    option(data-display='usersEmail') Select Email
+                                                            each user in users
+                                                                option(value=user.email) #{user.email}
+                                    .row
+                                        .col-md-12
+                                            label File Upload
+                                            input.form-control(type='file', name='Img')							
+                                        .col-md-12.text-right
+                                            button.btn.btn-info(type='submit',name='submit') Send Notification 
+            script(type='text/javascript').
+                    function imgUpload(input){
+                       
+                       
+                    }

@@ -1,0 +1,32 @@
+extends ./../../layout/admin-layout
+
+block content
+				#page-wrapper
+					.row.page-titles
+						.col-md-5.align-self-center
+							h3.text-themecolor Project Planner
+						.col-md-7.align-self-center
+							ol.breadcrumb
+								li.breadcrumb-item.active Dashboard
+					.container-fluid
+						-if(messages.msg_error)
+							.alert.alert-danger #{messages.msg_error}
+						-else if(messages.msg_info)
+							.alert.alert-success #{messages.msg_info}
+						.row
+							.col-md-4.col-sm-6.col-md-offset-2
+								.widget.standard-widget
+									.row
+										a.widget-caption.info(href='/admin/super-admin/edit-profile')
+											.col-md-12.text-center
+												.img-div
+													img(src='../../admin/img/architect.png')
+												h4.text Edit Profile
+							.col-md-4.col-sm-6
+								.widget.standard-widget
+									.row
+										a.widget-caption.info(href='/admin/super-admin/create-sites')
+											.col-md-12.text-center
+												.img-div
+													img(src='../../admin/img/organize.png')
+												h4.text Create Location

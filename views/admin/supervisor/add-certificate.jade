@@ -1,0 +1,124 @@
+extends ./../../layout/supervisor-layout
+
+block content
+            #page-wrapper
+                .row.page-titles
+                    .col-md-5.align-self-center
+                        h3.text-themecolor Supervisor
+                    .col-md-7.align-self-center
+                        ol.breadcrumb
+                            li.breadcrumb-item.active Certification - Dashboard
+                .container-fluid
+                    form#newSiteForm(accept-charset='utf-8', method='post', name='loginForm', action='/admin/supervisor/add-certificate', enctype='multipart/form-data')
+                        -if(messages.msg_error)
+                            .alert.alert-danger #{messages.msg_error}
+                        -else if(messages.msg_info)
+                            .alert.alert-success #{messages.msg_info}
+                        .row
+                            .col-md-12.col-sm-12
+                                .card
+                                        .card-header
+                                            .row
+                                                .col-sm-6
+                                                    h4 My Cerification
+                                        .card-body
+                                            .row
+                                                .col-md-12
+                                                    .row
+                                                        .col-sm-3
+                                                            label Certification Name
+                                                                span.text-danger  *
+                                                            input#autocomplete.form-control(type='text', name='certification_name', spellcheck="false",autocomplete="off",required)
+                                                        .col-sm-3
+                                                            label Authority
+                                                                span.text-danger  *
+                                                            input#autocomplete_auth.form-control(type='text', name='authority', required)
+                                                        .col-sm-3
+                                                            label Attachment
+                                                                span.text-danger  *
+                                                            input.form-control(type='file', name='certificate_attachment', accept='image/pdf/*',required)
+                                                         .col-sm-3
+                                                            label Expiration Date
+                                                                span.text-danger  *
+                                                            input.form-control(type='text',placeholder='MM/DD/YYYY', name='exp_date', data-toggle='datepicker',autocomplete="off",required)
+                                                
+                                                .col-sm-12
+                                                    label Description Of Certificate
+                                                    textarea#report.form-control.height-120.textarea(placeholder='About Report', name='description', minlength='5')
+                                                
+                                                .col-md-12
+                                                    .text-right
+                                                            button.btn.btn-success(type='submit') Submit & Exit
+                    script(type='text/javascript').
+                     $(document).ready(function(){
+                        $(document).find('[name="exp_date"]').datepicker('setStartDate', new Date());
+                        var k = !{JSON.stringify(url)};
+                        var inputValue = $(this).val();
+                        var url= k+"getCertificationName/";
+                        
+                        var options = {
+
+                         
+
+
+                            url: function(phrase) {
+                                return url;
+                            },
+
+                            getValue: function(element) {
+                                return element;
+                            },
+
+                            ajaxSettings: {
+                                dataType: "json",
+                                method: "POST",
+                                data: {
+                                dataType: "json"
+                                }
+                            },
+
+                            preparePostData: function(data) {
+                                data.certify = $("#autocomplete").val();
+                                return data;
+                            },
+
+                        requestDelay: 400
+                        };
+
+                         $('#autocomplete').easyAutocomplete(options);
+                        
+                     })
+
+                     $(document).ready(function(){
+                        var k = !{JSON.stringify(url)};
+                        var inputCode = $(this).val();
+                        var url= k+"getAuthorityName/";
+                        var options = {
+
+                            url: function(phrase) {
+                                return url;
+                            },
+
+                            getValue: function(element) {
+                                return element;
+                            },
+
+                            ajaxSettings: {
+                                dataType: "json",
+                                method: "POST",
+                                data: {
+                                dataType: "json"
+                                }
+                            },
+
+                            preparePostData: function(data) {
+                                data.auth = $("#autocomplete_auth").val();
+                                return data;
+                            },
+
+                        requestDelay: 400
+                        };
+                        $('#autocomplete_auth').easyAutocomplete(options);
+                     })
+                        
+                      

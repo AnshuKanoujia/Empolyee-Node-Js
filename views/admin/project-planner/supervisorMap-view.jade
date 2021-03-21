@@ -1,0 +1,360 @@
+extends ./../../layout/admin-layout
+
+block content
+            #page-wrapper
+                .row.page-titles
+                    .col-md-5.align-self-center
+                        h3.text-themecolor Project Planner
+                    .col-md-7.align-self-center
+                        ol.breadcrumb
+                            li.breadcrumb-item.active Map View
+                .container-fluid
+                    .row
+                        .col-md-12.col-sm-12
+                            // General Information
+                            .card
+                                .card-header
+                                    .row
+                                        .col-md-8
+                                            h4 Maps
+                                        .col-md-4.text-right
+                                            button.open-close-button#legendBtn Legend 
+                                .card-body
+                                    .row
+                                        .col-md-12
+                                            #legend
+                                            #map(class="googleMap")
+                script(src='https://maps.googleapis.com/maps/api/js?key='+apiKey+'&callback=initMap' async defer)
+                script(type='text/javascript').
+                    function initMap() {
+                        var data = !{JSON.stringify(supervisorList)};
+                        // The location of Uluru
+                        var cordinates = {lat: 39.025398, lng: -94.522827};
+                        
+                        // The map, centered at Uluru
+                        var map = new google.maps.Map(
+                            document.getElementById('map'), 
+                                {zoom: 5, center: cordinates,  mapTypeId: 'roadmap'}
+                            );
+                    
+        
+                        //- var iconBase = '/admin/img/maps/';
+                        var iconBase = '/admin/img/icons/';
+                        /*dynamic code*/
+                        var icons = {}
+                        var features= [];
+                        var contentString = [];
+                        var infoString = [];
+
+                        /* -------------------------------- */
+                        var contentStringDup = [];
+                        var infoStringDup = [];
+                        /* -------------------------------- */
+
+                        $.each(data, function(i, userData){
+                           
+                           //icons list //
+                        if(userData.role != undefined){
+                            if(userData.role=="3" && userData.type_name=="Electrical"){
+                                iconId = 
+                                'user212.png'
+
+                            } else if(userData.role=="3" && userData.type_name=="Mechanical"){
+                                iconId = 
+                                'user222.png'
+                            }
+                        }
+                        
+                        //-     var id = parseInt(i)+1;
+                        //-    icons['user'+userData.id] = {icon: iconBase + 'user2.png'}
+                          icons['user'+userData.id] = {icon: iconBase + iconId}
+                           
+                           //features list //
+                            var label = new google.maps.LatLng(userData.latitude, userData.longitude);
+                            var featuresList = {position: label, type: 'user'+userData.id};
+                            features.push(featuresList);
+
+                            var  content, profile, badges, pullLeft, ratings, mobileNumber, achorBtn, ancrbtnDiv, address, ancrbtnDiv, achorBtnDup, ancrbtnDivDup, profileDup, pullLeftDup;
+                        
+                        
+                            var list= document.createElement('div')
+                            list.className = "list";
+
+                            /* --------------------------- */
+                            var listDup= document.createElement('div')
+                            listDup.className = "list";
+                            /* --------------------------- */
+
+                            content= document.createElement('div')
+                            content.className = "content";
+                           
+                            /* --------------------------- */
+                            contentDup= document.createElement('div')
+                            contentDup.className = "content";
+                            /* --------------------------- */
+
+                            profile= document.createElement('div');
+                            profile.className = "profile";
+
+                            if(userData['profileImg'] !== undefined){
+                                profile.innerHTML = '<img src="/admin/img/avatar.jpg" />';   
+                            } else{
+                                 profile.innerHTML = '<img src="/uploads/profile_img/'+userData.profileImg+'" />'; 
+                            }
+
+                            /* --------------------------- */
+                            profileDup= document.createElement('div');
+                            profileDup.className = "profile";
+
+                            if(userData['profileImg'] == null){
+                                profileDup.innerHTML = '<img src="/admin/img/avatar.jpg" />';   
+                            } else{
+                                profileDup.innerHTML = '<img src="/uploads/profile_img/'+userData.profileImg+'" />'; 
+                            }
+                            /* --------------------------- */
+                            
+                            content.appendChild(profile);
+                            /* --------------------------- */
+                            contentDup.appendChild(profileDup);
+                            /* --------------------------- */
+
+                            pullLeft= document.createElement('div');
+                            pullLeft.className = 'pull-left';
+                            pullLeft.innerHTML = '<h3 class="firstHeading">'+userData.name+'</h3>';
+
+                            /* --------------------------- */
+                            pullLeftDup= document.createElement('div');
+                            pullLeftDup.className = 'pull-left';
+                            pullLeftDup.innerHTML = '<h3 class="firstHeading">'+userData.name+'</h3>'; 
+                            /* --------------------------- */
+
+                            badges= document.createElement('span');
+                            badges.className = "badges badge-info";
+                            badges.innerText = userData.type_name;
+                            pullLeft.appendChild(badges);
+
+                            if(userData['ratings'] !== undefined){
+                                ratings= document.createElement('span');
+                                ratings.className = "ratings pull-right"
+                                ratings.innerHTML = '<i class="ti ti-star text-danger"></i> 4.5';
+                                pullLeft.appendChild(ratings);
+                            }
+
+                            if(userData['phone_number'] !== undefined){
+                                mobileNumber= document.createElement('div');
+                                mobileNumber.className = 'mobileNumber';
+                               mobileNumber.innerHTML = '<i class="fa fa-phone"></i> <span>' + userData.phone_number+'</span>';
+                                
+                            }
+
+                            if(userData['newAddress'] !== undefined){
+                                address= document.createElement('div');
+                                address.className = 'address';
+                                address.innerHTML = '<i class="fa fa-map-marker"></i> <span>' +userData.newAddress+'</span>';
+                                
+                            }
+
+                            ancrbtnDiv= document.createElement('div');
+                            ancrbtnDiv.className = 'ancrbtnDiv';
+                             
+                            achorBtn= document.createElement('a');
+                            achorBtn.className = 'achorBtn';
+                            achorBtn.href = '/admin/project-planner/view-supervisorProfile/'+userData.id+'';
+                            achorBtn.title = 'View Profile'
+                            achorBtn.setAttribute('data-toggle', 'tooltip')
+                            achorBtn.innerHTML =  '<img src="/admin/img/view.png">';
+
+                            /* ------------------------------ */
+                            ancrbtnDivDup= document.createElement('div');
+                            ancrbtnDivDup.className = 'ancrbtnDiv eyeCl';
+
+                            achorBtnDup= document.createElement('a');
+                            achorBtnDup.className = 'achorBtn';
+                            achorBtnDup.href = '/admin/project-planner/view-supervisorProfile/'+userData.id+'';
+                            achorBtnDup.title = 'Visit Profile'
+                            achorBtnDup.setAttribute('data-toggle', 'tooltip')
+                            achorBtnDup.innerHTML =  '<img src="/admin/img/view.png">';
+
+                            /* ------------------------------ */
+
+
+                            profile.appendChild(pullLeft);
+                            content.appendChild(profile); 
+                            content.appendChild(mobileNumber);   
+                            content.appendChild(address);   
+                            content.appendChild(achorBtn); 
+                            content.appendChild(ancrbtnDiv); 
+                            ancrbtnDiv.appendChild(achorBtn);   
+
+                            /* -------------------------------- */
+                            profileDup.appendChild(pullLeftDup);
+                            contentDup.appendChild(profileDup);
+                            contentDup.appendChild(achorBtnDup);   
+                            
+                            contentDup.appendChild(ancrbtnDivDup); 
+                            ancrbtnDivDup.appendChild(achorBtnDup); 
+
+                            var contentDataDup = listDup.appendChild(contentDup);
+                            /* -------------------------------- */
+                           
+
+                            var contentData = list.appendChild(content);
+                            //- var contentData = '<div class="content">'+
+                            //-     '<div class="profile">'+
+                            //-     '<img  src="/uploads/profile_img/'+userData.profileImg+'">'  + 
+                            //-     '<div class="pull-left"><h3 class="firstHeading">'+userData.name+'</h3>'+
+                            //-     '<span class="badges badge-info">'+userData.type_name+'</span>' +
+                            //-     '<span class="ratings pull-right"><i class="ti ti-star text-danger"></i> 4.5</span>' +
+                            //-     '</div>'+
+                            //-     '<div class="mobileNumber">'+userData.phone_number+'</div>'+
+                            //-     '</div>'+
+                            //-     '</div>'
+
+                            var infoData = '<div class="content">'+
+                                '<div class="profile">'+
+                                '<div class=""><h3 class="firstHeading">'+userData.name+'</h3>'+
+                                '<span class="badges badge-info">'+userData.type_name+'</span>' +
+                                '</div></div>'+
+                                '</div>'
+
+                            /* --------------------------- */
+                            var infoDataDup = '<div class="content">'+
+                                '<div class="profile">'+
+                                '<div class=""><h3 class="firstHeading">'+userData.name+'</h3>'+
+                                '<span class="badges badge-info">'+userData.type_name+'</span>' +
+                                '</div></div>'+
+                                '</div>'
+                            /* --------------------------- */
+
+                            contentString.push(contentData);
+                            /* --------------------------- */
+                            contentStringDup.push(contentDataDup); 
+                            /* --------------------------- */
+                            infoString.push(infoData);
+                            /* --------------------------- */
+                            infoStringDup.push(infoDataDup);
+                            /* --------------------------- */
+                            $('[data-toggle="tooltip"]').tooltip();
+                        });
+                 
+                      
+
+                        //- Create markers.
+                        /* ---------------------------- */
+                        var markers = [];
+                        var infoStringMultiple='';
+                        var contentStringMultiple=[];
+                        var contentStringMultipleDup='';
+                        /* ---------------------------- */
+                        for (var i = 0; i < features.length; i++) {
+
+                            /* ------------------------- */
+                            var is_dup=0;
+                            var posMarker=features[i].position;
+                            infoStringMultiple = infoString[i];
+                            
+                           // contentStringMultiple=contentStringDup[i].innerHTML;
+                            contentStringMultiple=contentString[i].innerHTML;
+                            contentStringMultipleDup=contentStringDup[i].innerHTML;
+                            if(markers.length != 0) 
+                            {
+                               
+                                
+                                for (J=0; J < markers.length; J++) {
+                                    var existingMarker = markers[J];
+                                    var pos = existingMarker.getPosition();
+
+                                    if (posMarker.equals(pos)) {
+
+                                        ++is_dup;
+                                        infoStringMultiple+=infoStringDup[J];
+                                        contentStringMultipleDup+=contentStringDup[J].innerHTML;
+
+                                    }
+                                }
+                                if(is_dup>0){
+                                        contentStringMultiple=contentStringMultipleDup;
+                                        icons[features[i].type] = {icon: iconBase + 'circle.png'}
+                                }
+                                
+                            }
+                            /* ------------------------- */
+                            
+                            var contentwindow = new google.maps.InfoWindow({
+                                content: contentStringMultiple,
+                                maxWidth: 300
+                            });
+
+                            var infomationwindow = new google.maps.InfoWindow({
+                                content: infoStringMultiple,
+                                maxWidth: 300
+                            });
+                            var marker = new google.maps.Marker({
+                                position: posMarker,
+                                icon: icons[features[i].type].icon,
+                                map: map
+                            });
+
+                            bindContentwindow(marker, map, contentwindow, contentStringMultiple);
+                            bindInfowindow(marker, map, infomationwindow, infoStringMultiple);
+                            markers.push(marker);
+                            
+                        };
+
+                        var iconsLegend = {
+                            M_Supervisor: {
+                                icon: iconBase + 'user222.png'
+                            },
+                            E_Supervisor: {
+                                icon: iconBase + 'user212.png'
+                            }
+                        };
+
+                        var legend = document.getElementById('legend');
+                        for (var key in iconsLegend) {
+                            var type = iconsLegend[key];
+                            var name = key;
+                            var icon = type.icon;
+                            var div = document.createElement('div');
+                            div.innerHTML = '<img src="' + icon + '"> ' + name.charAt(0).toUpperCase() + name.slice(1);;
+                            legend.appendChild(div);
+                        }
+
+                        map.controls[google.maps.ControlPosition.RIGHT_TOP].push(legend);
+                    }
+
+                    function bindContentwindow(marker, map, contentwindow, contentString) {
+                        marker.addListener('click', function() {
+                            contentwindow.setContent(contentString);
+                            contentwindow.open(map, this);
+                        });
+                        
+                    }
+
+                    function bindInfowindow(marker, map, infomationwindow, infoString) {
+                        
+                        marker.addListener('mouseover', function() {
+                            infomationwindow.setContent(infoString);
+                            infomationwindow.open(map, this);
+                        });
+                        marker.addListener('mouseout', function() {
+                            infomationwindow.setContent(infoString);
+                            infomationwindow.close(map, this);
+                        });
+                    }
+
+
+
+                    (function () {
+                        var openclose;
+                        openclose = function () {
+                            return $(".open-close-button").click(function () {
+                            return $(this).toggleClass("open"),  $('#legend').slideToggle();
+                            });
+                        };
+
+                        jQuery(document).ready(function ($) {
+                            return openclose();
+                        });
+
+                        }).call(this);        

@@ -1,0 +1,69 @@
+extends ./../../layout/user-layout
+
+block content
+      #page-wrapper
+            .row.page-titles
+                .col-md-5.align-self-center
+                    h3.text-themecolor Technician
+                .col-md-7.align-self-center
+                    ol.breadcrumb
+                        li.breadcrumb-item.active Time Sheet - Dashboard
+            .container-fluid
+                    -if(messages.msg_error)
+                        .alert.alert-danger #{messages.msg_error}
+                    -else if(messages.msg_info)
+                       .alert.alert-success #{messages.msg_info}
+                    .row
+                        .col-md-12
+                            .card
+                                .card-body
+                                    h4  Time Sheets List
+                                    .table-responsive
+                                        table.table.table-striped.table-bordered
+                                            thead
+                                                tr
+                                                    th #
+                                                    th Project Name
+                                                    th Date
+                                                    th In Time
+                                                    th Out Time
+                                                    th Total Hours
+                                                    th Status 
+                                                    th Action
+                                            tbody
+                                                if(reports.length)
+                                                    each report, i in reports
+                                                        tr
+                                                            td= i+1
+                                                            td= report.jobName
+                                                            td= moment(report.date).format('MM/DD/YYYY')
+                                                            td= report.inTime
+                                                            td= report.outTime ? report.outTime : '--'
+                                                            td= report.hours_count ? report.hours_count : '--'
+                                                            td= report.statusName
+                                                            td
+                                                                if(report.status == 0)
+                                                                    a.btn.btn-info.btn-sm(href='/user/technician/view-reportDetails/#{report.id}', data-toggle='tooltip', title='View Report') 
+                                                                        i.fa.fa-eye
+                                                                    &#32;
+                                                                    a.btn.btn-primary.btn-sm(href='/user/technician/editReport/#{report.id}', data-toggle='tooltip', title='Edit Report')
+                                                                        i.fa.fa-edit
+                                                                    &#32;
+                                                                    a.btn.btn-danger.btn-sm(href='/user/technician/deleteReport/#{report.id}', data-toggle='tooltip', title='Delete Report', onclick="return confirm('Do you really want to delete this time sheet?');")
+                                                                         i.fa.fa-trash
+                                                                else
+                                                                    a.btn.btn-info.btn-sm(href='/user/technician/view-reportDetails/#{report.id}', data-toggle='tooltip', title='View Report') 
+                                                                        i.fa.fa-eye
+                                                                    &#32;
+                                                                if(report.status == 7 && report.outTime != null)
+                                                                    a.btn.btn-primary.btn-sm(href='/user/technician/report/#{report.jobId}', data-toggle='tooltip', title='Edit Report')
+                                                                        i.fa.fa-edit
+                                                                    &#32;
+                                                                if(report.outTime  == null)
+                                                                    a.btn.btn-primary.btn-sm(href='/user/technician/report/#{report.jobId}', data-toggle='tooltip', title='Enter Out Time') Clock Out
+                                                                        
+                                                else
+                                                    tr.danger.text-center
+                                                        td(colspan='8') Sorry, no record found!
+                                                          
+                                                       

@@ -1,0 +1,111 @@
+extends ./../../layout/admin-layout
+
+block content
+      #page-wrapper
+            .row.page-titles
+                .col-md-5.align-self-center
+                    h3.text-themecolor Project Planner
+                .col-md-7.align-self-center
+                    ol.breadcrumb
+                        //- li.breadcrumb-item.active Job State
+            .container-fluid
+                -if(messages.msg_error)
+                    .alert.alert-danger #{messages.msg_error}
+                -else if(messages.msg_info)
+                    .alert.alert-success #{messages.msg_info}
+                .row
+                    .col-md-12
+                            .card
+                                .card-header 
+                                    .col-sm-12
+                                        h4 
+                                            i.fa.fa-filter  Filter
+                                .card-body
+                                    .col-sm-12
+                                        .row
+                                            form#newSiteForm.d-inline-block(accept-charset='utf-8', method='post', name='searchQuesAns', action='/admin/project-planner/search_userSkills')
+                                                input(type="hidden" name="id" value="1")
+                                                button.btn.btn-primary.btn-sm(type="submit", data-toggle='tooltip', title='Search mechanical users') Mechanical
+                                            form#newSiteForm.d-inline-block(accept-charset='utf-8', method='post', name='searchQuesAns', action='/admin/project-planner/search_userSkills')
+                                                input(type="hidden" name="id" value="2")
+                                                button.btn.btn-primary.btn-sm(type="submit", data-toggle='tooltip', title='Search electrical users') Electrical
+                                            form#newSiteForm.d-inline-block(accept-charset='utf-8', method='get', name='searchQuesAns', action='/admin/project-planner/view-technician')
+                                                button.btn.btn-primary.btn-sm(type="submit", data-toggle='tooltip', title='Search All users') All
+                    .col-md-12
+                        .card
+                            .card-header
+                                .col-sm-6
+                                    h4  Technicians List
+                                .col-sm-6.text-right
+                                    a.btn.btn-primary.block.btn-sm(href='/admin/project-planner/technicianMap-view', title='View On Map') View On Map
+                            .card-body
+                                
+                                .table-responsive
+                                    table.table.table-striped.table-bordered.tech_list
+                                        thead
+                                            tr
+                                                th #
+                                                //- th E_Code
+                                                th Name
+                                                th Project Trade
+                                                th Experience
+                                                th Action
+                                        tbody
+                                            if(users.length)
+                                                each user, i in users
+                                                    tr
+                                                        td= i+1
+                                                        //- td= user.eCode
+                                                        td= user.name
+                                                        td= user.jobtype
+                                                        td= user.experience
+                                                        td
+                                                            a.btn.btn-danger.block.btn-sm(href='/admin/project-planner/block-UnblockTech/#{user.id}', data-toggle='tooltip', title='Unblock Technician')  
+                                                                i.fa.fa-ban
+                                                            &nbsp;
+                                                            a.btn.btn-primary.btn-sm(href='/admin/project-planner/viewTechProfile/#{user.id}', data-toggle='tooltip', title='View Profile')  
+                                                                i.fa.fa-eye
+                                                            &nbsp;
+                                                            a.btn.btn-success.btn-sm(href='/admin/project-planner/manage-TimeSheet/#{user.id}', title='Manage TimeSheet', data-toggle='tooltip') 
+                                                                i.ti-timer 
+                                                            &nbsp;
+                                                            a.btn.btn-success.btn-sm(href='/admin/project-planner/view-reviews/#{user.id}', title='View Reviews', data-toggle='tooltip')  
+                                                                i.fa.fa-comments
+                                                            
+                                            else
+                                                tr.danger.text-center
+                                                    td(colspan='5') Sorry, no record found!
+                script(type="text/javascript").
+                        $(document).ready(function(){
+                       
+                            var k = !{JSON.stringify(users)};
+                            $('.block').on('click', function(){
+                                    if($(this).is('.btn-info')){
+                                         return confirm('Do you really want to Unblock user?');
+                                    } else if($(this).is('.btn-danger')){
+                                         return confirm('Do you really want to Block user?');
+                                    }
+                            })
+                           $('.tech_list tbody tr').each(function(i){
+                               if(k[i].status== 1){
+                                    //- $(this).find('.block').removeClass('btn-primary').text('block');
+                                     $(this).find('.block').removeClass('btn-primary').html('<i class="fa fa-ban"></i>').attr('title', 'Block Technician');
+        
+                               } else{
+                                    $(this).find('.block').removeClass('btn-danger').addClass('btn-info').html('<i class="fa fa-unlock"></i>')
+                               }
+                           })
+                          
+
+                            //- $('.block').on('click', function(){
+                            //-     $(this).parent().find('.unblock').fadeIn();
+                            //-     $(this).fadeOut();
+
+                            //- })
+                            //- $('.unblock').on('click', function(){
+                            //-     $(this).parent().find('.block').fadeIn();
+                            //-     $(this).fadeOut();
+
+                            //- })
+                          
+                        });

@@ -1,0 +1,44 @@
+extends ./../../layout/supervisor-layout
+
+block content
+      #page-wrapper
+            .row.page-titles
+                .col-md-5.align-self-center
+                    h3.text-themecolor Technician
+                .col-md-7.align-self-center
+                    ol.breadcrumb
+                        li.breadcrumb-item.active Time Sheet - Dashboard
+            .container-fluid
+                    -if(messages.msg_error)
+                        .alert.alert-danger #{messages.msg_error}
+                    -else if(messages.msg_info)
+                       .alert.alert-success #{messages.msg_info}
+                    .row
+                        .col-md-12
+                            .card
+                                .card-body
+                                    h4  Time Sheets List
+                                    .table-responsive
+                                        table.table.table-striped.table-bordered
+                                            thead
+                                                tr
+                                                    th #
+                                                    th Site Name 
+                                                    th Action
+                                            tbody
+                                                if(list.length)
+                                                    each lists, i in list
+                                                        tr
+                                                            td= i+1
+                                                            td= lists.siteName
+                                                            td
+                                                                if(lists.reportCount  == 0)
+                                                                    No time sheets pending.
+                                                                else
+                                                                    a.btn.btn-primary.btn-sm(href='/admin/supervisor/clockOut/#{lists.id}', data-toggle='tooltip', title='Enter Out Time') Clock Out
+                                                                        
+                                                else
+                                                    tr.danger.text-center
+                                                        td(colspan='8') Sorry, no record found!
+                                                          
+                                                       

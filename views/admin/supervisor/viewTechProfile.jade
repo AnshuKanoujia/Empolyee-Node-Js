@@ -1,0 +1,175 @@
+extends ./../../layout/supervisor-layout
+
+block content
+
+        #page-wrapper
+            .row.page-titles
+                .col-md-5.align-self-center
+                    h3.text-themecolor Supervisor
+                .col-md-7.align-self-center
+                    ol.breadcrumb
+                        li.breadcrumb-item.active Technician Profile
+            .container-fluid
+                .row
+                    .col-md-12
+                        each usersTechProfile in users
+                            .card
+                                .card-header 
+                                    .row
+                                        .col-sm-8
+                                            h4 #{usersTechProfile.name}'s Profile : #{usersTechProfile.designation}
+                                        .col-sm-4.text-right
+                                            a.btn.btn-primary.block.btn-sm(href='/admin/supervisor/view-technician', title='Back To View Technician List')  
+                                                i.ti-angle-left Back
+                                            &#32;
+                                            a.btn.btn-info.btn-lg(href="#ratingModal", data-toggle="modal") View All Ratings
+                                .card-body
+                                    .table-responsive
+                                        table.table.table-borderless.job-details
+                                        
+                                            tbody
+                                                tr
+                                                    th User Name:
+                                                    td= usersTechProfile.name ? usersTechProfile.name : '--'
+                                                    th Overall Ratings:
+                                                    //- td <span class="j-type full-time">#{rating.total_rating ? Math.round(rating.total_rating) : 0}</span>
+                                                    td
+                                                        if (rating.total_rating)
+                                                            <span class="j-type full-time" style ="display: inline-block;font-size: 14px"><i class="pd-5 fa fa-star" aria-hidden="true"> #{Math.round(rating.total_rating)}/5</i></span>
+                                                        else
+                                                            <span class="j-type internship">New</span>
+                                                tr
+                                                    th Email:
+                                                    td= usersTechProfile.email 
+                                                    th Location:
+                                                    td= usersTechProfile.newAddress ? usersTechProfile.newAddress : '--'
+                                                        
+                                                //- tr
+                                                //-     th Supervisor:
+                                                //-     td= usersTechProfile.supervisors ? usersTechProfile.supervisors : '--'
+                                                
+                                                //- tr 
+                                                //-     th Skills
+                                                //-     td(colspan='4') #{usersTechProfile.skills}
+                                                
+
+                        .card
+                            .card-body
+                                h4  Certificates List
+                                .table-responsive
+                                    table.table.table-striped.table-bordered
+                                        thead
+                                            tr
+                                                th #
+                                                th Name
+                                                th Image
+                                                th Authority
+                                                th Action
+
+                                        tbody
+                                            if(certificatonList.length)
+                                                each viewCertificatonList, i in certificatonList
+                                                    tr
+                                                        td= i+1
+                                                        td= viewCertificatonList.certification_name
+                                                        td
+                                                            if(viewCertificatonList.certificate_attachment)
+                                                                a.btn.btn-sm(href='#view-image',
+                                                                data-img='/uploads/certificate_attachment/#{viewCertificatonList.certificate_attachment}', data-toggle='modal', data-id=viewCertificatonList.id, data-image=viewCertificatonList.certificate_attachment, title='View Image')
+                                                                    img#user_img.img-circle.img-responsive(src='/uploads/certificate_attachment/#{viewCertificatonList.certificate_attachment}', alt='' style="margin: 5px 0;width:40px;height:40px")
+                                                                        
+                                                            else
+                                                                label No Image
+                                                        td= viewCertificatonList.authority
+                                                        td
+                                                            //- a.btn.btn-primary.btn-lg(href="#myModal", class="btn-attach" data-toggle="modal", data-img=viewCertificatonList.certificate_attachment,  data-attachment="/uploads/certificate_attachment/#{viewCertificatonList.certificate_attachment}") View Image
+                                                            a.btn.btn-primary.btn-lg(href="/uploads/certificate_attachment/#{viewCertificatonList.certificate_attachment}",target='_blank', title='View Certificate') 
+                                                                i.fa.fa-eye
+                                            else
+                                                tr.danger.text-center
+                                                    td(colspan='6') Sorry, no record found!
+
+            #ratingModal.modal.fade(tabindex="-1", role="dialog", aria-labelledby="myModalLabe", aria-hidden="true")
+                .modal-dialog
+                    .modal-content
+                        .modal-header
+                            button.close(type="button", data-dismiss="modal", aria-hidden="true") &times;
+                            h4.modal-title View Ratings
+                        .modal-body
+                            label All Ratings
+                                table.table.table-borderless.job-details
+                                    tbody
+                                        tr
+                                            th Overall Ratings:
+                                            td= rating.total_rating ? Math.round(rating.total_rating) : '--'
+                                        tr
+                                            th Total Rating of Workmanship Quality:
+                                            td= rating.Workmanship_Quality ? Math.round(rating.Workmanship_Quality) : '--'
+                                        tr
+                                            th Total Rating of Attendance / Punctuality:
+                                            td= rating.Attendance_Punctuality ? Math.round(rating.Attendance_Punctuality) : '--'
+                                        tr
+                                            th Total Rating of Organization / Cleanliness:
+                                            td= rating.Organization_Cleanliness ? Math.round(rating.Organization_Cleanliness) : '--'
+                                        tr
+                                            th Total Rating of Communication / Updates:
+                                            td= rating.Communication_Updates ? Math.round(rating.Communication_Updates) : '--'
+                                        tr
+                                            th Total Rating of Worked Safe:
+                                            td= rating.Worked_Safe ? Math.round(rating.Worked_Safe) : '--'
+                                        tr 
+                                            th Total Rating of Followed Instructions & Schedule
+                                            td= rating.Followed_Instructions_Schedule ? Math.round(rating.Followed_Instructions_Schedule) : '--'
+                                        tr 
+                                            th Total Rating of Team Player
+                                            td= rating.Team_Player ? Math.round(rating.Team_Player) : '--'
+                        .modal-footer
+                            button.btn.btn-default(type="button", data-dismiss="modal") Close
+
+            #myModal.modal.fade(tabindex="-1", role="dialog", aria-labelledby="myModalLabel", aria-hidden="true")
+                .modal-dialog
+                    .modal-content
+                        .modal-header
+                            button.close(type="button", data-dismiss="modal", aria-hidden="true") &times;
+                            h4.modal-title View Image
+                        .modal-body
+                            label Download Attachment
+                                .contact-img(style="margin:0; width: 100%;position:relative")
+                                    a(href='')
+                                        img#user_img.img-responsive(src='/', alt='')
+                        .modal-footer
+                            button.btn.btn-default(type="button", data-dismiss="modal") Close
+            .modal#view-image.fade(tabindex='-1', role='dialog' aria-labelledby="delete-skill" aria-hidden="true")
+                        .modal-dialog.modal-300(role='document')
+                            .modal-content
+                                .modal-header.theme-bg
+                                    h4.modal-title Image
+                                    button.close(type='button', data-dismiss='modal', aria-label='Close')
+                                        span(aria-hidden='true') ×
+                                .modal-body
+                                    .row
+                                        .form-group.col-md-12
+                                            img#modal-img.full-modal-img.img-responsive(src='/uploads/profile_img/#{image}', alt='')
+
+            script(type='text/javascript').
+                $(document).ready(function(){
+                    $(".btn-attach").click(function(){
+                        var src = $(this).data('attachment');
+                        var img = $(this).data('img');
+                        $('#myModal').on('shown.bs.modal', function (e) {
+                            $(this).find('.contact-img a').attr('href', src);
+                            $(this).find('.contact-img a').attr('download', img);
+                            $(this).find('.contact-img img').attr('src', src);
+                        })
+
+                    })
+                })
+
+                $(document).on('click', "a[href='#view-image']", function() {
+                    let {id, img} = $(this).data();
+                    $("#id").val(id);
+                    $("#modal-img").attr('src', img);
+                });
+
+                                
+                                

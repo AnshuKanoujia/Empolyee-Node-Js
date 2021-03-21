@@ -1,0 +1,89 @@
+extends layout/login-layout
+
+block content
+    section.login-screen-sec
+        .container
+            .login-screen
+                a(href='/')
+                    img.img-responsive(src='images/logo.png', alt='')
+                form#loginForm(accept-charset='utf-8', method='post', name='loginForm', action='/login')
+                    -if(messages.msg_error)
+                        .alert.alert-danger #{messages.msg_error}
+                    -else if(messages.msg_info)
+                        .alert.alert-success #{messages.msg_info}
+                    .form-group
+                        input#email.form-control(type='email', placeholder='Email-ID *' name='email' required)
+                    .form-group
+                        input#password.form-control(type='password', placeholder='Password *' name='password', minlength='6', required)
+                        input#ipAddress.form-control(type='hidden', name="ipAddress")
+                        input#osName.form-control(type='hidden', name="osName")
+                        input#browserName.form-control(type='hidden', name="browserName")
+                    //- a.btn.btn-login(href="/admin/technician/dashboard") Login
+                    button#signIn.btn.btn-login(type='submit') Login
+                    span
+                        | Do You Have An Account? 
+                        a(href='/sign-up')  Create An Account
+                    span
+                        a(href='/forget-password')  Forgot Password
+        
+        script(type='text/javascript').
+            $(document).ready(function() {
+                $.getJSON("https://api.ipify.org?format=json", function(data) { 
+                    // Setting text of element P with id gfg 
+                    $("#ipAddress").val(data.ip); 
+                }) 
+                //Get OS name
+                var osName = "Unknown OS";
+                if (navigator.userAgent.indexOf("Win") != -1) osName = "Windows";
+                if (navigator.userAgent.indexOf("Mac") != -1) osName = "Macintosh";
+                if (navigator.userAgent.indexOf("Linux") != -1) osName = "Linux";
+                if (navigator.userAgent.indexOf("Android") != -1) osName = "Android";
+                if (navigator.userAgent.indexOf("like Mac") != -1) osName = "iOS";
+                $("#osName").val(osName)
+                //Get browser details
+                var nAgt = navigator.userAgent;
+                var browserName  = navigator.appName;
+                var nameOffset,verOffset,ix;
+
+                // In Opera, the true version is after "Opera" or after "Version"
+                if ((verOffset=nAgt.indexOf("Opera"))!=-1) {
+                browserName = "Opera";
+                fullVersion = nAgt.substring(verOffset+6);
+                if ((verOffset=nAgt.indexOf("Version"))!=-1) 
+                fullVersion = nAgt.substring(verOffset+8);
+                }
+                // In MSIE, the true version is after "MSIE" in userAgent
+                else if ((verOffset=nAgt.indexOf("MSIE"))!=-1) {
+                browserName = "Microsoft Internet Explorer";
+                fullVersion = nAgt.substring(verOffset+5);
+                }
+                // In Chrome, the true version is after "Chrome" 
+                else if ((verOffset=nAgt.indexOf("Chrome"))!=-1) {
+                browserName = "Chrome";
+                fullVersion = nAgt.substring(verOffset+7);
+                }
+                // In Safari, the true version is after "Safari" or after "Version" 
+                else if ((verOffset=nAgt.indexOf("Safari"))!=-1) {
+                browserName = "Safari";
+                fullVersion = nAgt.substring(verOffset+7);
+                if ((verOffset=nAgt.indexOf("Version"))!=-1) 
+                fullVersion = nAgt.substring(verOffset+8);
+                }
+                // In Firefox, the true version is after "Firefox" 
+                else if ((verOffset=nAgt.indexOf("Firefox"))!=-1) {
+                browserName = "Firefox";
+                fullVersion = nAgt.substring(verOffset+8);
+                }
+                // In most other browsers, "name/version" is at the end of userAgent 
+                else if ( (nameOffset=nAgt.lastIndexOf(' ')+1) < 
+                        (verOffset=nAgt.lastIndexOf('/')) ) 
+                {
+                    browserName = nAgt.substring(nameOffset,verOffset);
+                    fullVersion = nAgt.substring(verOffset+1);
+                    if (browserName.toLowerCase()==browserName.toUpperCase()) {
+                        browserName = navigator.appName;
+                    }
+                }
+                //- console.log(browserName)
+                $("#browserName").val(browserName)
+            })

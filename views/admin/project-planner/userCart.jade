@@ -1,0 +1,141 @@
+extends ./../../layout/admin-layout
+
+block content
+                #page-wrapper
+                    .row.page-titles
+                        .col-md-5.align-self-center
+                            h3.text-themecolor Manage Carts
+                        .col-md-7.align-self-center
+                            ol.breadcrumb
+                                li.breadcrumb-item.active Project
+                    .container-fluid
+                        -if(messages.msg_error)
+                            .alert.alert-danger #{messages.msg_error}
+                        -else if(messages.msg_info)
+                            .alert.alert-success #{messages.msg_info}
+                        .row
+                            .col-md-12.col-sm-12
+                                .card
+                                    .card-header
+                                         .row
+                                            .col-sm-6
+                                                h4 Total Technicians List
+                                            .col-sm-6.text-right
+                                                a.btn.btn-primary.block.btn-sm(href='/admin/project-planner/viewUsers/#{id}', title='Back To View Technicians List')  
+                                                    i.ti-angle-left Back
+                                    .card-body
+                                        form.col-md-12(accept-charset='utf-8', method='post', name='offeredForm', id='form', action="/admin/project-planner/jobOfferedUsers")
+                                            if (cart.length)
+                                                each users in cart
+                                                    input.form-control(type='hidden', name='distance', id='distance', value=users.distance)    
+                                                    input.form-control(type='hidden', name='rates', id='rates', value=users.rates) 
+                                                    ul.list.table-jobs
+                                                        li.manage-list-row.clearfix
+                                                            .job-info
+                                                                .job-img
+                                                                    img.attachment-thumbnail(src="#{users.profileImg ? '/uploads/profile_img/' + users.profileImg : '/admin/img/avatar.jpg'}", alt='User Image')
+                                                                .job-details
+                                                                    h3.job-name
+                                                                        a.job_name_tag(href='#') #{users.firstName}
+                                                                    //- small.job-company
+                                                                    //-     i.ti-home
+                                                                    //-     | #{users.noOfVacancy} - Vacancies
+                                                                    small.job-sallery
+                                                                        i.ti-time
+                                                                        | #{users.experience}
+                                                                    small.job-sallery
+                                                                        i.ti-location-pin
+                                                                        | #{users.newAddress}
+                                                                        
+                                                                    .candi-skill
+                                                                        //- - _skills = users.skills.split(',')
+                                                                        //- - _skills.forEach(function(a) {
+                                                                        //-     span.skill-tag #{a}
+                                                                        //- - })
+                                                                    small.job-sallery
+                                                                        i.fa.fa-map  Currently
+                                                                        | #{users.distance} mi From Job Location
+                                                                    small.job-sallery
+                                                                        i.fa.fa-plane
+                                                                        | $ #{parseFloat(users.distance * 0.58).toFixed(2)}
+                                                                    small.job-sallery
+                                                                        i.fa.fa-dollar 
+                                                                        | #{users.rates} 
+                                                                    small.job-sallery
+                                                                        i.fa.fa-bank
+                                                                        | $ #{users.total_predicated_budget} 
+                                                            .job-buttons
+                                                                
+                                                                a.btn.btn-danger.delete-job.manage-btn(href='/admin/project-planner/remove/#{users.id}', role='button',data-toggle='tooltip', data-placement='top', title='Delete')  Remove
+                                            else
+                                                ul.list.table-jobs.danger.text-center
+                                                    ul.list.table-jobs
+                                                    li.manage-list-row.clearfix
+                                                        .job-info
+                                                            .job-details
+                                                                h3.job-name
+                                                                    a.job_name_tag(href='#') Sorry, your cart is empty!
+                                                   
+                                                .col-md-12
+                                            .text-right
+                                                button.btn.btn-success(type='submit') Submit
+                                                        
+
+                    
+                    script(type='text/javascript'). 
+                        var btn = "";
+                        var val = $('#switch').val('1');
+                        $(document).ready(function(){
+                            $('.delete-job').on('click', function(){
+                                btn = $(this);
+                                $('#delete-job').modal('show');
+                            })
+                            $('#delete').on('click', function(){
+                                //alert('Successfully Deleted this skill');
+                                btn.closest('li').remove();
+                                $('#delete-job').modal('hide');
+                                if(!$('.table-jobs').find('li:not(.hide)').length){
+                                    $('.table-jobs').find('li.hide').removeClass('hide');
+                                }
+                            })
+                        })
+
+                        $('#switch').on('click', function(){
+                            if($(this).is(':checked')){
+                                var val = $(this).val();
+                                $('.switch-element').slideDown();
+                                getSkills(val);
+                            } else{
+                                $('.switch-element').slideUp();
+                            }
+                        })
+                        $('.keyEnter').keypress(function(event){
+
+                            var keycode = (event.keyCode ? event.keyCode : event.which);
+                            if(event.which == '13'){
+                                    event.preventDefault();
+                                    $('#form').submit();
+                            }
+                        });
+
+                        //- var k = !{JSON.stringify(url)};
+                        //- function getSkills(val) {
+                        //-     var getSkills = !{JSON.stringify(jobtype)};
+                        //-     var url = k+"getSkill/"+getSkills;
+                        //-         $.ajax({
+                        //-             type: "GET",
+                        //-             url: url,
+                        //-             data: val,
+                        //-             success: function(data){
+                        //-                 var data = data.data;
+                        //-                 var htmld= " ";
+                        //-                 data.forEach(function(val, index){
+
+                        //-                     htmld += "<input type='checkbox', name='skills', value ='"+val.id+"'> <label>" +val.name + " </label>"
+                        //-                 })
+                        //-                 htmld += "<br><br>"
+                        //-                 $("#skills").html(htmld);
+                        //-             }
+                        //-         });
+                        //- }
+                       

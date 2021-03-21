@@ -1,0 +1,117 @@
+extends ./../../layout/admin-layout
+
+block content
+      #page-wrapper
+            .row.page-titles
+                .col-md-5.align-self-center
+                    h3.text-themecolor Project Planner
+                .col-md-7.align-self-center
+                    ol.breadcrumb
+                        li.breadcrumb-item.active Locations
+            .container-fluid
+                -if(messages.msg_error)
+                    .alert.alert-danger #{messages.msg_error}
+                -else if(messages.msg_info)
+                    .alert.alert-success #{messages.msg_info}
+                .row
+                        .col-md-12
+                            .card
+                                .card-body
+                                    h4  Locations List
+                                    .table-responsive
+                                        table.table.table-striped.table-bordered
+                                            thead
+                                                tr
+                                                    th #
+                                                    th Location Name
+                                                    th Address
+                                                    th Action
+                                            tbody
+                                                if(siteLists.length)
+                                                    each siteList, i in siteLists
+                                                        tr
+                                                            td= i+1
+                                                            td= siteList.siteName
+                                                            //- td= siteList.siteName+' ('+ siteList.sitesCode+')'
+                                                            td= siteList.newAddress ? siteList.newAddress : '--'
+                                                            td(style="width: 250px")
+                                                                a.btn.btn-info.btn-sm(href='/admin/project-planner/view-sites/#{siteList.id}', data-toggle='tooltip', title='View Location') 
+                                                                    i.fa.fa-eye
+                                                                &nbsp;
+                                                                a.btn.btn-primary.btn-sm(href='/admin/project-planner/create-jobs/#{siteList.id}', data-toggle='tooltip', title='Create Project') 
+                                                                    i.fa.fa-user-plus
+                                                                &nbsp;
+                                                                a.btn.btn-success.btn-sm(href='/admin/project-planner/view-jobs/#{siteList.id}', data-toggle='tooltip', title='View Project') 
+                                                                    i.fa.fa-eye
+                                                                &nbsp;
+                                                                span(data-toggle='modal', data-target='#apply-job', class="manage-btn",data-id=siteList.id)
+                                                                    button.btn.btn-primary.manage-btn(data-toggle='tooltip', data-placement='top', data-id=siteList.id , title='Change Mechanical Supervisor', data-target='#apply-job') 
+                                                                        i.fa.fa-angle-double-right
+                                                                &nbsp;
+                                                                span(data-toggle='modal', data-target='#apply-job1', class="manage-btns",data-id=siteList.id)
+                                                                    button.btn.btn-primary.manage-btns(data-toggle='tooltip', data-placement='top', data-id=siteList.id , title='Change Electrical Supervisor', data-target='#apply-job1') 
+                                                                        i.fa.fa-angle-double-right
+                                                else
+                                                    tr.danger.text-center
+                                                        td(colspan='7') Sorry, no record found!
+
+            .modal#apply-job.fade(tabindex='-1', role='dialog' aria-labelledby="delete-skill" aria-hidden="true")
+                    .modal-dialog(role='document')
+                        .modal-content
+                            .modal-header.theme-bg
+                                h4.modal-title Select Supervisor
+                                button.close(type='button', data-dismiss='modal', aria-label='Close')
+                                    span(aria-hidden='true') ×
+                            form#SupervisorForm(accept-charset='utf-8', method='post', name='superviosrForm', action='/admin/project-planner/updateSupervisor')
+                                .modal-body
+                                        label Supervisor
+                                            span.text-danger  *
+                                        select.form-control(name='jobSupervisor')
+                                                //- option(value="0") Select Supervisor
+                                                each supervisors in supervisor
+                                                    if(supervisors.jobType == 1)
+                                                        option(value=supervisors.id) #{supervisors.firstName}
+
+                                        input.form-control(type='hidden', id='applyJob' ,name='applyJob')
+                                        input.form-control(type='hidden', id='mSupervisor' ,name='jobType', value='1')
+                                .modal-footer
+                                    button.btn.btn-default(type='button', data-dismiss='modal') Cancel
+                                    button#delete.btn.btn-primary(type='submit') Submit
+            .modal#apply-job1.fade(tabindex='-1', role='dialog' aria-labelledby="delete-skill" aria-hidden="true")
+                    .modal-dialog(role='document')
+                        .modal-content
+                            .modal-header.theme-bg
+                                h4.modal-title Select Supervisor
+                                button.close(type='button', data-dismiss='modal', aria-label='Close')
+                                    span(aria-hidden='true') ×
+                            form#SupervisorForm(accept-charset='utf-8', method='post', name='superviosrForm', action='/admin/project-planner/updateSupervisor')
+                                .modal-body
+                                        label Supervisor
+                                            span.text-danger  *
+                                        select.form-control(name='jobSupervisor')
+                                                //- option(value="0") Select Supervisor
+                                                each supervisors in supervisor
+                                                    if(supervisors.jobType == 2)
+                                                        option(value=supervisors.id) #{supervisors.firstName}
+
+                                        input.form-control(type='hidden', id='applyJob1' ,name='applyJob')
+                                        input.form-control(type='hidden', id='eSupervisor' ,name='jobType', value='2')
+                                .modal-footer
+                                    button.btn.btn-default(type='button', data-dismiss='modal') Cancel
+                                    button#delete.btn.btn-primary(type='submit') Submit
+
+            
+            script(type='text/javascript').
+                $(document).on('click', "span.manage-btn[data-toggle='modal']", function() {
+                    event.preventDefault();
+                    let applyJob = $(this).data('id');
+                    $("#applyJob").val(applyJob);
+                    $('#apply-job').modal('show');
+                });
+                $(document).on('click', "span.manage-btns[data-toggle='modal']", function() {
+                    event.preventDefault();
+                    let applyJob1 = $(this).data('id');
+                    console.log(applyJob1,'job')
+                    $("#applyJob1").val(applyJob1);
+                    $('#apply-job1').modal('show');
+                });

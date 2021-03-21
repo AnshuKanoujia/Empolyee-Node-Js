@@ -1,0 +1,57 @@
+extends ./../../layout/admin-layout
+
+block content
+            #page-wrapper
+                .row.page-titles
+                    .col-md-5.align-self-center
+                        h3.text-themecolor Project Planner
+                    .col-md-7.align-self-center
+                        ol.breadcrumb
+                            li.breadcrumb-item.active Edit Certification - Dashboard
+                .container-fluid
+                    each details in certificate
+                        form#newSiteForm(accept-charset='utf-8', method='post', name='loginForm', action='/admin/super-admin/edit-certificate/#{id}', enctype='multipart/form-data')
+                            -if(messages.msg_error)
+                                .alert.alert-danger #{messages.msg_error}
+                            -else if(messages.msg_info)
+                                .alert.alert-success #{messages.msg_info}
+                            .row
+                                .col-md-12.col-sm-12
+                                    .card
+                                            .card-header
+                                                .row
+                                                    .col-sm-6
+                                                        h4 My Cerification
+                                            .card-body
+                                                .row
+                                                    .col-md-12
+                                                        .row
+                                                            .col-sm-3
+                                                                label Certification Name
+                                                                    span.text-danger  *
+                                                                input.form-control(type='text', name='certification_name',value=details.certification_name, required)
+                                                            .col-sm-3
+                                                                label Authority
+                                                                    span.text-danger  *
+                                                                input#outTime.timepicker.form-control(type='text', name='authority',value=details.authority, required)
+                                                            .col-sm-3
+                                                                label Attachment
+                                                                input.form-control(type='file', name='certificate_attachment', accept='image/pdf/*',required=details.certificate_attachment ? false : true)
+                                                            .col-sm-3
+                                                                label Expire Date
+                                                                    span.text-danger  *
+                                                                input.form-control(type='text',placeholder='MM/DD/YYYY', name='exp_date', data-toggle='datepicker',value=moment(details.exp_date).isValid() ? moment(details.exp_date).format('MM/DD/YYYY') : "",required)
+                                                    
+                                                    .col-sm-12
+                                                        label Description Of Certificate
+                                                        textarea#report.form-control.height-120.textarea(placeholder='About Report', name='description',value=details.description, minlength='5') #{details.description}
+                                                    
+                                            .col-md-12
+                                                .text-right
+                                                    button.btn.btn-success(type='submit') Submit & Exit
+                    script(type='text/javascript').
+                        $(document).ready(function(){
+                            $(document).find('[name="exp_date"]').datepicker('setStartDate', new Date());
+                        })
+                        
+                      

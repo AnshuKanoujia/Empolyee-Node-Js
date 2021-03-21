@@ -1,0 +1,47 @@
+extends ./../../layout/admin-layout
+
+block content
+      #page-wrapper
+            .row.page-titles
+                .col-md-5.align-self-center
+                    h3.text-themecolor Supervisor
+                .col-md-7.align-self-center
+                    ol.breadcrumb
+                        li.breadcrumb-item.active Supervisor Profile
+            .container-fluid
+                .row
+                    .col-md-12
+                        .card
+                            .card-header 
+                                .row
+                                    .col-sm-6
+                                        h4 Profile
+                                    .col-sm-6.text-right
+                                        a.btn.btn-primary.block.btn-sm(href='/admin/project-planner/view-supervisor', title='Back To View Supervisors List')  
+                                            i.ti-angle-left Back
+                            .card-body
+                               
+                                .table-responsive
+                                    table.table.table-borderless.job-details
+                                        tbody
+                                            each supervisorProfile in users
+                                                tr
+                                                    th Name:
+                                                    td= supervisorProfile.name+' ('+ supervisorProfile.eCode +')' ? supervisorProfile.name : '--'
+                                                    th DOB:
+                                                    td= moment(supervisorProfile.dob).isValid()  ? moment(supervisorProfile.dob).format('MM/DD/YYYY') : '--'
+                                                tr
+                                                    th Email:
+                                                    td= supervisorProfile.email ? supervisorProfile.email : '--'
+                                                    th Project Trade:
+                                                    td= supervisorProfile.type_name ? supervisorProfile.type_name : '--'
+                                                tr
+                                                    th Experience:
+                                                    td= supervisorProfile.experience ? supervisorProfile.experience : '--'
+                                                    th Location:
+                                                    td= supervisorProfile.newAddress ? supervisorProfile.newAddress : '--'
+                                                //- tr
+                                                //-     th Skills:
+                                                //-     td(colspan='4')= supervisorProfile.skills ? supervisorProfile.skills : '--'
+                                                    
+                                                

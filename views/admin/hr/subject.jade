@@ -1,0 +1,91 @@
+extends ./../../layout/hr-layout
+
+block content
+      #page-wrapper
+            .row.page-titles
+                .col-md-5.align-self-center
+                    h3.text-themecolor Hr
+                .col-md-7.align-self-center
+                    ol.breadcrumb
+                        li.breadcrumb-item.active Subject - Dashboard
+            .container-fluid
+                -if(messages.msg_error)
+                    .alert.alert-danger #{messages.msg_error}
+                -else if(messages.msg_info)
+                    .alert.alert-success #{messages.msg_info}
+
+                .row
+                    .col-md-12
+                        .card
+                            .card-header 
+                                .row
+                                    .col-sm-6
+                                        h4 Subjects List
+                                    .col-sm-6.text-right
+                                        //- a.btn.btn-primary.block.btn-sm(href='/admin/project-planner/manage-sites', title='Back To View Supervisor List')  
+                                        //-     i.ti-angle-left Back
+                            .card-body
+                                .row
+                                    .col-sm-6.form-group
+                                        a.btn.btn-success.btn-sm(href='/admin/hr/add-subject', title='Add Suject')  
+                                            i.fa.fa-plus    Add Subject
+                                .row
+                                    .col-md-12
+                                        .table-responsive
+                                            table.table.table-striped.table-bordered
+                                                thead
+                                                    tr
+                                                        th # 
+                                                        th Subject Name
+                                                        th Date
+                                                        th Action
+                                                tbody
+                                                    if(subjectList.length)
+                                                        each list, i in subjectList
+                                                            tr
+                                                                td= i+1
+                                                                td= list.sub_name
+                                                                td= moment(list.sub_date).isValid() ? moment(list.sub_date).format('YYYY/MM/DD') : '--'
+                                                                td
+                                                                    //- a.btn.btn-primary.btn-sm(href='#', title='Edit Subject') 
+                                                                    //-     i.fa.fa-edit
+                                                                    span(data-toggle='modal', data-placement='top',class="btn-sm", data-target='#change_sub',  data-id=list.subId, data-sub_name=list.sub_name)
+                                                                        button.btn.btn-primary.btn-sm(data-toggle='tooltip', data-placement='top', title='Edit Subject', data-target='#change_sub')
+                                                                            i.fa.fa-edit
+                                                                    a.btn.btn-danger.btn-sm(href='/admin/hr/delete-sub/#{list.subId}', data-toggle='tooltip', title='delete Subject') 
+                                                                        i.fa.fa-trash
+                                                    else
+                                                        tr.danger.text-center
+                                                            td(colspan='4') Sorry, no record found!
+
+            .modal#change_sub.fade(tabindex='-1', role='dialog' aria-labelledby="delete-skill" aria-hidden="true")
+                    .modal-dialog(role='document')
+                        .modal-content
+                            .modal-header.theme-bg
+                                h4.modal-title Edit Subject
+                                button.close(type='button', data-dismiss='modal', aria-label='Close')
+                                    span(aria-hidden='true') ×
+                            form#SupervisorForm(accept-charset='utf-8', method='post', name='superviosrForm', action='/admin/hr/updateSubject')
+                                .modal-body
+                                       .row
+                                            .col-md-12
+                                                label Change Subject Name
+                                                    span.text-danger  *
+                                                input.form-control(type='text', name='sub_name', id='subName',value=subjectList.subId, required, autocomplete="off")
+                                            
+                                        input.form-control(type='hidden', id='changeSub' ,name='changeSub')
+                                .modal-footer
+                                    button.btn.btn-default(type='button', data-dismiss='modal') Cancel
+                                    button#delete.btn.btn-primary(type='submit') Submit
+
+            script(type='text/javascript').
+                $(document).on('click', "span.btn-sm[data-toggle='modal']", function() {
+                             event.preventDefault();
+                            let changeSub = $(this).data('id');
+                            let changeSubName = $(this).data('sub_name');
+                            $("#changeSub").val(changeSub);
+                            $("#subName").val(changeSubName);
+                            $('#change_sub').modal('show');
+                        });
+
+           

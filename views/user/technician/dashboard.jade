@@ -1,0 +1,51 @@
+extends ./../../layout/user-layout
+
+block content
+      #page-wrapper
+            .row.page-titles
+                .col-md-5.align-self-center
+                    h3.text-themecolor Technician
+                .col-md-7.align-self-center
+                    ol.breadcrumb
+                        li.breadcrumb-item.active  Dashboard
+            .container-fluid
+              -if(messages.msg_error)
+                  .alert.alert-danger #{messages.msg_error}
+              -else if(messages.msg_info)
+                  .alert.alert-success #{messages.msg_info}
+               .row
+                  .col-md-3.col-sm-6
+                    .widget.standard-widget
+                      .row
+                        a.widget-caption.info(href='/user/technician/view-offers')
+                          .col-md-12.text-center
+                            .img-div
+                              img(src='../../admin/img/architect.png')
+                            h4.text My Offers
+                  .col-md-3.col-sm-6
+                    .widget.standard-widget
+                      .row
+                        a.widget-caption.info(href='/user/technician/report-view')
+                          .col-md-12.text-center
+                            .img-div
+                              img(src='../../admin/img/organize.png')
+                            h4.text Timesheets
+                  .col-md-3.col-sm-6
+                    .widget.standard-widget
+                      .row
+                        a.widget-caption.info(href='/user/technician/edit-profile')
+                          .col-md-12.text-center
+                            .img-div
+                              img(src='../../admin/img/profile.png')
+                            h4.text Edit Profile
+                  .col-md-3.col-sm-6
+                    .widget.standard-widget
+                      .row
+                        a.widget-caption.info(href='/user/technician/giveExam')
+                          .col-md-12.text-center
+                            .img-div
+                              img(src='../../admin/img/question-paper.png')
+                            h4.text Take Exam
+
+                            
+                

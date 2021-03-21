@@ -1,0 +1,21 @@
+extends layout/login-layout
+
+block content
+    section.login-screen-sec
+        .container
+            .login-screen
+                a(href='/')
+                    img.img-responsive(src='images/logo.png', alt='')
+                form#userAddForm(accept-charset='utf-8', method='post', name='userAddForm', action='/addUser')
+                    -if(messages.msg_error)
+                        .alert.alert-danger #{messages.msg_error}
+                    -else if(messages.msg_info)
+                        .alert.alert-success #{messages.msg_info}
+                    input.form-control(type='text', placeholder='Your First Name' name='fname')
+                    input.form-control(type='text', placeholder='Your Last Name' name='lname')
+                    input.form-control(type='email', placeholder='Email *' name='email' required)
+                    input.form-control(type='password', placeholder='Password *' name='password', minlength='6', required)
+                    button#signUp.btn.btn-login(type='submit') Sign Up
+                    span
+                        | Already Have An Account? 
+                        a(href='/login')  Login 

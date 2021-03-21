@@ -1,0 +1,44 @@
+extends ./../../layout/supervisor-layout
+
+block content
+    #page-wrapper
+        .row.page-titles
+            .col-md-5.align-self-center
+                h3.text-themecolor Supervisor
+            .col-md-7.align-self-center
+                ol.breadcrumb
+                    li.breadcrumb-item.active Time Sheet
+        each report in reports
+            .container-fluid
+                .row
+                    .col-md-12
+                        .card
+                            .card-header 
+                                .row
+                                    .col-sm-6
+                                        h4 Time Sheet
+                                    
+                            .card-body
+                            
+                                .table-responsive
+                                    table.table.table-borderless.job-details
+                                        tbody
+                                            tr
+                                                th User Name:
+                                                td= report.name 
+                                                th In Time:
+                                                td= report.inTime 
+                                            tr
+                                                th Out Time:
+                                                td= report.outTime
+                                                th Current Status:
+                                                td <span class="j-type full-time">#{report.statusName}</span>
+                                            tr
+                                                th Date:
+                                                td(colspan="4")= moment(report.date).isValid() ? moment(report.date).format('MM/DD/YYYY') : '--'
+                                            tr 
+                                                th Description Of Report:
+                                                td(colspan="4")= report.description 
+                                                
+
+                    

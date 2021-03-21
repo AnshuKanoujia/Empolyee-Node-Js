@@ -1,0 +1,589 @@
+extends ./../../layout/admin-layout
+
+block content
+            #page-wrapper
+                .row.page-titles
+                    .col-md-5.align-self-center
+                        h3.text-themecolor Project Planner
+                    .col-md-7.align-self-center
+                        ol.breadcrumb
+                            li.breadcrumb-item.active Map View
+                .container-fluid
+                    -if(messages.msg_error)
+                        .alert.alert-danger #{messages.msg_error}
+                    -else if(messages.msg_info)
+                        .alert.alert-success #{messages.msg_info}
+                    .row
+                        .col-md-12.col-sm-12
+                            // General Information
+                            input.form-control(type='hidden', id='jobId', value=jobId, name='jobId')
+                            .card
+                                .card-header
+
+                                    form.col-md-12(accept-charset='utf-8', method='post', name='searchForm', id='form', action="/admin/super-admin/searchUsersOnMap")
+                                        .row
+                                            .col-sm-4
+                                                input.form-control.keyEnter.wide-width(type='text', placeholder='Search Job By Name', name='search', value=search)
+                                            .col-sm-4
+                                                label.switch
+                                                    input(type="checkbox",id="switch")
+                                                    span.slider.round
+                                                span &nbsp; Search by designation
+                                            
+                                        .switch-element(style="display:none;padding-top:15px")
+                                                label 
+                                                    h4 Designation
+                                                    .row.from-group.custom-checkbox
+                                                        each designationList in designation
+                                                            .col-md-6
+                                                                input#designation(type="checkbox", name="designation", value=designationList.designationId) 
+                                                                label(for="designation"+designationList.designationId+"") #{designationList.designation_name}
+                                                .row
+                                                    label 
+                                                    h4 Minimum Ratings
+                                                    .col-md-12.from-group
+                                                        span(style='display:block;')
+                                                            div.custom-radio
+                                                                input(type="radio", id="rating1", value="1" name="ratings")
+                                                                label(for='rating1') 1
+                                                                input(type="radio", id="rating2", value="1" name="ratings") 
+                                                                label(for='rating2') 2
+                                                                input(type="radio", id="rating3", value="3" name="ratings") 
+                                                                label(for='rating3') 3
+                                                                input(type="radio", id="rating4", value="4" name="ratings") 
+                                                                label(for='rating4') 4
+                                                        input.form-control(type='hidden', name='jobId', id='jobId', value=jobId)
+                                                        .form-group
+                                                            button.btn.btn-success(type='submit') Submit & Exit
+                                //- .card
+                                .card-header
+                                    .row
+                                        .col-md-4
+                                            h4 Maps
+                                        .col-md-8.text-right
+                                            label Proposed Budget / Total Predicated Budget - #{job_budget[0].proposed_budget ? Number(parseFloat(job_budget[0].proposed_budget).toFixed(2).toString()).toLocaleString() : '00'} / #{job_budget[0].predicated_budget ? '$ '+Number(parseFloat(job_budget[0].predicated_budget).toFixed(2).toString()).toLocaleString() : '$ '+'00'}
+                                            &nbsp;
+                                            a.btn.btn-primary.block.btn-lg(href='/admin/super-admin/viewUsers/#{jobId}', title='Back To View Supervisor List')
+                                                i.fa.fa-edit View List
+                                            button.open-close-button#legendBtn Legend
+                                .card-body
+                                    .row
+                                        .col-md-12
+                                            #legend
+                                            #map(class="googleMap")
+                script(src='https://maps.googleapis.com/maps/api/js?key='+apiKey+'&callback=initMap' async defer)
+                script(type='text/javascript').
+                    function initMap() {
+                        var data = !{JSON.stringify(users)};
+                        var jobId = !{JSON.stringify(jobId)};
+                        console.log(data,'data')
+                        // The location of Uluru
+                        //
+                        var cordinates = {lat: 39.025398, lng: -94.522827};
+                       // var cordinates = {lat:34.0548912, lng: -85.28512330000001};
+                        // The map, centered at Uluru
+                        var map = new google.maps.Map(
+                            document.getElementById('map'), 
+                                {zoom: 5, center: cordinates,  mapTypeId: 'roadmap'}
+                            );
+                    
+        
+                        //- var iconBase = '/admin/img/maps/';
+                        var iconBase = '/admin/img/icons/';
+                        /*dynamic code*/
+                        var icons = {}
+                        var features= [];
+                        var contentString = [];
+                        var contentStringDup = [];
+
+                        var infoString = [];
+                        var infoStringDup = [];
+                        $.each(data, function(i, userData){
+                           //icons list //
+                        if(userData.role != undefined){
+                            console.log(data,'data',jobId,'jobId')
+                            
+                            if(userData.role=="1" && userData.type_name=="Electrical"){
+                                iconId = 
+                                'user2.png'
+
+                            } else if(userData.role=="1" && userData.type_name=="Mechanical"){
+                                iconId = 
+                                'user1.png';
+                                console.log(data,'data',jobId,'jobId')
+
+                            }
+                        }
+                        
+                            //- var id = parseInt(i)+1;
+                        //-    icons['user'+userData.id] = {icon: iconBase + 'user1.png'}
+                           icons['user'+userData.id] = {icon: iconBase + iconId}
+                           
+                           //features list //
+                            //console.log(data,'data',jobId,'jobId')
+                            var label = new google.maps.LatLng(userData.latitude, userData.longitude);
+
+
+
+                            var featuresList = {position: label, type: 'user'+userData.id};
+                            features.push(featuresList);
+
+                            var  content, profile, badges, pullLeft, ratings,button,mobileNumber,designationName, distanceCovered, testScore, achorBtn, ancrbtnDiv,achorBtnDup, ancrbtnDivDup,profileDup,pullLeftDup,address;
+                        
+                        
+                            var list= document.createElement('div')
+                            list.className = "list";
+
+                            var listDup= document.createElement('div')
+                            listDup.className = "list";
+
+                            content= document.createElement('div')
+                            content.className = "content";
+
+                            contentDup= document.createElement('div')
+                            contentDup.className = "content";
+                           
+
+                            profile= document.createElement('div');
+                            profile.className = "profile";
+
+                            if(userData['profileImg'] == null){
+                                profile.innerHTML = '<img src="/admin/img/avatar.jpg" />';   
+                            } else{
+                                profile.innerHTML = '<img src="/uploads/profile_img/'+userData.profileImg+'" />'; 
+                            }
+
+                            profileDup= document.createElement('div');
+                            profileDup.className = "profile";
+
+                            if(userData['profileImg'] == null){
+                                profileDup.innerHTML = '<img src="/admin/img/avatar.jpg" />';   
+                            } else{
+                                profileDup.innerHTML = '<img src="/uploads/profile_img/'+userData.profileImg+'" />'; 
+                            }
+                            
+                            content.appendChild(profile);
+                            contentDup.appendChild(profileDup);
+
+                            pullLeft= document.createElement('div');
+                            pullLeft.className = 'pull-left';
+                            pullLeft.innerHTML = '<h3 class="firstHeading">'+userData.name+'</h3>';
+
+                            pullLeftDup= document.createElement('div');
+                            pullLeftDup.className = 'pull-left';
+                            pullLeftDup.innerHTML = '<h3 class="firstHeading">'+userData.name+'</h3>';     
+
+                            badges= document.createElement('span');
+                            badges.className = "badges badge-info";
+                            badges.innerText = userData.type_name;
+                            pullLeft.appendChild(badges);
+                           // pullLeftDup.appendChild(badges);
+
+                            if(userData['ratings'] !== undefined){
+                                ratings= document.createElement('span');
+                                ratings.className = "ratings pull-right"
+                                ratings.innerHTML = '<i class="ti ti-star text-danger"></i> 4.5';
+                                pullLeft.appendChild(ratings);
+                            }
+
+
+                            if(userData['phone_number'] !== undefined){
+                                mobileNumber= document.createElement('div');
+                                mobileNumber.className = 'mobileNumber';
+                                mobileNumber.innerHTML = '<i class="fa fa-phone"></i> <span>' + userData.phone_number+'</span>';
+                                
+                             }
+
+                             
+                            if(userData['designation'] !== undefined){
+                                designationName= document.createElement('div');
+                                designationName.className = 'designationName';
+                                designationName.innerHTML = '<i class="fa fa-user-secret"></i> <span>' +userData.designation+'</span>';
+                                
+                            }
+
+                            if(userData['total_score'] !== undefined){
+                                if(userData['role'] == 1){
+                                  if( userData.total_score !==  null){
+                                      var testData = '<span>'+userData.total_score+'</span>';
+
+                                  } else{
+                                    var testData = "This user have not given exam";
+
+                                  }
+                                    testScore= document.createElement('div');
+                                    testScore.className = 'testScore';
+                                    testScore.innerHTML = '<i class="fa fa-list"></i> ' + testData ;
+
+                                }
+                                
+                            }
+
+                            if(userData['distance'] !== undefined){
+                                distanceCovered= document.createElement('div');
+                                distanceCovered.className = 'distanceCovered';
+                                distanceCovered.innerHTML = '<i class="fa fa-map-marker"></i>  <span>'+userData.distance+'</span>';
+                                
+                             }
+
+                            if(userData['newAddress'] !== undefined){
+                                address= document.createElement('div');
+                                address.className = 'address';
+                                address.innerHTML = '<i class="fa fa-map-marker"></i> <span>' +userData.newAddress+'</span>';
+                                
+                            }
+
+                            ancrbtnDiv= document.createElement('div');
+                            ancrbtnDiv.className = 'ancrbtnDiv';
+
+                            achorBtn= document.createElement('a');
+                            achorBtn.className = 'achorBtn';
+                            achorBtn.href = '/admin/super-admin/viewTechProfile/'+userData.id+'';
+                            achorBtn.title = 'Visit Profile'
+                            achorBtn.setAttribute('data-toggle', 'tooltip')
+                            achorBtn.innerHTML =  '<img src="/admin/img/view.png"> |';
+
+                            achorBtn1= document.createElement('a');
+                            achorBtn1.className = 'job_notification';
+                            achorBtn1.href = '#';
+                            achorBtn1.title = 'Send Job Notification'
+                            achorBtn1.setAttribute('data-toggle', 'tooltip')
+                            achorBtn1.innerHTML =  '<img src="/admin/img/mail.png">';
+                            achorBtn1.id = userData.id;
+                            achorBtn1.dataset.email = userData.email;
+                            achorBtn1.dataset.distance = userData.distance;
+                            achorBtn1.dataset.rates = userData.rates;
+                            achorBtn1.dataset.jobId = jobId;
+
+                            ///////////////////////////////////////
+
+                            ancrbtnDivDup= document.createElement('div');
+                            ancrbtnDivDup.className = 'ancrbtnDiv eyeCl';
+
+                            achorBtnDup= document.createElement('a');
+                            achorBtnDup.className = 'achorBtn';
+                            achorBtnDup.href = '/admin/super-admin/viewTechProfile/'+userData.id+'';
+                            achorBtnDup.title = 'Visit Profile'
+                            achorBtnDup.setAttribute('data-toggle', 'tooltip')
+                            achorBtnDup.innerHTML =  '<img src="/admin/img/view.png"> |';
+
+                            achorBtn1Dup= document.createElement('a');
+                            achorBtn1Dup.className = 'job_notification';
+                            achorBtn1Dup.href = '#';
+                            achorBtn1Dup.title = 'Send Job Notification'
+                            achorBtn1Dup.setAttribute('data-toggle', 'tooltip')
+                            achorBtn1Dup.innerHTML =  '<img src="/admin/img/mail.png">';
+                            achorBtn1Dup.id = userData.id;
+                            achorBtn1Dup.dataset.email = userData.email;
+                            achorBtn1Dup.dataset.distance = userData.distance;
+                            achorBtn1Dup.dataset.rates = userData.rates;
+                            achorBtn1Dup.dataset.jobId = jobId;
+
+                            ////////////////////////////////////////////
+                            
+                            profile.appendChild(pullLeft);
+                            content.appendChild(profile); 
+
+                            
+                            
+                            // var contentDup=contentDup;
+                            //console.log(data,'data',jobId,'jobId')
+                            content.appendChild(mobileNumber);   
+                            content.appendChild(designationName); 
+                            content.appendChild(address); 
+                            content.appendChild(testScore);  
+                            content.appendChild(distanceCovered); 
+                            content.appendChild(achorBtn);   
+                            content.appendChild(achorBtn1);
+                            content.appendChild(ancrbtnDiv); 
+                            ancrbtnDiv.appendChild(achorBtn); 
+                            ancrbtnDiv.appendChild(achorBtn1); 
+
+                            profileDup.appendChild(pullLeftDup);
+                            contentDup.appendChild(profileDup);
+                            contentDup.appendChild(achorBtnDup);   
+                            contentDup.appendChild(achorBtn1Dup);
+                            contentDup.appendChild(ancrbtnDivDup); 
+                            ancrbtnDivDup.appendChild(achorBtnDup); 
+                            ancrbtnDivDup.appendChild(achorBtn1Dup); 
+
+                            var contentDataDup = listDup.appendChild(contentDup);
+                            var contentData = list.appendChild(content);
+
+                            var infoData = '<div class="content">'+
+                                '<div class="profile">'+
+                                '<div class=""><h3 class="firstHeading">'+userData.name+'</h3>'+
+                                '<span class="badges badge-info">'+userData.type_name+'</span>' +
+                                '</div></div><div><span class="designationName">'+userData.designation+'</span>' +
+                                '<span class="designationName">'+userData.distance+'</span>' +
+                                '</div>'+
+                                '</div>'
+
+                            var infoDataDup = '<div class="content">'+
+                                '<div class="profile">'+
+                                '<div class=""><h3 class="firstHeading">'+userData.name+'</h3>'+
+                                '<span class="badges badge-info">'+userData.type_name+'</span>' +
+                                '</div></div>'+
+                                '</div>'
+
+                            contentString.push(contentData);
+                            contentStringDup.push(contentDataDup);        
+
+                            infoString.push(infoData);
+                            infoStringDup.push(infoDataDup);
+                            
+                            $('[data-toggle="tooltip"]').tooltip();
+                            
+                        });
+                 
+                      
+                        var markers = [];
+                        var infoStringMultiple='';
+                        var contentStringMultiple=[];
+                        var contentStringMultipleDup='';
+                        for (var i = 0; i < features.length; i++) {
+                            var is_dup=0;
+                            var posMarker=features[i].position;
+                            infoStringMultiple = infoString[i];
+                            
+                           // contentStringMultiple=contentStringDup[i].innerHTML;
+                            contentStringMultiple=contentString[i].innerHTML;
+                            contentStringMultipleDup=contentStringDup[i].innerHTML;
+                            if(markers.length != 0) 
+                            {
+                               
+                                
+                                for (J=0; J < markers.length; J++) {
+                                    var existingMarker = markers[J];
+                                    var pos = existingMarker.getPosition();
+
+                                    if (posMarker.equals(pos)) {
+
+                                        ++is_dup;
+                                        infoStringMultiple+=infoStringDup[J];
+                                        contentStringMultipleDup+=contentStringDup[J].innerHTML;
+
+                                    }
+                                }
+                                if(is_dup>0){
+                                        contentStringMultiple=contentStringMultipleDup;
+                                        icons[features[i].type] = {icon: iconBase + 'circle.png'}
+                                }
+                                
+                            }
+
+
+                            
+                            var contentwindow = new google.maps.InfoWindow({
+                                content: contentStringMultiple,
+                                maxWidth: 300
+                            });
+
+                            var infomationwindow = new google.maps.InfoWindow({
+                                content: infoStringMultiple,
+                                maxWidth: 300
+                            });
+                            var marker = new google.maps.Marker({
+                                position: posMarker,
+                                icon: icons[features[i].type].icon,
+                                map: map
+                            });
+
+                            bindContentwindow(marker, map, contentwindow, contentStringMultiple,is_dup);
+                            bindInfowindow(marker, map, infomationwindow, infoStringMultiple);
+                            markers.push(marker);
+                        };
+
+                        var iconsLegend = {
+                            M_Technician: {
+                                icon: iconBase + 'user1.png'
+                            },
+                            E_Technician: {
+                                icon: iconBase + 'user2.png'
+                            }
+                        };
+
+                        var legend = document.getElementById('legend');
+                        for (var key in iconsLegend) {
+                            var type = iconsLegend[key];
+                            var name = key;
+                            var icon = type.icon;
+                            var div = document.createElement('div');
+                            div.innerHTML = '<img src="' + icon + '"> ' + name.charAt(0).toUpperCase() + name.slice(1);;
+                            legend.appendChild(div);
+                        }
+
+                        map.controls[google.maps.ControlPosition.RIGHT_TOP].push(legend);
+                    }
+
+                    var k = !{JSON.stringify(url)};
+
+                    function bindContentwindow(marker, map, contentwindow, contentString,is_dup) {
+                        marker.addListener('click', function() {
+
+                            
+                            setTimeout(function(){
+                                $('.job_notification').on('click', function(){
+                                    //- if(confirm('Do you really want to send job notification?')){
+                                    //- if(confirm('Do you really want to add this user?')){
+
+                                        $(this).html('Please wait <i class="fa fa-spinner spinner"></i>').attr('disabled' , true);
+                                        
+                                            var id = $(this).attr('id');
+                                            var email = $(this).attr('data-email');
+                                            var jobId = $('#jobId').val();
+                                            //- var distance = $(this).attr('data-distance');
+                                            var arr = $(this).attr('data-distance')
+                                            var dis = arr.replace(/,/g, '');
+                                            var distance = dis.split(" ",1);
+                                            var rates = $(this).attr('data-rates');
+                                            var jobId = $(this).attr('data-job-id');
+                                            //console.log(data,'data',jobId,'jobId')
+                                        
+                                            $.ajax({
+                                                type: "POST",
+                                                //- url: '/admin/super-admin/jobNotification',
+                                                url: '/admin/super-admin/addUsersToCart',
+                                                async: false,
+                                                data:{ 
+                                                    'id': id,
+                                                    'email': email,
+                                                    'jobId': jobId,
+                                                    'distance': distance,
+                                                    'rates': rates,
+                                                    'jobId': jobId,
+                                                    },
+                                                success: function(data){
+                                                    if(data=='success')
+                                                    //-  window.location.reload();
+                                                        window.location.href='/admin/super-admin/userMap-view/'+jobId;
+                                                }
+                                            })
+                                    //- }
+                                })
+                            })
+
+                            contentwindow.setContent(contentString);
+                            contentwindow.open(map, this);
+
+                            
+                            //console.log(data,'data',jobId,'jobId')
+                            if(is_dup==0){
+                            
+                                var id = $(contentString).find('.job_notification').attr('id');
+                                var jobId =  $(contentString).find('.job_notification').attr('data-job-id');
+                                var arr = $(contentString).find('.job_notification').attr('data-distance')
+                                var dis = arr.replace(/,/g, '');
+                                var distance = dis.split(" ",1);
+
+                                $.ajax({
+                                    type: "POST",
+                                    url: k+'getUserRates'+'/'+id +'/'+jobId+'/'+distance,
+                                    async: false,
+                                    data:{ 
+                                        'id': id,
+                                        'jobId': jobId,
+                                        'distance': distance,
+                                        },
+                                    success: function(data){
+                                        if(data.success){
+                                            $(contentString).find('.budget').remove();
+                                            $(contentString).find('.distanceCovered').after(
+                                                    $('<div class="budget" />').append(
+                                                        $('<i class="fa fa-credit-card" />'),
+                                                        ' ',
+                                                        data['data']
+                                                    )
+                                            );
+                                        
+
+                                        }
+                                        
+                                    }
+                                })
+                            }
+
+                        });
+                        
+                    }
+
+                   
+                    function bindInfowindow(marker, map, infomationwindow, infoString) {
+                        
+                        marker.addListener('mouseover', function() {
+                           
+                            infomationwindow.setContent(infoString);
+                            infomationwindow.open(map, this);
+                        });
+                        marker.addListener('mouseout', function() {
+                         
+                            infomationwindow.setContent(infoString);
+                            infomationwindow.close(map, this);
+                        });
+
+                        //- marker.addListener('click', function() {
+                           
+                        //- });
+                    }
+
+
+
+                    (function () {
+                        var openclose;
+                        openclose = function () {
+                            return $(".open-close-button").click(function () {
+                            return $(this).toggleClass("open"),  $('#legend').slideToggle();
+                            });
+                        };
+
+                        jQuery(document).ready(function ($) {
+                            return openclose();
+                        });
+
+                        }).call(this);   
+
+                    
+
+                    $(document).on('click', "button.manage-btn[data-toggle='modal']", 
+                    function() {
+                        
+                            event.preventDefault();
+                            // var button = $(this), text = $(this).text();
+                            let profileData = $(this).data('id');
+                            $("#profileData").val(profileData);
+                            $('#profile-view').modal('show');
+                    });
+                    var btn = "";
+                    var val = $('#switch').val('1');
+                    $(document).ready(function(){
+                        $('.delete-job').on('click', function(){
+                            btn = $(this);
+                            $('#delete-job').modal('show');
+                        })
+                        $('#delete').on('click', function(){
+                            //alert('Successfully Deleted this skill');
+                            btn.closest('li').remove();
+                            $('#delete-job').modal('hide');
+                            if(!$('.table-jobs').find('li:not(.hide)').length){
+                                $('.table-jobs').find('li.hide').removeClass('hide');
+                            }
+                        })
+                    })
+
+                    $('#switch').on('click', function(){
+                        if($(this).is(':checked')){
+                            var val = $(this).val();
+                            $('.switch-element').slideDown();
+                            //- getSkills(val);
+                        } else{
+                            $('.switch-element').slideUp();
+                        }
+                    })
+                    $('.keyEnter').keydown(function(event){
+                        var keycode = (event.keyCode ? event.keyCode : event.which);
+                        if(event.which == '13'){
+                            event.preventDefault();
+                            $('#form').submit();
+                        }
+                    });
+                

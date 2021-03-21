@@ -1,0 +1,81 @@
+extends ./../../layout/supervisor-layout
+
+block content
+      #page-wrapper
+            .row.page-titles
+                .col-md-5.align-self-center
+                    h3.text-themecolor Supervisor
+                .col-md-7.align-self-center
+                    ol.breadcrumb
+                        //- li.breadcrumb-item.active View Technician
+            .container-fluid
+                -if(messages.msg_error)
+                    .alert.alert-danger #{messages.msg_error}
+                -else if(messages.msg_info)
+                    .alert.alert-success #{messages.msg_info}
+                .row
+                    .col-md-12
+                            .card
+                                .card-header 
+                                    .col-sm-12
+                                        h4 
+                                            i.fa.fa-filter  Filter
+                                .card-body
+                                    .col-sm-12
+                                        .row
+                                            form#newSiteForm.d-inline-block(accept-charset='utf-8', method='post', name='searchQuesAns', action='/admin/supervisor/search_userSkills')
+                                                input(type="hidden" name="id" value="1")
+                                                button.btn.btn-primary.btn-sm(type="submit", data-toggle='tooltip', title='Search mechanical user') Mechanical
+                                            form#newSiteForm.d-inline-block(accept-charset='utf-8', method='post', name='searchQuesAns', action='/admin/supervisor/search_userSkills')
+                                                input(type="hidden" name="id" value="2")
+                                                button.btn.btn-primary.btn-sm(type="submit", data-toggle='tooltip', title='Search electrical user') Electrical
+                                            form#newSiteForm.d-inline-block(accept-charset='utf-8', method='get', name='searchQuesAns', action='/admin/supervisor/view-technician')
+                                                button.btn.btn-primary.btn-sm(type="submit", data-toggle='tooltip', title='Search all user') All
+                    .col-md-12
+                        .card
+                            .card-header
+                                .col-sm-6
+                                    h4  Technicians List
+                                .col-sm-6.text-right
+                                    a.btn.btn-primary.block.btn-sm(href='/admin/supervisor/technicianMap-view', title='View On Map') View On Map
+                            .card-body
+                                .table-responsive
+                                    table.table.table-striped.table-bordered.tech_list
+                                        thead
+                                            tr
+                                                th #
+                                                //- th E_Code
+                                                th Name
+                                                th Project Name
+                                                th Project Trade
+                                                th Experience
+                                                th Pending Time Sheet
+                                                th Action
+                                        tbody
+                                            if (users.length)
+                                                each user, i in users
+                                                    tr
+                                                        td= i+1
+                                                        //- td= user.eCode
+                                                        td= user.name
+                                                        td= user.jobName
+                                                        td= user.jobtype
+                                                        td= user.experience
+                                                        td= user.pending_reports
+                                                        td
+                                                            a.btn.btn-info.btn-lg(href='/admin/supervisor/viewTechProfile/#{user.id}', data-toggle='tooltip',title='View Profile')  
+                                                                i.fa.fa-eye 
+                                                            &nbsp;
+                                                            a.btn.btn-primary.btn-sm(href='/admin/supervisor/editJob/#{user.id}', data-toggle='tooltip', title='Edit Schedule') 
+                                                                i.fa.fa-edit 
+                                                            &nbsp;
+                                                            a.btn.btn-success.btn-sm(href='/admin/supervisor/view-reviews/#{user.id}', title='View Reviews', data-toggle='tooltip')  
+                                                                i.fa.fa-comments
+                                                            if (user.pending_reports != 0)
+                                                                &nbsp;
+                                                                a.btn.btn-success.block.btn-lg(href='/admin/supervisor/submitted-reports/#{user.id}', data-toggle='tooltip', title='View Time Sheet')  View Time Sheet 
+                                                            else
+                                                                label This user doesn't have any time sheets pending. 
+                                            else
+                                                tr.danger.text-center
+                                                    td(colspan='7') Sorry, no record found!

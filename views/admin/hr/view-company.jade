@@ -1,0 +1,52 @@
+extends ./../../layout/hr-layout
+
+block content
+      #page-wrapper
+            .row.page-titles
+                .col-md-5.align-self-center
+                    h3.text-themecolor Hr
+                .col-md-7.align-self-center
+                    ol.breadcrumb
+                        //- li.breadcrumb-item.active Certification
+            .container-fluid
+                    -if(messages.msg_error)
+                        .alert.alert-danger #{messages.msg_error}
+                    -else if(messages.msg_info)
+                       .alert.alert-success #{messages.msg_info}
+                    .row
+                        .col-md-12
+                            .card
+                                .card-body
+                                    h4  Companies List
+                                    .table-responsive
+                                        table.table.table-striped.table-bordered
+                                            thead
+                                                tr
+                                                    th #
+                                                    //- th Certificate Image
+                                                    th Company Name
+                                                    th company_code
+                                                    th Action
+                                            tbody
+                                                if(companyList.length)
+                                                    each list, i in companyList
+                                                        tr
+                                                            td= i+1
+
+                                                            td= list.company_name
+                                                            td= list.company_code
+                                                            td
+                                                                a.btn.btn-info.btn-sm(href='/uploads/company_logo/#{list.company_logo}', target='_blank', data-toggle='tooltip', title='View Company') 
+                                                                     i.fa.fa-eye 
+                                                                &#32;
+                                                                a.btn.btn-primary.btn-sm(href='/admin/hr/edit-company/#{list.id}', data-toggle='tooltip', title='Edit Company') 
+                                                                    i.fa.fa-edit 
+                                                                &#32;
+                                                                a.btn.btn-danger.btn-sm(href='/admin/hr/deleteCompany/#{list.id}', data-toggle='tooltip', title='Delete Company') 
+                                                                    i.fa.fa-trash
+                                                            
+                                                else
+                                                    tr.danger.text-center
+                                                        td(colspan='6') Sorry, no record found!
+                                                          
+                                                       

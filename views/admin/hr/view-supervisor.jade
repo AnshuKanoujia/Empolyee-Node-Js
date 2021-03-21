@@ -1,0 +1,58 @@
+extends ./../../layout/hr-layout
+
+block content
+      #page-wrapper
+            .row.page-titles
+                .col-md-5.align-self-center
+                    h3.text-themecolor Hr
+                .col-md-7.align-self-center
+                    ol.breadcrumb
+                        li.breadcrumb-item.active Supervisor
+            .container-fluid
+                -if(messages.msg_error)
+                    .alert.alert-danger #{messages.msg_error}
+                -else if(messages.msg_info)
+                    .alert.alert-success #{messages.msg_info}
+                .row
+                    .col-md-12
+                        .card
+                            .card-header
+                                .col-sm-6
+                                    h4  Supervisors List
+                                .col-sm-6.text-right
+                                    a.btn.btn-primary.block.btn-sm(href='/admin/hr/supervisorMap-view', title='View On Map') View On Map
+                            .card-body
+                                .table-responsive
+                                    table.table.table-striped.table-bordered
+                                        thead
+                                            tr
+                                                th #
+                                                //- th E_Code
+                                                th Name
+                                                th Trade
+                                                th Site Name
+                                                th Location
+                                                th Action
+                                        tbody
+                                            if(users.length)
+                                                each user, i in users
+                                                    tr
+                                                        td= i+1
+                                                        //- td= user.eCode
+                                                        td= user.name
+                                                        td= user.type_name
+                                                        td= user.siteName ? user.siteName  : '--' 
+                                                        //- td= (user.siteName && user.sitesCode ? (user.siteName ? user.siteName : '--') +'('+ (user.sitesCode ? user.sitesCode : '--') +')' : '--')
+                                                        td= user.newAddress ? user.newAddress : '--' 
+                                                        td
+                                                            a.btn.btn-primary.btn-sm(href='/admin/hr/view-supervisorProfile/#{user.id}', data-toggle='tooltip', title='View Profile') 
+                                                                i.fa.fa-eye 
+                                                            if (user.pending_reports != 0)
+                                                                    &nbsp;
+                                                                    a.btn.btn-success.block.btn-lg(href='/admin/hr/supSubmitted-reports/#{user.id}', data-toggle='tooltip', title='View Time Sheet')  View Time Sheet 
+                                                            else
+                                                                label This supervisor doesn't have any pending time sheets.
+                                                        
+                                            else
+                                                tr.danger.text-center
+                                                    td(colspan=4) Sorry, no record found!

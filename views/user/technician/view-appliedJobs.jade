@@ -1,0 +1,47 @@
+extends ./../../layout/user-layout
+
+block content
+      #page-wrapper
+            .row.page-titles
+                .col-md-5.align-self-center
+                    h3.text-themecolor Technician
+                .col-md-7.align-self-center
+                    ol.breadcrumb
+                        //- li.breadcrumb-item.active Applied Project
+            .container-fluid
+                    -if(messages.msg_error)
+                        .alert.alert-danger #{messages.msg_error}
+                    -else if(messages.msg_info)
+                       .alert.alert-success #{messages.msg_info}
+                    .row
+                        .col-md-12
+                            .card
+                                .card-body
+                                    h4  Applied Projects
+                                    .table-responsive
+                                        table.table.table-striped.table-bordered
+                                            thead
+                                                tr
+                                                    th #
+                                                    th Project Code
+                                                    th Project Name
+                                                    th Status 
+                                                    th Date
+                                                    th Action
+                                            tbody
+                                                if(appliedJobs.length)
+                                                    each listAppliedJob, i in appliedJobs
+                                                        tr
+                                                            td= i+1
+                                                            td= listAppliedJob.jobCode
+                                                            td= listAppliedJob.jobName
+                                                            td= listAppliedJob.statusName
+                                                            td= moment(listAppliedJob.date).format('YYYY/MM/DD')
+                                                            td
+                                                                a.btn.btn-danger.btn-sm(href='/user/technician/delete-appliedJobs/#{listAppliedJob.id}', title='Delete Project') Cancel Application
+                                                               
+                                                else
+                                                    tr.danger.text-center
+                                                        td(colspan='6') Sorry, no record found!
+                                                          
+                                                       

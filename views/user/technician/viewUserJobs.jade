@@ -1,0 +1,78 @@
+extends ./../../layout/user-layout
+
+block content
+      #page-wrapper
+                .row.page-titles
+                    .col-md-5.align-self-center
+                        h3.text-themecolor Technician
+                    .col-md-7.align-self-center
+                        ol.breadcrumb
+                            li.breadcrumb-item.active Projects List 
+                .container-fluid
+                    -if(messages.msg_error)
+                        .alert.alert-danger #{messages.msg_error}
+                    -else if(messages.msg_info)
+                       .alert.alert-success #{messages.msg_info}
+                    .row
+                        .col-md-12
+                            .card
+                                .card-header
+                                    .row
+                                        .col-sm-6
+                                            h4 Current Projects
+                                        //- .col-sm-6.text-right
+                                        //-     a.btn.btn-primary.block.btn-sm(href='', title='Back To View Supervisors List')
+                                        //-         i.ti-angle-left Back
+                                .card-body
+                                    .table-responsive
+                                        table.table.table-striped.table-bordered
+                                            thead
+                                                tr
+                                                    th #
+                                                    th Projects
+                                                    th Start Date
+                                                    th End Date
+                                                    th Action
+                                            tbody
+                                               each  viewJobList, i in data
+                                                        tr
+                                                            td= i+1
+                                                            td= viewJobList.jobName
+                                                            td= moment(viewJobList.startDate).isValid() ? moment(viewJobList.startDate).format('MM/DD/YYYY') : '--'
+                                                            td= moment(viewJobList.endDate).isValid() ? moment(viewJobList.endDate).format('MM/DD/YYYY') : '--'
+                                                            td
+
+                                                                a.btn.btn-info.btn-sm(href='/user/technician/view-jobDetails/#{viewJobList.jobId}', data-toggle='tooltip', title='View Projects') 
+                                                                    i.fa.fa-eye
+                                                                &nbsp;
+                                                                span(data-toggle='modal', data-placement='top',class="manage-btn-sm", data-target='#apply-job', data-id=viewJobList.jobId)
+                                                                    button.btn.btn-primary.manage-btn-sm(data-toggle='tooltip', title='Initiate Time Sheet', data-target='#apply-job') Clock In
+                                                                &nbsp;
+                                                                a.btn.btn-success.btn-sm(href='/user/technician/report/#{viewJobList.jobId}', data-toggle='tooltip',title='Submit Time Sheet') Clock Out
+                                                                &nbsp;
+                .modal#apply-job.fade(tabindex='-1', role='dialog' aria-labelledby="delete-skill" aria-hidden="true")
+                        .modal-dialog(role='document')
+                            .modal-content
+                                .modal-header.theme-bg
+                                    h4.modal-title Reporting
+                                    button.close(type='button', data-dismiss='modal', aria-label='Close')
+                                        span(aria-hidden='true') ×
+                                form#SupervisorForm(accept-charset='utf-8', method='post', name='superviosrForm', action='/user/technician/reportInTime')
+                                    .modal-body
+
+                                            label Enter InTime
+                                            input#inTime.timepicker.form-control(type='text', name='inTime', required, autocomplete="off")
+
+                                            input.form-control(type='hidden', id='jobId', name='jobId')
+                                    .modal-footer
+                                        button.btn.btn-default(type='button', data-dismiss='modal') Cancel
+                                        button#delete.btn.btn-primary(type='submit') Reporting Time
+
+
+                script(type='text/javascript').
+                    $(document).on('click', "span.manage-btn-sm[data-toggle='modal']", function(event) {
+                                //- event.preventDefault();
+                                let jobId = $(this).data('id');
+                                $("#jobId").val(jobId);
+                                $('#apply-job').modal('show');
+                            });

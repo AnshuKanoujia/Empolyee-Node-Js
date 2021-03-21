@@ -1,0 +1,760 @@
+extends ./../../layout/hr-layout
+
+block content
+            #page-wrapper
+                .row.page-titles
+                    .col-md-5.align-self-center
+                        h3.text-themecolor Hr
+                    .col-md-7.align-self-center
+                        ol.breadcrumb
+                            li.breadcrumb-item.active Map View
+                .container-fluid
+                    .row
+                        .col-md-12.col-sm-12
+                            // General Information
+                            .card
+                                .card-header
+                                    .row
+                                        .col-md-8
+                                            h4 Maps
+                                        .col-md-4.text-right
+                                            button.open-close-button#legendBtn  Legend
+                                .card-body
+                                    .row
+                                        .col-md-12
+                                            #legend
+                                            #map(class="googleMap")
+                script(src='https://maps.googleapis.com/maps/api/js?key='+apiKey+'&callback=initMap' async defer)
+                //- script(src='../../admin/js/dashboard-4.js')
+                script(type='text/javascript').
+                        function initMap() {
+                            var data = !{JSON.stringify(list)};
+                            console.log(data,'data')
+                             
+                            // The location of Uluru
+                            var cordinates = {lat: 39.025398, lng: -94.522827};
+                            
+                            // The map, centered at Uluru
+                            var map = new google.maps.Map(
+                                document.getElementById('map'), 
+                                    {zoom: 5, center: cordinates,  mapTypeId: 'roadmap'}
+                                );
+                        
+                    
+                        //- var iconBase = '/admin/img/maps/';
+                        var iconBase = '/admin/img/icons/';
+                            /*dynamic code*/
+                        var icons = {}
+                        var features= [];
+                        var contentString = [];
+                        var infoString = [];
+
+                         /* ----------------------- */
+                        var contentStringDup = [];
+                        var infoStringDup = [];
+                         /* ----------------------- */
+                       
+                        $.each(data, function(i, userData){
+                          
+                           //icons list //
+                        //-    var iconId;
+                        //-    if(userData.role=="1"){
+                        //-      iconId = 'user1.png'
+
+                        //-    } else if(userData.role=="2"){
+                        //-         iconId = 'user2.png'
+                                
+                        //-    }  else if(userData.role=="3"){
+                        //-         iconId = 'user3.png'
+
+                        //-    }
+                        //-    if(userData.sitesCode !== undefined){
+                        //-         iconId = 'site.png'
+                        //-    }
+                           
+                            //- if(userData.role != undefined && userData.type_name != undefined){
+                            if(userData.role != undefined || userData.type_name != undefined){
+                                
+                               if(userData.role=="1" && userData.type_name=="Electrical"){
+                                    iconId = 'user2.png'
+                                   
+
+                                } else if(userData.role=="1" && userData.type_name=="Mechanical"){
+                                    iconId = 
+                                    'user1.png'
+
+                                } else if(userData.role=="2"){
+                                    iconId = 'puser.png'
+                                } else if(userData.role=="3" && userData.type_name=="Electrical"){
+                                    iconId = 'user212.png'
+                                } else if(userData.role=="3" && userData.type_name=="Mechanical"){
+                                    iconId = 'user222.png'
+                                }
+
+                           }else {
+                               
+                                if(userData['sitesCodeCpy'] != null){
+                                //- if(userData['sitesCode'] != null){
+                                    iconId = 'sites.png'
+
+                                }
+                                
+                           }
+
+
+                        //-    var id = parseInt(i)+1;
+                           icons['user'+userData.id] = {icon: iconBase + iconId}
+                           
+                           //features list //
+                            var label = new google.maps.LatLng(userData.latitude, userData.longitude);
+                            var featuresList = {position: label, type: 'user'+userData.id};
+                            features.push(featuresList);
+
+                            var content, title, profile, badges, pullLeft, ratings, mobileNumber, testScore, designationName, achorBtn, ancrbtnDiv, address, achorBtnDup, ancrbtnDivDup,profileDup,pullLeftDup;
+                        
+                        
+                            var list= document.createElement('div')
+                            list.className = "list";
+
+                            /* --------------------------------- */
+                            var listDup= document.createElement('div')
+                            listDup.className = "list";
+                            /* --------------------------------- */
+
+                            content= document.createElement('div')
+                            content.className = "content";
+
+                            /* --------------------------------- */
+                            contentDup= document.createElement('div')
+                            contentDup.className = "content";
+                            /* --------------------------------- */
+
+                            profile= document.createElement('div');
+                            profile.className = "profile";
+
+                            /* --------------------------------- */
+                            profileDup= document.createElement('div');
+                            profileDup.className = "profile";
+                            /* --------------------------------- */
+                            
+
+                            
+                            if(userData['role'] == 2){
+                                title= document.createElement('div')
+                                title.className = "text-center h4"; 
+                                title.innerText = "Planner";
+                            } else if(userData['role'] == 3){
+                                title= document.createElement('div')
+                                title.className = "text-center h4"; 
+                                title.innerText = "Supervisor"
+                            }
+                            if(userData['role'] == 2 || userData['role'] == 3){
+
+                            content.appendChild(title);
+                            }
+
+                            if(userData['userData.profileImg'] !== undefined){
+                                profile.innerHTML = '<img src="/admin/img/avatar.jpg" />';   
+                            } else{
+                                 profile.innerHTML = '<img src="/uploads/profile_img/'+userData.profileImg+'" />'; 
+                            }
+
+                            /* --------------------------- */
+                            if(userData['profileImg'] !== undefined){
+                                profileDup.innerHTML = '<img src="/admin/img/avatar.jpg" />';   
+                            } else{
+                                profileDup.innerHTML = '<img src="/uploads/profile_img/'+userData.profileImg+'" />'; 
+                            }
+                            /* --------------------------- */
+                            
+                            content.appendChild(profile);
+
+                            pullLeft= document.createElement('div');
+                            /* --------------------------- */
+                            pullLeftDup= document.createElement('div');
+                            /* --------------------------- */
+                            
+                            if(userData.name !== undefined){
+                                pullLeft.className = 'pull-left';
+                                pullLeft.innerHTML = '<h3 class="firstHeading">'+userData.name+'</h3>';
+                                /* --------------------------- */
+                                pullLeftDup.className = 'pull-left';
+                                pullLeftDup.innerHTML = '<h3 class="firstHeading">'+userData.name+'</h3>';
+                                /* --------------------------- */
+
+                            } else if(userData.siteName !== undefined){
+                                
+                                    pullLeft.className = 'pull-left';
+                                    pullLeft.innerHTML = '<h3 class="firstHeading">'+userData.siteName+ ' [' +userData.sitesCodeCpy + ']' +
+                                    //- pullLeft.innerHTML = '<h3 class="firstHeading">'+userData.siteName+ ' [' +userData.sitesCode + ']' +
+                                    '</h3>';
+                                /* --------------------------- */
+                                    pullLeftDup.className = 'pull-left';
+                                    pullLeftDup.innerHTML = '<h3 class="firstHeading">'+userData.siteName+ ' [' +userData.sitesCodeCpy + ']' +
+                                    //- pullLeftDup.innerHTML = '<h3 class="firstHeading">'+userData.siteName+ ' [' +userData.sitesCode + ']' +
+                                    '</h3>';
+                                /* --------------------------- */
+                            }
+                            
+
+                            if(userData['type_name'] !== undefined){
+                                badges= document.createElement('span');
+                                badges.className = "badges badge-info";
+                                badges.innerText = userData.type_name;
+                                pullLeft.appendChild(badges);
+                            }
+
+                            if(userData['plannerName'] !== undefined){
+                                badges = document.createElement('div');
+                                badges.className = "mb-2";
+                                badges.innerText = 'Planner name:';
+                                var span= document.createElement('span');
+                                span.className = "badges badge-info";
+                                span.innerText = userData.plannerName;
+                                badges.appendChild(span);
+                                pullLeft.appendChild(badges);
+                            }
+                            if(userData['supervisorName'] !== undefined){
+                                badges = document.createElement('div');
+                                badges.className = "mb-2";
+                                badges.innerText = 'Supervisor name:';
+                                var span=  document.createElement('span');
+                                span.className = "badges badge-info";
+                                span.innerText = userData.supervisorName;
+                                badges.appendChild(span);
+                                pullLeft.appendChild(badges);
+                            }
+
+
+
+                            if(userData['ratings'] !== undefined){
+                                if(userData['ratings'] == 0){
+
+                                    ratings= document.createElement('span');
+                                    ratings.className = "ratings pull-right"
+                                    ratings.innerHTML = '<i class="ti ti-star text-danger"></i>&nbsp;<span class="j-type internship">New</span>';
+                                    pullLeft.appendChild(ratings);
+                                } else{
+                                    
+                                    ratings= document.createElement('span');
+                                    ratings.className = "ratings pull-right"
+                                    ratings.innerHTML = '<i class="ti ti-star text-danger"></i> '+userData.ratings;
+                                    pullLeft.appendChild(ratings);
+                                }
+                            }
+
+                            if(userData['phone_number'] !== undefined){
+                                mobileNumber= document.createElement('div');
+                                mobileNumber.className = 'mobileNumber';
+                                mobileNumber.innerHTML = '<i class="fa fa-phone"></i> <span>' + userData.phone_number+'</span>';
+                            }
+                            
+                            if(userData['designation'] !== undefined){
+                                designationName= document.createElement('div');
+                                designationName.className = 'designationName';
+                                designationName.innerHTML = '<i class="fa fa-user-secret"></i> <span>' +userData.designation+'</span>';
+                                
+                            }
+
+                            if(userData['newAddress'] !== undefined){
+                                address= document.createElement('div');
+                                address.className = 'address';
+                                address.innerHTML = '<i class="fa fa-map-marker"></i> <span>' +userData.newAddress+'</span>';
+                                
+                            }
+
+                            if(userData['total_score'] !== undefined){
+                                if(userData['role'] == 1){
+                                  if( userData.total_score !==  null){
+                                      var testData = userData.total_score -(userData.wrong_answer_count * userData.neg_mark);
+
+                                  } else{
+                                    var testData = "This user have not given exam";
+
+                                  }
+                                    testScore= document.createElement('div');
+                                    testScore.className = 'testScore';
+                                    testScore.innerHTML = '<i class="fa fa-list"></i> ' + testData ;
+
+                                }
+                                
+                            }
+                           
+                            
+                           
+                            ancrbtnDiv= document.createElement('div');
+                            ancrbtnDiv.className = 'ancrbtnDiv';
+
+                            /* -------------------------------- */
+                            if(userData.role !== undefined){
+                              ancrbtnDivDup= document.createElement('div');
+                              ancrbtnDivDup.className = 'ancrbtnDiv eyeCl';
+                            }
+                          
+                            /* -------------------------------- */
+                           
+                            if(userData.role == 1){
+                                achorBtn= document.createElement('a');
+                                achorBtn.className = 'achorBtn pull-right';
+                                achorBtn.href = '/admin/hr/view-technicianProfile/'+userData.id+'';
+                                achorBtn.title = 'Visit Profile'
+                                achorBtn.setAttribute('data-toggle', 'tooltip')
+                                achorBtn.innerHTML =  '<img src="/admin/img/view.png">';
+
+                                /* ------------------------------- */
+                                achorBtnDup= document.createElement('a');
+                                achorBtnDup.className = 'achorBtn pull-right';
+                                achorBtnDup.href = '/admin/hr/view-technicianProfile/'+userData.id+'';
+                                achorBtnDup.innerText = 'Visit Profile';
+                                achorBtnDup.setAttribute('data-toggle', 'tooltip')
+                                achorBtnDup.innerHTML =  '<img src="/admin/img/view.png">';
+                                /* ------------------------------- */
+                            }
+
+                            if(userData.role == 2){
+                                achorBtn= document.createElement('a');
+                                achorBtn.className = 'achorBtn pull-right';
+                                achorBtn.href = '/admin/hr/view-plannerProfile/'+userData.id+'';
+                                achorBtn.title = 'Visit Profile'
+                                achorBtn.setAttribute('data-toggle', 'tooltip')
+                                achorBtn.innerHTML =  '<img src="/admin/img/view.png">';
+
+                                /* -------------------------------- */
+                                achorBtnDup= document.createElement('a');
+                                achorBtnDup.className = 'achorBtn pull-right';
+                                achorBtnDup.href = '/admin/hr/view-plannerProfile/'+userData.id+'';
+                                achorBtnDup.innerText = 'Visit Profile';
+                                achorBtnDup.setAttribute('data-toggle', 'tooltip')
+                                achorBtnDup.innerHTML =  '<img src="/admin/img/view.png">';
+                                /* -------------------------------- */
+                            }
+
+                            if(userData.role == 3){
+                                achorBtn= document.createElement('a');
+                                achorBtn.className = 'achorBtn pull-right';
+                                achorBtn.href = '/admin/hr/view-supervisorProfile/'+userData.id+'';
+                                achorBtn.title = 'Visit Profile'
+                                achorBtn.setAttribute('data-toggle', 'tooltip')
+                                achorBtn.innerHTML =  '<img src="/admin/img/view.png">';
+
+                                /* ------------------------------- */
+                                achorBtnDup= document.createElement('a');
+                                achorBtnDup.className = 'achorBtn pull-right';
+                                achorBtnDup.href = '/admin/hr/view-supervisorProfile/'+userData.id+'';
+                                achorBtnDup.title = 'Visit Profile'
+                                achorBtnDup.setAttribute('data-toggle', 'tooltip')
+                                achorBtnDup.innerHTML =  '<img src="/admin/img/view.png">';
+                                /* ------------------------------- */
+                                
+                            }
+                            if(userData.role == null){
+                              
+                                profile.className += ' no-img-class';
+                               
+                            }
+                            
+                            
+
+                       
+
+                            
+                            profile.appendChild(pullLeft);
+                            content.appendChild(profile); 
+
+                            /* ----------------------------- */
+                            profileDup.appendChild(pullLeftDup);
+                            contentDup.appendChild(profileDup); 
+                            /* ----------------------------- */
+                           
+                            userData['phone_number'] !== undefined ? content.appendChild(mobileNumber) : null ;
+                            userData['designation'] !== undefined ? content.appendChild(designationName) : null ;
+                            userData['newAddress'] !== undefined ? content.appendChild(address) : null ;
+                            userData['total_score'] !== undefined ? content.appendChild(testScore) : null ;
+
+                            /* ----------------------------- */
+                            content.appendChild(ancrbtnDiv);
+                            if(userData.role !== undefined){
+                               contentDup.appendChild(ancrbtnDivDup);
+                            }
+                            /* ----------------------------- */
+
+                            userData.role !== undefined ? ancrbtnDiv.appendChild(achorBtn) : null
+                            
+                            /* ---------------------------- */
+                            userData.role !== undefined ? ancrbtnDivDup.appendChild(achorBtnDup) : null;
+
+                            
+                            /* ---------------------------- */
+
+                            //Technicial List
+                            if(userData.sitesCodeCpy !== undefined && userData['technicianList'] !== undefined  && userData['technicianList'] !== null){
+                            //- if(userData.sitesCode !== undefined && userData['technicianList'] !== undefined  && userData['technicianList'] !== null){
+                                mobileNumber= document.createElement('div');
+                                mobileNumber.className = 'mobileNumber';
+                                var name =  userData.technicianList.split(',');
+                                var element = "";
+                                $.each(name, function(i,eleNode){
+                                     element += eleNode + '<br />';
+                                })
+
+                                mobileNumber.innerHTML = element;
+                                content.appendChild(mobileNumber);
+                                
+                                
+                            }
+                            
+
+                            //- content.appendChild(ancrbtnDiv);
+                            var contentData = list.appendChild(content);
+                            /* --------------------------- */
+                            var contentDataDup = listDup.appendChild(contentDup);
+                            /* --------------------------- */
+                             
+                      
+                            //- var contentData = '<div class="content">'+
+                            //-     '<div class="profile">'+
+                            //-     '<img  src="/uploads/profile_img/'+userData.profileImg+'">'  + 
+                            //-     '<div class="pull-left"><h3 class="firstHeading">'+userData.name+'</h3>'+
+                            //-     '<span class="badges badge-info">'+userData.type_name+'</span>' +
+                            //-     '<span class="ratings pull-right"><i class="ti ti-star text-danger"></i> 4.5</span>' +
+                            //-     '</div>'+
+                            //-     '<div class="mobileNumber">'+userData.phone_number+'</div>'+
+                            //-     '</div>'+
+                            //-     '</div>'
+
+                           
+                            contentString.push(contentData);
+                            /* ----------------------------- */
+                            contentStringDup.push(contentDataDup);   
+                            /* ----------------------------- */
+                            
+                            //- if(userData.sitesCode !== undefined){
+                            //-      var infoData = '<div class="content">'+
+                            //-     '<div class="profile">'+
+                            //-     '<div class=""><h3 class="firstHeading">'+userData.name+'</h3>'+
+                            //-     '<span class="badges badge-info">'+userData.type_name+'</span>' +
+                            //-     '</div></div>'+
+                            //-     '</div>'
+
+                            //-     infoString.push(infoData);
+                            //-     $('[data-toggle="tooltip"]').tooltip();
+                            //- }
+                            if(userData.role !== undefined){
+                                if(userData['sitesCodeCpy'] == null){
+                                //- if(userData['sitesCode'] == null){
+                                    var infoData = '<div class="content">'+
+                                    '<div class="profile">'+
+                                    '<div><h3 class="firstHeading">'+userData.name+'</h3>'+(userData.type_name == undefined ? '' : '<span class="badges badge-info">'+userData.type_name+'</span>')+
+                                    '</div></div>'+
+                                    '</div>'
+
+                                    /* ------------------------------- */
+                                    var infoDataDup = '<div class="content">'+
+                                    '<div class="profile">'+
+                                    '<div class=""><h3 class="firstHeading">'+userData.name+'</h3>'+
+                                    '<span class="badges badge-info">'+userData.type_name+'</span>' +
+                                    '</div></div>'+
+                                    '</div>'
+                                    /* ------------------------------- */
+                                    infoString.push(infoData);
+                                    /* ------------------------------- */
+                                    infoStringDup.push(infoDataDup);
+                                    /* ------------------------------- */
+
+                                }
+                               
+                            }
+                            else{
+
+
+                             }
+                            
+                            
+                            
+
+                        });
+
+                            //- var icons = {
+                            //- 	oklahoma: {
+                            //- 		icon: iconBase + 'user3.png'
+                            //- 	},
+                            //- 	wyoming: {
+                            //- 		icon: iconBase + 'user1.png'
+                            //- 	},
+                            //- 	kansas: {
+                            //- 		icon: iconBase + 'user2.png'
+                            //- 	},
+                            //- 	washignton: {
+                            //- 		icon: iconBase + 'lighthouse.png'
+                            //- 	}
+                            //- };
+
+                            
+                            //- var features = [
+                            //- 	{
+                            //- 		position: new google.maps.LatLng(36.084621, -96.921387),
+                            //- 		type: 'oklahoma'
+                            //- 	}, {
+                            //- 		position: new google.maps.LatLng(43.075970, -107.290283),
+                            //- 		type: 'wyoming'
+                            //- 	}, {
+                            //- 		position: new google.maps.LatLng(39.025398, -94.522827),
+                            //- 		type: 'kansas'
+                            //- 	}, {
+                            //- 		position: new google.maps.LatLng(45.025398, -90.522827),
+                            //- 		type: 'washignton'
+                            //- 	}
+                            //- ];
+
+                            //- var contentString = ['<div class="content">'+
+                            //- 	'<div class="profile">'+
+                            //- 	'<img  src="/admin/img/user-8.jpg">' +
+                            //- 	'<div class="pull-left"><h3 class="firstHeading">Technician 1</h3>'+
+                            //- 	'<span class="badges badge-info">Foreman</span>' +
+                            //- 	'<span class="ratings pull-right"><i class="ti ti-star text-danger"></i> 4.5</span>' +
+                            //- 	'</div></div>'+
+                                
+                            //- 	'<div class="bodyContent">'+
+                            //- 	'<p><b>Lorem ipsum</b>  dolor sit amet, consectetur adipiscing elit.</p>'+
+                            //- 	'<span><b>Job Name:</b> 20</span>'+
+                            //- 	'<button class="btn btn-primary btn-sm pull-right">Send Job offer</button>'+
+                            //- 	'</div>'+
+                            //- 	'</div>',
+
+                            //- 	'<div class="content">'+
+                            //- 	'<div>'+
+                            //- 	'<h3 class="firstHeading">Job Name</h3>'+
+                            //- 	'</div>'+
+                            //- 	'<div class="bodyContent">'+
+                            //- 	'<p><b>Lorem ipsum</b>  dolor sit amet, consectetur adipiscing elit,'+
+                            //- 	'sed do eiusmod tempor incididunt ut labore et dolore magna aliqua'+
+                            //- 	'</p>'+
+                            //- 	'<span><b>Job Name:</b> 20</span>'+
+                            //- 		'<button class="btn btn-primary btn-sm pull-right">Job information</button>'+
+                            //- 	'</div>'+
+                            //- 	'</div>',
+
+                            //- 		'<div class="content">'+
+                            //- 	'<div><h3 class="firstHeading">Superviser</h3>'+
+                            //- 	'</div>'+
+                            //- 	'<div class="bodyContent">'+
+                            //- 	'<p><b>Lorem ipsum</b>  dolor sit amet, consectetur adipiscing elit.</p>'+
+                            //- 	'<button class="btn btn-primary btn-sm pull-right">Visit Profile</button>'+
+                            //- 	'</div>'+
+                            //- 	'</div>',
+
+                            //- 	'<div class="content">'+
+                            //- 	'<div><h3 class="firstHeading">Site Name </h3>'+
+                            //- 	'</div>'+
+                            //- 	'<div class="bodyContent">'+
+                            //- 	'<div><b>No. of Jobs</b> 20</div>'+
+                            //- 	'<div><b>No of Supervisor:</b> 10/20</div>'+
+                            //- 	'<div><b>No of Technician:</b> 07/20</div><br />'+
+                            //- 	'<button class="btn btn-primary btn-sm pull-right">Visit Profile</button>'+
+                            //- 	'</div>'+
+                            //- 	'</div>'
+                            //- 	]
+
+                            //- 	var infoString = ['<div class="content">'+
+                            //- 	'<div class="profile">'+
+                            //- 	'<img  src="/admin/img/user-8.jpg">' +
+                            //- 	'<div class="pull-left"><h3 class="firstHeading">Technician 1</h3>'+
+                            //- 	'<span class="badges badge-info">Foreman</span>' +
+                            //- 	'<span class="ratings pull-right"><i class="ti ti-star text-danger"></i> 4.5</span>' +
+                            //- 	'</div></div>'+
+                                
+                            //- 	'<div class="bodyContent">'+
+                            //- 	'<p><b>Lorem ipsum</b>  dolor sit amet, consectetur adipiscing elit.</p>'+
+                            //- 	'<span><b>Job Name:</b> 20</span>'+
+                            //- 	'<button class="btn btn-primary btn-sm pull-right">Send Job offer</button>'+
+                            //- 	'</div>'+
+                            //- 	'</div>',
+
+                            //- 	'<div class="content">'+
+                            //- 	'<div>'+
+                            //- 	'<h3 class="firstHeading">Job Name</h3>'+
+                            //- 	'</div>'+
+                            //- 	'<div class="bodyContent">'+
+                            //- 	'<p><b>Lorem ipsum</b>  dolor sit amet, consectetur adipiscing elit,'+
+                            //- 	'sed do eiusmod tempor incididunt ut labore et dolore magna aliqua'+
+                            //- 	'</p>'+
+                            //- 	'<span><b>Job Name:</b> 20</span>'+
+                            //- 		'<button class="btn btn-primary btn-sm pull-right">Job information</button>'+
+                            //- 	'</div>'+
+                            //- 	'</div>',
+
+                            //- 		'<div class="content">'+
+                            //- 	'<div><h3 class="firstHeading">Superviser</h3>'+
+                            //- 	'</div>'+
+                            //- 	'<div class="bodyContent">'+
+                            //- 	'<p><b>Lorem ipsum</b>  dolor sit amet, consectetur adipiscing elit.</p>'+
+                            //- 	'<button class="btn btn-primary btn-sm pull-right">Visit Profile</button>'+
+                            //- 	'</div>'+
+                            //- 	'</div>',
+
+                            //- 	'<div class="content">'+
+                            //- 	'<div><h3 class="firstHeading">Site Name </h3>'+
+                            //- 	'</div>'+
+                            //- 	'<div class="bodyContent">'+
+                            //- 	'<div><b>No. of Jobs</b> 20</div>'+
+                            //- 	'<div><b>No of Supervisor:</b> 10/20</div>'+
+                            //- 	'<div><b>No of Technician:</b> 07/20</div><br />'+
+                            //- 	'<button class="btn btn-primary btn-sm pull-right">Visit Profile</button>'+
+                            //- 	'</div>'+
+                            //- 	'</div>'
+                            //- 	]
+
+                            // Create markers.
+                            /* ------------------------------- */
+                            var markers = [];
+                            var infoStringMultiple='';
+                            var contentStringMultiple=[];
+                            var contentStringMultipleDup='';
+                            /* ------------------------------- */
+
+                            for (var i = 0; i < features.length; i++) {
+                                /* ------------------------------- */
+                                var is_dup=0;
+                                var posMarker=features[i].position;
+                                infoStringMultiple = infoString[i];
+                                contentStringMultiple=contentString[i].innerHTML;
+                                
+                                contentStringMultipleDup=contentStringDup[i].innerHTML;
+                                if(markers.length != 0) 
+                                {
+                                    for (J=0; J < markers.length; J++) {
+                                        var existingMarker = markers[J];
+                                        var pos = existingMarker.getPosition();
+
+                                        if (posMarker.equals(pos)) {
+
+                                            ++is_dup;
+                                            infoStringMultiple+=infoStringDup[J];
+                                            contentStringMultipleDup+=contentStringDup[J].innerHTML;
+
+                                        }
+                                    }
+                                    if(is_dup>0){
+                                        contentStringMultiple=contentStringMultipleDup;
+                                        icons[features[i].type] = {icon: iconBase + 'circle.png'}
+                                    }
+                                    
+                                }
+                                /* ------------------------------- */
+
+                                var contentwindow = new google.maps.InfoWindow({
+                                    content: contentStringMultiple,
+                                    maxWidth: 300
+                                });
+
+
+                                var marker = new google.maps.Marker({
+                                    position: posMarker,
+                                    icon: icons[features[i].type].icon,
+                                    map: map
+                                });
+
+                                bindContentwindow(marker, map, contentwindow,contentStringMultiple);
+
+                                if(infoString[i] != undefined){
+                                    var infomationwindow = new google.maps.InfoWindow({
+                                        content: infoStringMultiple,
+                                        maxWidth: 300
+                                    });
+                                    bindInfowindow(marker, map, infomationwindow, infoStringMultiple);
+                                }
+
+                                markers.push(marker);
+                            };
+                              
+                            //- var iconBase = '/admin/img/maps/';
+                            var iconBase = '/admin/img/icons/';
+
+                            var iconsLegend = {
+                                Planner: {
+                                    icon: iconBase + 'puser.png'
+                                },
+                                M_Technician: {
+                                    icon: iconBase + 'user1.png'
+                                },
+                                E_Technician: {
+                                    icon: iconBase + 'user2.png'
+                                },
+                                M_Supervisor: {
+                                    icon: iconBase + 'user222.png'
+                                },
+                                E_Supervisor: {
+                                    icon: iconBase + 'user212.png'
+                                },
+                                Sites: {
+                                    icon: iconBase + 'sites.png'
+                                }
+                            };
+
+
+                            var legend = document.getElementById('legend');
+                            for (var key in iconsLegend) {
+                                var type = iconsLegend[key];
+                                var name = key;
+                                var icon = type.icon;
+                                var div = document.createElement('div');
+                                div.innerHTML = '<img src="' + icon + '"> ' + name.charAt(0).toUpperCase() + name.slice(1);;
+                                legend.appendChild(div);
+                            }
+
+                            map.controls[google.maps.ControlPosition.RIGHT_TOP].push(legend);
+                        }
+                        
+
+                        function bindContentwindow(marker, map, contentwindow, contentString) {
+                            marker.addListener('click', function() {
+                                //- var element = document.getElementById("map");
+                                //- element.classList.remove("correct-hover-width");
+                                //- var element = document.getElementById("map");
+                                //- element.classList.add("ne-design");
+                                contentwindow.setContent(contentString);
+                                contentwindow.open(map, this);
+                                // unused /////////////////
+                                //- if(userData.role == 2){
+                                //-     var v = document.getElementById("map");
+                                //-     v.googleMap += " class2";
+                                //- }
+                                // unused /////////////////
+                            });
+                            
+                        }
+
+                        function bindInfowindow(marker, map, infomationwindow, infoString) {
+                            
+                            marker.addListener('mouseover', function() {
+                                //- var element = document.getElementById("map");
+                                //- element.classList.add("correct-hover-width");
+                                infomationwindow.setContent(infoString);
+                                infomationwindow.open(map, this);
+                            });
+                            marker.addListener('mouseout', function() {
+                                //- var element = document.getElementById("map");
+                                //- element.classList.remove("correct-hover-width");
+                                infomationwindow.setContent(infoString);
+                                infomationwindow.close(map, this);
+                            });
+                        }
+
+
+
+                        (function () {
+                            var openclose;
+                            openclose = function () {
+                                return $(".open-close-button").click(function () {
+                                return $(this).toggleClass("open"),  $('#legend').slideToggle();
+                                });
+                            };
+
+                            jQuery(document).ready(function ($) {
+                                return openclose();
+                            });
+
+                            }).call(this);
+
+
+                        

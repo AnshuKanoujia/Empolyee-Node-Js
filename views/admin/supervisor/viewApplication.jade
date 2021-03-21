@@ -1,0 +1,92 @@
+extends ./../../layout/supervisor-layout
+
+block content
+      #page-wrapper
+            .row.page-titles
+                .col-md-5.align-self-center
+                    h3.text-themecolor Technician
+                .col-md-7.align-self-center
+                    ol.breadcrumb
+                        li.breadcrumb-item.active Project Name
+            .container-fluid
+                .row
+                    .col-md-12
+                            //- each viewApplications in viewApplication
+                            .card
+                                .card-header 
+                                    .row
+                                        .col-sm-6
+                                            h4 Location Profile
+                                        .col-sm-6.text-right
+                                            a.btn.btn-primary.block.btn-sm(href='/admin/supervisor/manage-application', title='Back To View Supervisors List')  
+                                                i.ti-angle-left Back
+                                        //- h4  Report
+                                .card-body
+                                
+                                    .table-responsive
+                                        form#applicationForm(accept-charset='utf-8', method='post', name='applicationForm', action='/admin/supervisor/updateUserStatus')
+                                            input.form-control(type='hidden', name='id' value=viewApplication.id)
+                                            table.table.table-borderless.job-details
+                                        
+                                                tbody
+                                                    tr
+                                                        
+                                                        th Project:
+                                                        td= viewApplication.jobName+' ('+viewApplication.jobCode+')'
+                                                    tr
+                                                        th Shift:
+                                                        td= viewApplication.shift
+                                                        th experience:
+                                                        td= viewApplication.experience
+                                                    tr
+                                                        th Date:
+                                                        td= moment(viewApplication.date).format('YYYY/MM/DD')
+                                                        th Supervisor:
+                                                        td <span class="j-type full-time">#{viewApplication.statusName}</span>
+                                                   
+                                                    tr 
+                                                        th Address
+                                                        td(colspan="4") #{viewApplication.address}
+                                            button.btn.btn.btn-success.phases.btn-sm(type='submit', name='status', value=5, data-toggle='modal', data-placement='top', data-id=viewApplication.id , title='Apply', data-target='#noOfPhases') Accept
+                                            &nbsp;
+                                            button.btn.btn-info.btn-sm(type='submit', name='status', value=2) Hold
+                                            &nbsp;
+                                            button.btn.btn-danger.btn-sm(type='submit', name='status', value=6) Reject
+                                            //- a.btn.btn-info.btn-sm(href='/admin/supervisor/viewApplication/#{userlist.id}', title='View Application') View
+                                                        
+            .modal#noOfPhases.fade(tabindex='-1', role='dialog' aria-labelledby="delete-skill" aria-hidden="true")
+                            .modal-dialog(role='document')
+                                .modal-content
+                                    .modal-header.theme-bg
+                                        h4.modal-title Apply Project
+                                        button.close(type='button', data-dismiss='modal', aria-label='Close')
+                                            span(aria-hidden='true') ×
+                                    form#ShiftForm(accept-charset='utf-8', method='post', name='shiftForm', action='/user/supervisor/phases')
+                                        .modal-body
+                                            //- p Are you sure , you want delete this job  ?
+                                            //- label No. of Phases
+                                            //-     span.text-danger  *
+                                            //- select.wide.form-control(name='shift', id='shift')
+                                            //-      option(value="0") Select Phases Id
+                                            //-         each noOfPhaseList in phaseList
+                                            //-             option(value=noOfPhaseList.id) #{noOfPhaseList.id}
+                                            label No. of Phases
+                                                span.text-danger  *
+                                            select.wide.form-control(name='shift', id='shift')
+                                                option(value="0") Select Phases
+                                                    each noOfPhaseList in phaseList
+                                                        option(value=noOfPhaseList.id) #{noOfPhaseList.phaseName}
+                                                input.form-control(type='hidden', id='phases' ,name='phases')
+                                        .modal-footer
+                                            button.btn.btn-default(type='button', data-dismiss='modal') Cancel
+                                            button#delete.btn.btn-primary(type='submit') Apply
+
+            script(type='text/javascript').
+                $(document).on('click', "button.manage-btn[data-toggle='modal']", function() {
+                        event.preventDefault();
+                    // var button = $(this), text = $(this).text();
+                    let phases = $(this).data('id');
+                    $("#phases").val(phases);
+                    $('#noOfPhases').modal('show');
+                });
+                        

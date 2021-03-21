@@ -1,0 +1,99 @@
+extends ./../../layout/hr-layout
+
+block content
+            #page-wrapper
+                .row.page-titles
+                    .col-md-5.align-self-center
+                        h3.text-themecolor Hr
+                    .col-md-7.align-self-center
+                        ol.breadcrumb
+                            li.breadcrumb-item.active Questions & Answers
+                -if(messages.msg_error)
+                    each error in messages.msg_error
+                        .alert.alert-danger #{error}
+                -else if(messages.msg_info)
+                    .alert.alert-success #{messages.msg_info}
+                form#newSiteForm(accept-charset='utf-8', method='post', name='jobForm', action='/admin/hr/import_excel', enctype='multipart/form-data') 
+                    .container-fluid
+                         .row
+                            .col-md-12
+                                    .card
+                                        .card-header
+                                            .row
+                                                .col-sm-6
+                                                    h4 Import Questions & Answers
+                                                .col-sm-6.text-right
+                                                    label Import Multiple Questions :
+                                                    input(type='file', name='import_excel', accept='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', required)
+                                                    button.btn.btn-success.block.btn-sm(type='submit') upload 
+                form#newSiteForm(accept-charset='utf-8', method='post', name='jobForm', action='/admin/hr/add-ques_ans', enctype='multipart/form-data')
+                        .container-fluid
+                            // /row
+                            .row
+                                .col-md-12
+                                    .card
+                                        .card-header
+                                            .row
+                                                .col-sm-6
+                                                    h4 Add Question Details
+                                        //-         .col-sm-6.text-right
+                                                    //- form#newSiteForm(accept-charset='utf-8', method='post', name='jobForm', action='/admin/hr/add-ques_ans', enctype='multipart/form-data')
+                                                    //-     label Import Multiple Questions :
+                                                    //-     input(type='file', name='profileImg', accept='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+                                                    //-     button.btn.btn-m.btn-success(type='submit') upload
+                                        .card-body
+                                            .row
+                                                .col-sm-4
+                                                    label Select Subjects
+                                                        span.text-danger  *
+                                                    select.wide.form-control(id='sub_id', name='sub_id', required)
+                                                            each sub_list in listOfSubject
+                                                                option(value=sub_list.subId) #{sub_list.sub_name}
+                                                .col-sm-4
+                                                    label Select Difficulty Level
+                                                        span.text-danger  *
+                                                    select.wide.form-control(id='exam_level', name='exam_level', required)
+                                                            each ques_level in quesLevel
+                                                                option(value=ques_level.id) #{ques_level.ques_level}
+                                                .col-sm-4
+                                                    label Attachment
+                                                    input.form-control(type='file', name='quesImg_attach', accept='image/pdf/*')
+                                            .row
+                                                .col-sm-12
+                                                   label Add Question
+                                                        span.text-danger  *
+                                                    textarea.form-control.height-100.textarea(rows='3', placeholder='Enter Question', name='question', minlength='5', required)
+                                            .row
+                                                .col-sm-3.m-clear
+                                                   label Add Choice 1 
+                                                    span.text-danger  *
+                                                    input.form-control(type='text', name='ch1', placeholder="Enter 1st choice", required)
+                                                .col-sm-3.m-clear
+                                                    label Add Choice 2
+                                                        span.text-danger  *
+                                                    input.form-control(type='text', name='ch2', placeholder="Enter 2nd choice", required)
+                                                .col-sm-3.m-clear
+                                                    label Add Choice 3
+                                                    input.form-control(type='text', name='ch3', placeholder="Enter 3rd choice")
+                                                .col-sm-3.m-clear
+                                                    label Add Choice 4
+                                                    input.form-control(type='text', name='ch4', placeholder="Enter 4th choice")
+                                            .row
+                                                .col-sm-12
+                                                    //- i.fa.fa-check
+                                                    label Add Correct Answer    
+                                                        i.fa.fa-check
+                                                        span.text-danger  *
+                                                    //- input.form-control(type='text', name='correct_ans', placeholder='Enter correct Answer', required)
+                                                    select.wide.form-control(id='correct_ans', name='correct_ans', required)
+                                                        option(value='', hidden='hidden') Select choice
+                                                        option(value='ch1') choice 1
+                                                        option(value='ch2') choice 2
+                                                        option(value='ch3') choice 3
+                                                        option(value='ch4') choice 4
+                                            .row
+                                                .col-sm-12
+                                                    .text-right
+                                                        button.btn.btn-success(type='submit') Submit & Exit
+
+            

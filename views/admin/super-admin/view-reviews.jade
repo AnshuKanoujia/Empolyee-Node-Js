@@ -1,0 +1,49 @@
+extends ./../../layout/admin-layout
+
+block content
+      #page-wrapper
+            .row.page-titles
+                .col-md-5.align-self-center
+                    h3.text-themecolor Project Planner
+                .col-md-7.align-self-center
+                    ol.breadcrumb
+                        li.breadcrumb-item.active All Reviews
+            .container-fluid
+                -if(messages.msg_error)
+                    each error in messages.msg_error
+                        .alert.alert-danger #{error}
+                -else if(messages.msg_info)
+                    .alert.alert-success #{messages.msg_info}
+                if (reviewsList.length)
+                    each lists in reviewsList
+                        .row
+                            .col-md-12
+                                .card
+                                    .card-header 
+                                        .row
+                                            .col-sm-12
+                                                .col-sm-3
+                                                    h4 
+                                                        //- i.fa.fa-comment  Reviews
+                                                        i.fa.fa-comment  
+                                                            value=lists.name    
+                                                            <span> ON </span>
+                                                .col-sm-2
+                                                    label 
+                                                        value=moment(lists.reviewDate).format('MM/DD/YYYY')
+                                                .col-sm-7
+                                                    .text-right
+                                                        if(lists.isJobreview == 1)
+                                                            label Job review
+                                                        else
+                                                            label Time sheet review
+                                                
+                                        .card-body
+                                            .col-sm-12
+                                                .row
+                                                    .col-sm-8
+                                                        i 
+                                                           value=lists.reviews
+                else 
+                    h3(style="text-align:center;") There is no reviews for this user yet.
+                                       

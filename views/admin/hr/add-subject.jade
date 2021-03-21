@@ -1,0 +1,59 @@
+extends ./../../layout/hr-layout
+
+block content
+            #page-wrapper
+                .row.page-titles
+                    .col-md-5.align-self-center
+                        h3.text-themecolor Hr
+                    .col-md-7.align-self-center
+                        ol.breadcrumb
+                            li.breadcrumb-item.active Company - Dashboard
+                .container-fluid
+                    form#newSiteForm(accept-charset='utf-8', method='post', name='loginForm', action='/admin/hr/add-subject', enctype='multipart/form-data')
+                        -if(messages.msg_error)
+                            .alert.alert-danger #{messages.msg_error}
+                        -else if(messages.msg_info)
+                            .alert.alert-success #{messages.msg_info}
+                        .row
+                            .col-md-12.col-sm-12
+                                .card
+                                        .card-header
+                                            .row
+                                                .col-sm-6
+                                                    h4 About Company
+                                        .card-body
+                                            .row
+                                                .col-md-12
+                                                    .row
+                                                        .col-sm-6
+                                                            label Add Subject
+                                                                span.text-danger  *
+                                                            input.subjectName.form-control(type='text', name='sub_name', spellcheck="false", required)
+                                                
+                                            .col-md-12
+                                                .text-right
+                                                        button.btn.btn-success(type='submit') Submit & Exit
+
+                script(type='text/javascript').
+                    var k = !{JSON.stringify(url)};
+                    $(document).ready(function(){
+                        $('.subjectName').on('blur', function() {
+                            var inputValue = $(this).val();
+                            var url= k+"getsubjectName/"+inputValue;
+                            $.ajax({
+                                type: "GET",
+                                url: url,
+                                success: function(data){
+                                var subjectName = data.data;
+                                if(subjectName == 1){
+                                    
+                                    $('.subjectName').after('<span style="color:red">Subject already is there, please enter new subject.</span>')
+                                } else {
+                                    $('.subjectName').next('span').remove();
+                                }
+                                }
+                            });
+                        });
+                
+                    })
+                        
